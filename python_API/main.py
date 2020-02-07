@@ -3,9 +3,10 @@
 # http://lkiis.lki.lt/pavardziu-duomenu-baze
 
 import spacy
-import json
 from googleapiclient.discovery import build
 from collections import Counter, OrderedDict
+
+from private import GOOGLE_KEYS
 
 # define models
 nlp_models = {'LTU': spacy.load('lt_core_news_sm'),
@@ -52,8 +53,8 @@ def process_entities(entities):
 
 
 def google_search(search_term):
-    my_api_key = "AIzaSyBEIjcT1qN0lJXl-efaNIXuyvXv5otxbr4"
-    my_cse_id = "014316290684678740716:7ay0n9qvdk4"
+    my_api_key = GOOGLE_KEYS['my_api_key']
+    my_cse_id = GOOGLE_KEYS['my_cse_id']
     service = build("customsearch", "v1", developerKey=my_api_key)
     res = service.cse().list(q=search_term, cx=my_cse_id).execute()  # start=5, num=10
     return res
