@@ -8,6 +8,9 @@ from collections import Counter, OrderedDict
 
 from private import GOOGLE_KEYS
 
+# separate endpoints
+from instagram import instagram_users
+
 # define models
 nlp_models = {'LTU': spacy.load('lt_core_news_sm'),
               'EN': spacy.load('en_core_web_sm')}
@@ -52,11 +55,19 @@ def process_entities(entities):
         return None
 
 
-def google_search(search_term):
+def google_search(person_name, num_pages=5):
     my_api_key = GOOGLE_KEYS['my_api_key']
     my_cse_id = GOOGLE_KEYS['my_cse_id']
     service = build("customsearch", "v1", developerKey=my_api_key)
-    res = service.cse().list(q=search_term, cx=my_cse_id).execute()  # start=5, num=10
+
+    res = service.cse().list(q=person_name, cx=my_cse_id).execute()
+    if num_pages > 1:
+        for start in range(1, num_pages):
+            start *= 10
+            start += 1
+            next_page = service.cse().list(q=person_name, cx=my_cse_id, start=start).execute()
+            res['items'] = res['items'] + next_page['items']
+
     return res
 
 
@@ -69,7 +80,7 @@ def process_google_response(google_response):
     for item in google_response['items']:
         parsed_item_fields = {}
         for data_field in fields_to_parse_from_items:
-            print(data_field, item[data_field])
+            # print(data_field, item[data_field])
             parsed_item_fields[data_field] = item[data_field]
         parsed_items.append(parsed_item_fields)
 
@@ -116,10 +127,16 @@ def get_api_data(input):
     google_response = google_search(person_name)
     google_data = process_google_response(google_response)
     google_analytics = get_google_data_analytics(google_data)
+    instagram_data = instagram_users(person_name)
 
-    output = {}
+    # making final output
+    output = dict()
     output['input_raw'] = input
     output['input_entities'] = entities
+
     output['google'] = {'items': google_data['totalResults'], 'freq_words': google_analytics}
+    print('IG')
+    output['instagram'] = instagram_data
+    print('done')
 
     return output
