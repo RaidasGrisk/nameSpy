@@ -8,7 +8,7 @@ def get_entities(input, nlp_models):
         if doc.ents:
             for ent in doc.ents:
                 ent_str = str(ent)
-                print(model_lang, ent.text, ent.label_)
+                # print(model_lang, ent.text, ent.label_)
                 if ent.label_ in entities.keys():
                     entities[ent.label_].add(ent_str)
                 else:
