@@ -63,7 +63,7 @@ class GoogleResult(object):
 
 
 # PUBLIC
-def get_google_search_scrape(query, exact_match, pages=1, lang='en', ncr=True, void=True, time_period=False, sort_by_date=False, first_page=0):
+def get_google_search_scrape(query, exact_match, pages=1, lang='en', ncr=False, void=True, time_period=False, sort_by_date=False, first_page=0):
     """Returns a list of GoogleResult.
 
     Args:
@@ -85,7 +85,10 @@ def get_google_search_scrape(query, exact_match, pages=1, lang='en', ncr=True, v
             soup = BeautifulSoup(html, "html.parser")
             divs = soup.findAll("div", attrs={"class": "g"})
 
-            results_div = soup.find("div", attrs={"id": "resultStats"})
+            # total search results
+            # google will store this in different div id depending on
+            # if the search is ncr or not
+            results_div = soup.find("div", attrs={"id": ["resultStats", 'slim_appbar']})
             number_of_results = _get_number_of_results(results_div)
 
             j = 0
@@ -316,4 +319,4 @@ def get_html(url):
     except Exception as e:
         print("Error accessing:", url)
         print(e)
-        return None
+        sys.exit()

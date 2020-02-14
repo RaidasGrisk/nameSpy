@@ -15,7 +15,7 @@ def get_api_data(input):
     person_name = process_entities(entities)
 
     print('Google search')
-    google_data = google_search_scrape(person_name, exact_match=True)
+    google_data = google_search_scrape(person_name, exact_match=True, pages=1)
     print('Google analytics')
     google_analytics = get_google_data_analytics(google_data, nlp_models, person_name, ingore_name=True)
     print('Instagram')

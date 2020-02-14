@@ -8,7 +8,7 @@ from find_job_titles import Finder
 from googletrans import Translator
 
 
-def google_search_scrape(person_name, exact_match, num_pages=1):
+def google_search_scrape(person_name, exact_match, pages=1):
 
     def reorganize_data(search_results):
         data = {'items': [], 'totalResults': search_results[0].number_of_results}
@@ -25,7 +25,7 @@ def google_search_scrape(person_name, exact_match, num_pages=1):
                                   'title': item.name})
         return data
 
-    search_results = get_google_search_scrape(person_name, exact_match, num_pages)
+    search_results = get_google_search_scrape(person_name, exact_match)
     search_results = reorganize_data(search_results)
 
     return search_results

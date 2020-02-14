@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import json
 
 
 def get_basic_info(user_name):
@@ -8,7 +9,6 @@ def get_basic_info(user_name):
 
     instagram_page = requests.get('https://www.instagram.com/' + user_name)
     soup = BeautifulSoup(instagram_page.text, 'html.parser')
-
 
     # TODO: private public?
     # TODO: description
@@ -20,6 +20,17 @@ def get_basic_info(user_name):
             output['Following'] = words[2].replace('k', '000').replace(',', '').replace('.', '')
             output['Posts'] = words[4].replace('k', '000').replace(',', '').replace('.', '')
             break
+
+    # if nothing was found then profile is set to private and html is structured differently
+    if not output:
+        js_items = soup.findAll('script', attrs={'type': 'text/javascript'})
+        for item in js_items:
+            if 'edge_followed_by' in item.text:
+                js_json = json.loads(item.text.replace('window._sharedData = ', '')[:-1])
+                # js_json['country_code']
+                output['Followers'] = js_json['entry_data']['ProfilePage'][0]['graphql']['user']['edge_followed_by']['count']
+                output['Following'] = js_json['entry_data']['ProfilePage'][0]['graphql']['user']['edge_follow']['count']
+                output['Posts'] = js_json['entry_data']['ProfilePage'][0]['graphql']['user']['edge_owner_to_timeline_media']['count']
 
     return output
 
