@@ -1,50 +1,27 @@
-import requests
+# https://github.com/ideoforms/python-twitter-examples/blob/master/twitter-user-search.py
 
-input = 'Raidas Griskevicius'
-endpoint = 'https://api.twitter.com/1.1/users/lookup.json?screen_name={}'.format(input)
-oauth_consumer_key = 'PrstHGkvSNyYHDYchun8vxiPiNtP3fLQgBXiKpktDz1n8IU5tU'
-response = requests.get('https://website.com/id', headers={'Authorization': 'OAuth oauth_consumer_key="{}"'.format(oauth_consumer_key)})
+from twitter import *
+from private import TWITTER_KEYS
 
 
+def get_twitter_users(input):
 
-import base64
-#Define your keys from the developer portal
-client_key = 'mPgpDSjjToaPbqGnLk3JnxSzG'
-client_secret = 'PrstHGkvSNyYHDYchun8vxiPiNtP3fLQgBXiKpktDz1n8IU5tU'
-#Reformat the keys and encode them
-key_secret = '{}:{}'.format(client_key, client_secret).encode('ascii')
+    twitter = Twitter(auth=OAuth(TWITTER_KEYS['access_key'],
+                      TWITTER_KEYS['access_secret'],
+                      TWITTER_KEYS['consumer_key'],
+                      TWITTER_KEYS['consumer_secret']))
 
-# Transform from bytes to bytes that can be printed
-b64_encoded_key = base64.b64encode(key_secret)
-#Transform from bytes back into Unicode
-b64_encoded_key = b64_encoded_key.decode('ascii')
+    results = twitter.users.search(q=input, count=20)
 
+    output = {'num_users': len(results),
+              'users': []}
+    for user in results[:5]:
+        user_data = {}
+        user_data['screen_name'] = user['screen_name']
+        user_data['followers_count'] = user['followers_count']
+        user_data['friends_count'] = user['friends_count']
+        user_data['favourites_count'] = user['favourites_count']
+        output['users'].append(user_data)
 
-import requests
-base_url = 'https://api.twitter.com/'
-auth_url = '{}oauth2/token'.format(base_url)
-auth_headers = {
-    'Authorization': 'Basic {}'.format(b64_encoded_key),
-    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-}
-auth_data = {
-    'grant_type': 'client_credentials'
-}
-auth_resp = requests.post(auth_url, headers=auth_headers, data=auth_data)
+    return output
 
-access_token = auth_resp.json()['access_token']
-
-
-search_headers = {
-    'Authorization': 'Bearer {}'.format(access_token)
-}
-
-search_params = {
-    'screen_name': 'Karolis matuliauskas',
-    'user_id': '',
-    'include_entities': False,
-    'tweet_mode': False
-}
-search_url = '{}1.1/users/lookup.json'.format(base_url)
-search_resp = requests.get(search_url, headers=search_headers, params=search_params)
-print(search_resp.text)

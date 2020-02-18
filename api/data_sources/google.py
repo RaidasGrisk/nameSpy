@@ -3,8 +3,6 @@ from googleapiclient.discovery import build
 from collections import Counter, OrderedDict
 from private import GOOGLE_KEYS
 
-from find_job_titles import Finder
-
 from googletrans import Translator
 
 
@@ -111,31 +109,17 @@ def get_google_data_analytics(search_results, nlp_models, person_name, ingore_na
 
         return output
 
-    # translate
-    search_results = google_translate(search_results)
-
     # combine into one string
     text_items_combined = ' '.join([item['snippet'] + ' ' + item['title'] for item in search_results['items']])
 
-    # extract job titles
-    job_titles = []
-    try:
-        finder = Finder()
-        job_titles = finder.findall(text_items_combined)
-        job_titles = list(set([title.match for title in job_titles]))
-    except RuntimeError:
-        print('Job Title finder failed')
-
     # extract entities
-    from helpers import get_entities
-    nlp = nlp_models['EN']
-    entities = get_entities(text_items_combined, {'EN': nlp})
+    # from helpers import get_entities
+    # nlp = nlp_models['EN']
+    # entities = get_entities(text_items_combined, {'EN': nlp})
 
     # count words
-    text_items_cleaned = clean_text(text_items_combined, nlp_models, person_name)
+    text_items_cleaned = clean_text(text_items_combined, nlp_models, person_name, ingore_name)
     frequent_words = OrderedDict(Counter(text_items_cleaned.split()).most_common()[:25])
 
-    return {'job_titles': job_titles, 'entities': entities, 'frequent_words': frequent_words}
+    return {'frequent_words': frequent_words}
 
-# from other.main import pretty_print_json
-# pretty_print_json(search_results)

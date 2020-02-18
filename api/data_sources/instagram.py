@@ -16,9 +16,9 @@ def get_basic_info(user_name):
         content = item.get('content')
         if 'Followers' in content:
             words = content.split()
-            output['Followers'] = words[0].replace('k', '00').replace(',', '').replace('.', '')
-            output['Following'] = words[2].replace('k', '000').replace(',', '').replace('.', '')
-            output['Posts'] = words[4].replace('k', '000').replace(',', '').replace('.', '')
+            output['followers_count'] = int(words[0].replace('k', '00').replace(',', '').replace('.', ''))
+            output['following_count'] = int(words[2].replace('k', '000').replace(',', '').replace('.', ''))
+            output['posts_count'] = int(words[4].replace('k', '000').replace(',', '').replace('.', ''))
             break
 
     # if nothing was found then profile is set to private and html is structured differently
@@ -28,9 +28,9 @@ def get_basic_info(user_name):
             if 'edge_followed_by' in item.text:
                 js_json = json.loads(item.text.replace('window._sharedData = ', '')[:-1])
                 # js_json['country_code']
-                output['Followers'] = js_json['entry_data']['ProfilePage'][0]['graphql']['user']['edge_followed_by']['count']
-                output['Following'] = js_json['entry_data']['ProfilePage'][0]['graphql']['user']['edge_follow']['count']
-                output['Posts'] = js_json['entry_data']['ProfilePage'][0]['graphql']['user']['edge_owner_to_timeline_media']['count']
+                output['followers_count'] = int(js_json['entry_data']['ProfilePage'][0]['graphql']['user']['edge_followed_by']['count'])
+                output['following_count'] = int(js_json['entry_data']['ProfilePage'][0]['graphql']['user']['edge_follow']['count'])
+                output['posts_count'] = int(js_json['entry_data']['ProfilePage'][0]['graphql']['user']['edge_owner_to_timeline_media']['count'])
 
     return output
 
@@ -43,21 +43,15 @@ def instagram_users(input):
     response = requests.get(endpoint)
     search_output = response.json()
 
-    # remove some fields
-    for user in search_output['users']:
-        del user['user']['profile_pic_url']
-
-    # limit number of users to go on with
-    # TODO: dicts are unordered!
-    search_output['users'] = search_output['users'][:5]
-    search_output['hashtags'] = search_output['hashtags'][:5]
-
-    for user in search_output['users']:
+    users = []
+    for user in search_output['users'][:5]:
         basic_info = get_basic_info(user['user']['username'])
-        user['basic_info'] = basic_info
+        user_info = {'username': user['user']['username']}
+        user_info.update(basic_info)
+        users.append(user_info)
 
     output = {}
     output['num_users'] = len(response.json()['users'])
-    output['data'] = search_output
+    output['users'] = users
 
     return output

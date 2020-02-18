@@ -14,6 +14,8 @@
           Hi, my names is names.ml
         </div>
 
+        <jsonBox/>
+
         <!-- <div class="content"> -->
           <div class="is-size-4 is-uppercase has-text-weight-bold">
             <p>What I do?</p>
@@ -53,7 +55,11 @@
         <progress class="progress is-medium is-primary" max="100"></progress>
       </div>
       <div class="box is-size-7" v-if="output">
-        <pre>{{ stringify(this.output) }}</pre>
+        <vue-json-pretty
+          :data="this.output"
+          :showLine="false"
+          :showDoubleQuotes="false">
+        </vue-json-pretty>
       </div>
     </div>
 
@@ -63,10 +69,15 @@
 <script>
 
 import axios from "axios"
+import VueJsonPretty from 'vue-json-pretty'
 
 export default {
 
   name: 'landingPage',
+
+  components: {
+    VueJsonPretty
+  },
 
   data() {
     return {
@@ -99,6 +110,10 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style>
+
+.vjs-tree {
+  font-size: 10px;
+}
 
 </style>

@@ -63,7 +63,7 @@ class GoogleResult(object):
 
 
 # PUBLIC
-def get_google_search_scrape(query, exact_match, pages=1, lang='en', ncr=False, void=True, time_period=False, sort_by_date=False, first_page=0):
+def get_google_search_scrape(query, exact_match, pages=1, lang='en', ncr=False, void=True, time_period=False, sort_by_date=False, first_page=0, number_of_results_only=False):
     """Returns a list of GoogleResult.
 
     Args:
@@ -90,6 +90,9 @@ def get_google_search_scrape(query, exact_match, pages=1, lang='en', ncr=False, 
             # if the search is ncr or not
             results_div = soup.find("div", attrs={"id": ["resultStats", 'slim_appbar']})
             number_of_results = _get_number_of_results(results_div)
+
+            if number_of_results_only:
+                return {'items': number_of_results}
 
             j = 0
             for li in divs:
