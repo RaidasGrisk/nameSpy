@@ -16,9 +16,13 @@ def get_basic_info(user_name):
         content = item.get('content')
         if 'Followers' in content:
             words = content.split()
-            output['followers_count'] = int(words[0].replace('k', '00').replace(',', '').replace('.', ''))
-            output['following_count'] = int(words[2].replace('k', '000').replace(',', '').replace('.', ''))
-            output['posts_count'] = int(words[4].replace('k', '000').replace(',', '').replace('.', ''))
+            # TODO: this does not work all the time
+            try:
+                output['followers_count'] = int(words[0].replace('k', '00').replace(',', '').replace('.', ''))
+                output['following_count'] = int(words[2].replace('k', '000').replace(',', '').replace('.', ''))
+                output['posts_count'] = int(words[4].replace('k', '000').replace(',', '').replace('.', ''))
+            except:
+                continue
             break
 
     # if nothing was found then profile is set to private and html is structured differently

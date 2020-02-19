@@ -1,3 +1,5 @@
+import re
+
 
 def get_entities(input, nlp_models):
 
@@ -36,3 +38,8 @@ def process_entities(entities):
     else:
         print('No manes here')
         return None
+
+
+def get_domain_from_url(url):
+    regex = '^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)'
+    return re.search(regex, url)[0]

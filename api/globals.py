@@ -4,19 +4,20 @@ nlp_models = {'LTU': spacy.load('lt_core_news_sm'),
               'EN': spacy.load('en_core_web_sm')}
 
 
-#
+
 # from stanfordcorenlp import StanfordCoreNLP
 # import logging
 # import json
 #
 # class StanfordNLP:
 #     def __init__(self, host='http://localhost', port=9000):
-#         self.nlp = StanfordCoreNLP(host, port=port,
-#                                    timeout=30000)  # , quiet=False, logging_level=logging.DEBUG)
+#         self.nlp = StanfordCoreNLP(host, port=port, timeout=30000)  # , quiet=False, logging_level=logging.DEBUG)
 #         self.props = {
-#             'annotators': 'tokenize,ssplit,pos,lemma,ner,parse,depparse,dcoref,relation',
+#             'annotators': 'ner',
 #             'pipelineLanguage': 'en',
-#             'outputFormat': 'json'
+#             'outputFormat': 'json',
+#             "ner.applyFineGrained": "true",
+#             "ner.useSUTime": "false"
 #         }
 #
 #     def word_tokenize(self, sentence):
@@ -59,7 +60,7 @@ nlp_models = {'LTU': spacy.load('lt_core_news_sm'),
 #     print "Parse:", sNLP.parse(text)
 #     print "Dep Parse:", sNLP.dependency_parse(text)
 #
-#
+
 # import nltk
 # from nltk.tag.stanford import StanfordNERTagger
 #
@@ -76,7 +77,7 @@ nlp_models = {'LTU': spacy.load('lt_core_news_sm'),
 #
 # # Run NER tagger on words
 # print(ner_tagger.tag(words))
-#
+
 #
 #
 # from nltk.parse.corenlp import CoreNLPServer
@@ -96,3 +97,4 @@ nlp_models = {'LTU': spacy.load('lt_core_news_sm'),
 # parser = CoreNLPDependencyParser(tagtype='ner')
 # parse = next(parser.raw_parse("Elon musk the CEO of tesla"))
 # print(parse)
+

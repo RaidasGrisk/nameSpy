@@ -62,5 +62,6 @@ $link-focus-border: $primary;
   -moz-osx-font-smoothing: grayscale;
   background-color: #673AB7;
   min-height: 100vh;
+
 }
 </style>

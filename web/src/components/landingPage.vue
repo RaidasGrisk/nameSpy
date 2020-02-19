@@ -14,8 +14,6 @@
           Hi, my names is names.ml
         </div>
 
-        <jsonBox/>
-
         <!-- <div class="content"> -->
           <div class="is-size-4 is-uppercase has-text-weight-bold">
             <p>What I do?</p>
@@ -39,10 +37,20 @@
           <p class="control">
             <input class="input is-small" v-model='input' type="text" placeholder="e.g. Rick Morty">
           </p>
+        </div>
+
+        <div class="field has-addons has-addons-centered">
           <p class="control">
-            <a class="button is-small" @click="getModelApiData()">
+            <a class="button is-small is-success is-inverted is-focused" @click="getModelApiData(job_title)">
               <div class="content is-small">
-                Hit me!
+                Who is it?
+              </div>
+            </a>
+          </p>
+          <p class="control">
+            <a class="button is-small is-info is-inverted is-focused" @click="getModelApiData(social_score)">
+              <div class="content is-small">
+                Web score?
               </div>
             </a>
           </p>
@@ -50,18 +58,29 @@
       </div>
     </section>
 
-    <div class="columns is-centered">
-      <div class="box" style="min-width: 30vh;" v-if="processingAPIRequest">
-        <progress class="progress is-medium is-primary" max="100"></progress>
+    <section>
+      <div class="columns is-centered">
+        <div class="box" style="min-width: 30vh;" v-if="processingAPIRequest">
+          <progress class="progress is-medium is-primary" max="100"></progress>
+        </div>
+        <!-- style="background-color: #0a131c;" -->
+        <div class="box is-size-7" v-if="output">
+          <vue-json-pretty
+            :data="this.output"
+            :showLine="false"
+            :showDoubleQuotes="false">
+          </vue-json-pretty>
+        </div>
       </div>
-      <div class="box is-size-7" v-if="output">
-        <vue-json-pretty
-          :data="this.output"
-          :showLine="false"
-          :showDoubleQuotes="false">
-        </vue-json-pretty>
+    </section>
+
+    <br><br>
+    <section v-if="output">
+      <div class="is-size-4 is-uppercase has-text-weight-bold has-text-centered">
+        <p>Here are some examples <br>to give you a perspective</p>
       </div>
-    </div>
+      <SocialScoreBoard/>
+    </section>
 
   </div>
 </template>
@@ -71,19 +90,26 @@
 import axios from "axios"
 import VueJsonPretty from 'vue-json-pretty'
 
+import SocialScoreBoard from './SocialScoreBoard'
+
 export default {
 
   name: 'landingPage',
 
   components: {
-    VueJsonPretty
+    VueJsonPretty,
+    SocialScoreBoard
   },
 
   data() {
     return {
       input: '',
       output: null,
-      processingAPIRequest: false
+      processingAPIRequest: false,
+
+      // endpoints
+      job_title: 'job_title',
+      social_score: 'social_score'
     }
   },
 
@@ -93,13 +119,13 @@ export default {
       return JSON.stringify(input, null, 4)
     },
 
-    getModelApiData() {
+    getModelApiData(endpoint) {
 
       this.output = null
       this.processingAPIRequest = true
       var vm = this
-      var endpoint = "http://127.0.0.1:5000/api?input=" + this.input
-      axios.get(endpoint).then(function (response){
+      var url = "http://127.0.0.1:5000/api/" + endpoint + "?input=" + this.input
+      axios.get(url).then(function (response){
           vm.output = response.data
           vm.processingAPIRequest = false
         }
