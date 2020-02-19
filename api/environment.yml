@@ -1,0 +1,19 @@
+channels:
+  - anaconda
+  - conda-forge
+  - defaults
+dependencies:
+  - flask=1.1.1=py_0
+  - flask-restful=0.3.7=py_0
+  - pip
+  - beautifulsoup4
+  - unidecode
+  - pip:
+    - googletrans==2.4.0
+    - future
+    - fake-useragent==0.1.11
+    - google-api-python-client==1.7.11
+    - twitter==1.18.0
+    - find-job-titles==0.7.0
+    - stanfordnlp==0.2.0
+    - spacy==2.2.3
