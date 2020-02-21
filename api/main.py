@@ -51,6 +51,7 @@ def get_social_score(input):
     wiki_data = get_wiki_search(person_name)
     print('Instagram')
     instagram_data = instagram_users(person_name)
+    print(instagram_data)
     print('Twitter')
     twitter_data = get_twitter_users(person_name)
 

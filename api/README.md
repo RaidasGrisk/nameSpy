@@ -22,8 +22,8 @@ conda update --all
 All of this is stored in private.py
 ``` bash
 touch private.py
-echo "GOOGLE_KEYS" >> private.py
-echo "TWITTER_KEYS" >> private.py
+echo "GOOGLE_KEYS = {}" >> private.py
+echo "TWITTER_KEYS = {}" >> private.py
 ```
 
 # serve

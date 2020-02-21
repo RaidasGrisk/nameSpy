@@ -29,6 +29,31 @@ def google_search_scrape(person_name, exact_match, pages=1):
     return search_results
 
 
+def google_translate(search_results):
+    # https://github.com/ssut/py-googletrans
+    # TODO: do in one batch by giving an array
+
+    # collect items to translate
+    snippets = [item['snippet'] for item in search_results['items']]
+    titles = [item['title'] for item in search_results['items']]
+    text_to_translate = snippets + titles
+
+    # translate
+    translator = Translator()
+    translated = [item.text for item in translator.translate(text_to_translate, dest='en')]
+
+    # ungroup
+    snippets_translated = translated[:len(snippets)]
+    titles_translated = translated[len(snippets):]
+
+    # assign
+    for item, snippet, title in zip(search_results['items'], snippets_translated, titles_translated):
+        item['snippet'] = snippet
+        item['title'] = title
+
+    return search_results
+
+
 def google_search(person_name, num_pages=5):
     my_api_key = GOOGLE_KEYS['my_api_key']
     my_cse_id = GOOGLE_KEYS['my_cse_id']
@@ -54,31 +79,6 @@ def google_search(person_name, num_pages=5):
         return output
 
     search_results = process_google_response(search_results)
-
-    return search_results
-
-
-def google_translate(search_results):
-    # https://github.com/ssut/py-googletrans
-    # TODO: do in one batch by giving an array
-
-    # collect items to translate
-    snippets = [item['snippet'] for item in search_results['items']]
-    titles = [item['title'] for item in search_results['items']]
-    text_to_translate = snippets + titles
-
-    # translate
-    translator = Translator()
-    translated = [item.text for item in translator.translate(text_to_translate, dest='en')]
-
-    # ungroup
-    snippets_translated = translated[:len(snippets)]
-    titles_translated = translated[len(snippets):]
-
-    # assign
-    for item, snippet, title in zip(search_results['items'], snippets_translated, titles_translated):
-        item['snippet'] = snippet
-        item['title'] = title
 
     return search_results
 
@@ -123,3 +123,44 @@ def get_google_data_analytics(search_results, nlp_models, person_name, ingore_na
 
     return {'frequent_words': frequent_words}
 
+
+# ------ #
+import requests
+from bs4 import BeautifulSoup
+import unidecode
+import re
+
+
+def get_google_search_num_items(person_name):
+
+    USER_AGENT = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
+    params = {'q': person_name}
+    response = requests.get('https://www.google.com/search', params=params, headers=USER_AGENT)
+
+    soup = BeautifulSoup(response.text, "html.parser")
+    results_div = soup.find("div", attrs={"id": ["resultStats", 'slim_appbar']})
+
+    def _get_number_of_results(results_div):
+        """Return the total number of results of the google search.
+        Note that the returned value will be the same for all the GoogleResult
+        objects from a specific query."""
+        try:
+            results_div_text = results_div.get_text()
+            results_div_text = unidecode.unidecode(results_div_text)
+            results_div_text = results_div_text.replace(' ', '').replace(',', '').replace('.', '')
+            if results_div_text:
+                regex = r"[\d\s]+(?:\.(?:\s*\d){2,4})?"
+                m = re.findall(regex, results_div_text)
+
+                # Clean up the number
+                num = m[0]
+
+                results = int(num)
+                return results
+        except Exception as e:
+            print(e)
+            return 0
+
+    output = _get_number_of_results(results_div)
+    print(output)
+    return output
