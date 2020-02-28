@@ -77,7 +77,7 @@
     <br><br>
     <section v-if="output">
       <div class="is-size-4 is-uppercase has-text-weight-bold has-text-centered">
-        <p>Here are some examples <br>to give you a perspective</p>
+        <p>Here, <br>have some perspective</p>
       </div>
       <SocialScoreBoard/>
     </section>

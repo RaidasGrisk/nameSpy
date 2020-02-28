@@ -1,4 +1,4 @@
-# setup env
+# setup envjob_title
 
 Install conda:
 https://www.digitalocean.com/community/tutorials/how-to-install-anaconda-on-ubuntu-18-04-quickstart
@@ -28,6 +28,7 @@ echo "TWITTER_KEYS = {}" >> private.py
 
 # serve
 ``` bash
-python service.py
+python endpoint_get_social_score.py
+python endpoint_get_job_title.py
 
 ```
