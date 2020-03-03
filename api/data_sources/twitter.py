@@ -17,9 +17,9 @@ def get_twitter_users(input):
               'users': []}
     for user in results[:5]:
         user_data = {}
-        user_data['screen_name'] = user['screen_name']
+        user_data['username'] = user['screen_name']
         user_data['followers_count'] = user['followers_count']
-        user_data['friends_count'] = user['friends_count']
+        user_data['following_count'] = user['friends_count']
         user_data['favourites_count'] = user['favourites_count']
         output['users'].append(user_data)
 

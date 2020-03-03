@@ -43,3 +43,17 @@ def process_entities(entities):
 def get_domain_from_url(url):
     regex = '^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)'
     return re.search(regex, url)[0]
+
+
+def get_api_output_head_from_input_entities(entities):
+
+    output = {}
+    if entities.get('PERSON'):
+        output['input'] = entities['PERSON'][0]
+        if len(entities['PERSON']) != 1:
+            output['warning'] = 'Huh!? Why is there more than one person?'
+    else:
+        output['warning'] = 'I am built to recognize names, but I dont see any :('
+        output['entities'] = list(entities.keys())
+
+    return output

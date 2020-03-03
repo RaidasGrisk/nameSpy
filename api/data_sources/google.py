@@ -2,6 +2,7 @@ from data_sources.google_scrape import get_google_search_scrape
 from googleapiclient.discovery import build
 from collections import Counter, OrderedDict
 from private import GOOGLE_KEYS
+import re
 
 from googletrans import Translator
 
@@ -38,9 +39,18 @@ def google_translate(search_results):
     titles = [item['title'] for item in search_results['items']]
     text_to_translate = snippets + titles
 
+    # clear non alpha num
+    # e.g ☀ throws error in translator
+    # re is fastest
+    # https://stackoverflow.com/questions/1276764/stripping-everything-but-alphanumeric-chars-from-a-string-in-python
+    text_to_translate = [re.sub(r'\W+', ' ', text) for text in text_to_translate]
+
     # translate
     translator = Translator()
     translated = [item.text for item in translator.translate(text_to_translate, dest='en')]
+
+    for item in text_to_translate:
+        translator.translate(item, dest='en')
 
     # ungroup
     snippets_translated = translated[:len(snippets)]
