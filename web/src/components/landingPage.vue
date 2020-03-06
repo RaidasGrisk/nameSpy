@@ -10,8 +10,13 @@
       </div>
 
       <div class="has-text-centered">
-        <div class="section is-size-4 is-uppercase has-text-weight-bold">
-          Hi, my names is names.ml
+        <div class="section">
+          <div class="is-size-4 is-uppercase has-text-weight-bold">
+            Hi, my names is
+          </div>
+          <div class="is-size-4 is-uppercase has-text-weight-bold has-text-success">
+            NameSpy
+        </div>
         </div>
 
         <!-- <div class="content"> -->
@@ -79,7 +84,7 @@
       <div class="is-size-4 is-uppercase has-text-weight-bold has-text-centered">
         <p>Here, <br>have some perspective</p>
       </div>
-      <SocialScoreBoard/>
+      <SocialScoreBoard :gridData="getGridData()"></SocialScoreBoard>
     </section>
 
   </div>
@@ -109,7 +114,22 @@ export default {
 
       // endpoints
       job_title: 'job_title',
-      social_score: 'social_score'
+      social_score: 'social_score',
+
+      // table data
+      gridData: [
+        {'person': 'Albert Einstein', 'google_items': 62800000, 'wiki_items': 4511, 'twtr_users': 20, 'twtr_followers': 143596, 'ig_users': 31, 'ig_followers': 810100},
+        {'person': 'Nicki Minaj', 'google_items': 115000000, 'wiki_items': 2800, 'twtr_users': 20, 'twtr_followers': 20602384, 'ig_users': 27, 'ig_followers': 623500},
+        {'person': 'Charles Darwin', 'google_items': 14500000, 'wiki_items': 3936, 'twtr_users': 20, 'twtr_followers': 2875083, 'ig_users': 26, 'ig_followers': 506},
+        {'person': 'Elon Musk', 'google_items': 91000000, 'wiki_items': 838, 'twtr_users': 20, 'twtr_followers': 31396013, 'ig_users': 16, 'ig_followers': 6383},
+        {'person': 'Bart Simpson', 'google_items': 12900000, 'wiki_items': 432, 'twtr_users': 20, 'twtr_followers': 46045, 'ig_users': 21, 'ig_followers': 25700},
+        {'person': 'Karolina Meschino', 'google_items': 695000, 'wiki_items': 4, 'twtr_users': 1, 'twtr_followers': 132, 'ig_users': 41, 'ig_followers': 289300},
+        // {'person': 'Guido van Rossum', 'google_items': 478000, 'wiki_items': 98, 'twtr_users': 3, 'twtr_followers': 168370, 'ig_users': 3, 'ig_followers': 951},
+        // {'person': 'Evan You', 'google_items': 212000, 'wiki_items': 2, 'twtr_users': 20, 'twtr_followers': 99680, 'ig_users': 42, 'ig_followers': 4148},
+        // {'person': 'Agnė Širinskienė', 'google_items': 171000, 'wiki_items': 3, 'twtr_users': 0, 'twtr_followers': 0, 'ig_users': 0, 'ig_followers': 0},
+        // {'person': 'Karolina Zivkovic', 'google_items': 225, 'wiki_items': 0, 'twtr_users': 1, 'twtr_followers': 0, 'ig_users': 10, 'ig_followers': 171},
+        // {'person': 'Oleksii Potiekhin', 'google_items': 13200, 'wiki_items': 0, 'twtr_users': 1, 'twtr_followers': 3, 'ig_users': 0, 'ig_followers': 0}
+      ]
     }
   },
 
@@ -124,14 +144,46 @@ export default {
       this.output = null
       this.processingAPIRequest = true
       var vm = this
-      var url = "http://127.0.0.1:5000/api/" + endpoint + "?input=" + this.input
+      var url = "http://127.0.0.1:8080/api/" + endpoint + "?input=" + this.input
       axios.get(url).then(function (response){
           vm.output = response.data
           vm.processingAPIRequest = false
         }
       )
+    },
+
+    checkIfArrayIsEmpty(array, index) {
+      if (array.length == 0) {
+        return {'followers_count': 0}
+      } else {
+        return array[index]
+      }
+    },
+
+    getGridData() {
+      if (
+        (this.output !== 'undefined') &&
+        (this.output != null) &&
+        ('input' in this.output) &&
+        (this.output['input'] != this.gridData[this.gridData.length-1]['person'])
+      ) {
+        // map API data to gridData table
+        var newRow = {
+          'person': this.output['input'],
+          'google_items': this.output['google']['items'],
+          'wiki_items': this.output['wikipedia']['items'],
+          'twtr_users': this.output['twitter']['num_users'],
+          'twtr_followers': this.checkIfArrayIsEmpty(this.output['twitter']['users'], 0)['followers_count'],
+          'ig_users': this.output['instagram']['num_users'],
+          'ig_followers': this.checkIfArrayIsEmpty(this.output['instagram']['users'], 0)['followers_count'],
+          'class': 'is-success'
+        }
+        this.gridData.push(newRow)
+      }
+      return this.gridData
     }
-  }
+  },
+
 }
 </script>
 

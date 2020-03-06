@@ -16,3 +16,6 @@ private.py
 *.ntvs*
 *.njsproj
 *.sln
+
+# large files
+stanford*
