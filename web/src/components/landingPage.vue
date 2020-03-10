@@ -144,7 +144,7 @@ export default {
       this.output = null
       this.processingAPIRequest = true
       var vm = this
-      var url = "http://127.0.0.1:8080/api/" + endpoint + "?input=" + this.input
+      var url = "https://socialscore-mu7u3ykctq-lz.a.run.app/api/" + endpoint + "?input=" + this.input
       axios.get(url).then(function (response){
           vm.output = response.data
           vm.processingAPIRequest = false

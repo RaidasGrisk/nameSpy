@@ -3,7 +3,7 @@ FROM python:3.7-slim
 # copy files
 COPY /api/data_sources ./api/data_sources/
 COPY /api/__init__.py /api/globals.py /api/helpers.py /api/private.py ./api/
-COPY /api_build/social_score/requirements.txt ./api/
+COPY /deploy/social_score/requirements.txt ./api/
 COPY /api/endpoint_get_social_score.py ./api/
 
 # install dependencies

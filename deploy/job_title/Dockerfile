@@ -4,7 +4,7 @@ FROM ubuntu:18.04
 COPY /api/data_sources ./api/data_sources/
 COPY /api/__init__.py /api/globals.py /api/helpers.py /api/private.py ./api/
 COPY /api/job_titles ./api/job_titles/
-COPY /api_build/job_title/requirements.txt ./api/
+COPY /deploy/job_title/requirements.txt ./api/
 COPY /api/endpoint_get_job_title.py ./api/
 
 # install dependencies

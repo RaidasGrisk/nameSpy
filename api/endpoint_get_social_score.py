@@ -4,6 +4,7 @@ from data_sources.twitter import get_twitter_users
 from data_sources.google import get_google_search_num_items
 
 from helpers import get_entities, process_entities
+from helpers import get_api_output_head_from_input_entities
 from globals import nlp_models
 
 
@@ -12,6 +13,9 @@ def get_social_score(input):
     entities = get_entities(input, nlp_models)
     print(entities)
     person_name = process_entities(entities)
+
+    if not person_name:
+        return {'warning': 'I am built to recognize names, but I dont see any :('}
 
     print('Google counts')
     google_counts = get_google_search_num_items(person_name)
@@ -25,10 +29,8 @@ def get_social_score(input):
 
     # making final output
     output = dict()
-    output['input_raw'] = input
-    output['input_entities'] = entities
-
-    output['google'] = google_counts
+    output.update(get_api_output_head_from_input_entities(entities))
+    output['google'] = {'items': google_counts}
     output['wikipedia'] = wiki_data
     output['twitter'] = twitter_data
     output['instagram'] = instagram_data
