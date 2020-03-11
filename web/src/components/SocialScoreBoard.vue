@@ -2,7 +2,8 @@
   <section class="section">
     <div class="columns is-centered">
       <div class="box column is-narrow">
-        <table class="table is-narrow is-fullwidth" style="font-size: 10px !important">
+        <div class="table-container">
+        <table class="table is-narrow is-fullwidth" style="font-size: 10px !important;">
           <thead>
             <th v-for="key in gridColumns()" v-bind:key="key">
               {{ key }}
@@ -18,6 +19,7 @@
             </tr>
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   </section>

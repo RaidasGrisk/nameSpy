@@ -102,6 +102,8 @@ EXTERNAL_IP=$(gcloud compute instances list --format="get(networkInterfaces[0].a
 # in your browser, navigate to the echoed address.  NOTE: the deployment may take about a minute.
 echo http://$EXTERNAL_IP:8080
 
+# update VM instance with new image
+gcloud compute instances update-container --container-image=gcr.io/namesapi-1581010760883/vue-app vue-app-vm
 
 # cleanup
 gcloud compute firewall-rules delete vue-fw

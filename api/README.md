@@ -32,3 +32,12 @@ python endpoint_get_social_score.py
 python endpoint_get_job_title.py
 
 ```
+
+# BUGS
+
+``` bash
+# insta followers count bug with k and .
+Natalija Bunke IG followers	16800
+Karolina Meschino IG followers	288800
+
+```

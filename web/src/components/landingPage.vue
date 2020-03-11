@@ -1,74 +1,84 @@
 <template>
-  <div class="has-text-white-ter">
+  <div>
+    <section class="section has-text-centered has-text-white-ter">
 
-    <section class="section">
-
-      <div class="columns is-one-fifth is-centered">
-        <div class="box has-text-centered">
-          <img src="@/assets/Picture1.png" alt="Logo" style="width:100px;">
+      <transition name="fade" mode="out-in" appear>
+        <div class="columns is-one-fifth is-centered" style="transition-delay: 0.3s">
+          <div class="box has-text-centered">
+            <img src="@/assets/Picture1.png" alt="Logo" style="width:100px;">
+          </div>
         </div>
-      </div>
+      </transition>
 
-      <div class="has-text-centered">
-        <div class="section">
+
+      <transition name="fade" mode="out-in" appear>
+        <div class="section"  style="transition-delay: 0.6s">
           <div class="is-size-4 is-uppercase has-text-weight-bold">
             Hi, my names is
           </div>
           <div class="is-size-4 is-uppercase has-text-weight-bold has-text-success">
-            NameSpy
+            NameSpy <br> 🧐
+          </div>
         </div>
-        </div>
+      </transition>
 
         <!-- <div class="content"> -->
-          <div class="is-size-4 is-uppercase has-text-weight-bold">
-            <p>What I do?</p>
+        <transition name="fade" mode="out-in" appear>
+          <div class="section" style="transition-delay: 1.2s">
+            <div class="is-size-4 is-uppercase has-text-weight-bold">
+              <p>What I do?</p>
+            </div>
+            <div class="content is-size-7"  style="transition-delay: 0.9s">
+              <p>You give me a name <br>
+              I give you what I know about it.</p>
+            </div>
           </div>
+        </transition>
 
-          <div class="content is-size-7">
-            <p>You give me a name <br>
-            I give you what I know about it.</p>
+
+        <transition name="fade" mode="out-in" appear>
+          <div class="section" style="transition-delay: 1.8s">
+            <div class="is-size-4 is-uppercase has-text-weight-bold">
+              <p>Enough talk, try me.</p>
+            </div>
+
+            <div class="content is-size-7">
+              <p>Type any name and see what's up.<br>How about your own name?</p>
+            </div>
+
+            <div class="field has-addons has-addons-centered">
+              <p class="control">
+                <input class="input is-small" v-model='input' type="text" placeholder="e.g. Rick Morty">
+              </p>
+            </div>
+
+            <div class="field has-addons has-addons-centered">
+              <p class="control">
+                <a class="button is-small is-info is-inverted is-focused" @click="getModelApiData(social_score)">
+                  <div class="content is-small">
+                    Web score?
+                  </div>
+                </a>
+              </p>
+              <p class="control">
+                <a class="button is-small is-success is-inverted is-focused" disabled> <!-- @click="getModelApiData(job_title)" -->
+                  <div class="content is-small">
+                    Who is it?
+                  </div>
+                </a>
+              </p>
+            </div>
           </div>
+        </transition>
 
-          <div class="is-size-4 is-uppercase has-text-weight-bold">
-            <p>Enough talk, simply try me.</p>
-          </div>
-
-          <div class="content is-size-7">
-            <p>Type any name  and see what's up.<br>How about your own name?</p>
-          </div>
-        <!-- </div> -->
-
-        <div class="field has-addons has-addons-centered">
-          <p class="control">
-            <input class="input is-small" v-model='input' type="text" placeholder="e.g. Rick Morty">
-          </p>
-        </div>
-
-        <div class="field has-addons has-addons-centered">
-          <p class="control">
-            <a class="button is-small is-success is-inverted is-focused" @click="getModelApiData(job_title)">
-              <div class="content is-small">
-                Who is it?
-              </div>
-            </a>
-          </p>
-          <p class="control">
-            <a class="button is-small is-info is-inverted is-focused" @click="getModelApiData(social_score)">
-              <div class="content is-small">
-                Web score?
-              </div>
-            </a>
-          </p>
-        </div>
-      </div>
     </section>
+
 
     <section>
       <div class="columns is-centered">
         <div class="box" style="min-width: 30vh;" v-if="processingAPIRequest">
           <progress class="progress is-medium is-primary" max="100"></progress>
         </div>
-        <!-- style="background-color: #0a131c;" -->
         <div class="box is-size-7" v-if="output">
           <vue-json-pretty
             :data="this.output"
@@ -81,7 +91,7 @@
 
     <br><br>
     <section v-if="output">
-      <div class="is-size-4 is-uppercase has-text-weight-bold has-text-centered">
+      <div class="is-size-4 is-uppercase has-text-weight-bold has-text-centered has-text-white-ter">
         <p>Here, <br>have some perspective</p>
       </div>
       <SocialScoreBoard :gridData="getGridData()"></SocialScoreBoard>
@@ -108,6 +118,7 @@ export default {
 
   data() {
     return {
+
       input: '',
       output: null,
       processingAPIRequest: false,
@@ -190,8 +201,16 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 1s;
+}
+
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
 .vjs-tree {
-  font-size: 10px;
+  font-size: 10px !important;
 }
 
 </style>

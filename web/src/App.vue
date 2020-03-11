@@ -53,11 +53,12 @@ $link-focus-border: $primary;
 
 // Import Bulma and Buefy styles
 @import "~bulma";
+@import url('https://fonts.googleapis.com/css?family=Roboto+Condensed');
 
 #app {
 
   /* init */
-  font-family: 'Proza Libre', sans-serif;
+  font-family: 'B616', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #673AB7;
