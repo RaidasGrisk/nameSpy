@@ -39,7 +39,7 @@
         <transition name="fade" mode="out-in" appear>
           <div class="section" style="transition-delay: 1.8s">
             <div class="is-size-4 is-uppercase has-text-weight-bold">
-              <p>Enough talk, try me.</p>
+              <p>Enough talk, <br>try me.</p>
             </div>
 
             <div class="content is-size-7">
@@ -56,14 +56,14 @@
               <p class="control">
                 <a class="button is-small is-info is-inverted is-focused" @click="getModelApiData(social_score)">
                   <div class="content is-small">
-                    Web score?
+                    Web score
                   </div>
                 </a>
               </p>
               <p class="control">
                 <a class="button is-small is-success is-inverted is-focused" disabled> <!-- @click="getModelApiData(job_title)" -->
                   <div class="content is-small">
-                    Who is it?
+                    Job title
                   </div>
                 </a>
               </p>

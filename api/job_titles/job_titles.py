@@ -56,3 +56,4 @@ sim_matrix = np.inner(text_embed, job_matrix)
 
 for item in range(sim_matrix.shape[0]):
     print(pd.DataFrame([job_titles, sim_matrix[item]]).T.sort_values(1))
+

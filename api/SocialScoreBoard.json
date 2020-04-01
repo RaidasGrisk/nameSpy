@@ -1,0 +1,103 @@
+{
+  "data": [
+    {
+      "person": "Elon Musk",
+      "google_items": 91000000,
+      "wiki_items": 838,
+      "twtr_users": 20,
+      "twtr_followers": 31396013,
+      "ig_users": 16,
+      "ig_followers": 6383
+    },
+    {
+      "person": "Albert Einstein",
+      "google_items": 62800000,
+      "wiki_items": 4511,
+      "twtr_users": 20,
+      "twtr_followers": 143596,
+      "ig_users": 31,
+      "ig_followers": 810100
+    },
+    {
+      "person": "Nicki Minaj",
+      "google_items": 115000000,
+      "wiki_items": 2800,
+      "twtr_users": 20,
+      "twtr_followers": 20602384,
+      "ig_users": 27,
+      "ig_followers": 623500
+    },
+    {
+      "person": "Charles Darwin",
+      "google_items": 14500000,
+      "wiki_items": 3936,
+      "twtr_users": 20,
+      "twtr_followers": 2875083,
+      "ig_users": 26,
+      "ig_followers": 506
+    },
+    {
+      "person": "Bart Simpson",
+      "google_items": 12900000,
+      "wiki_items": 432,
+      "twtr_users": 20,
+      "twtr_followers": 46045,
+      "ig_users": 21,
+      "ig_followers": 25700
+    },
+    {
+      "person": "Karolina Meschino",
+      "google_items": 695000,
+      "wiki_items": 4,
+      "twtr_users": 1,
+      "twtr_followers": 132,
+      "ig_users": 41,
+      "ig_followers": 289300
+    },
+    {
+      "person": "Guido van Rossum",
+      "google_items": 478000,
+      "wiki_items": 98,
+      "twtr_users": 3,
+      "twtr_followers": 168370,
+      "ig_users": 3,
+      "ig_followers": 951
+    },
+    {
+      "person": "Evan You",
+      "google_items": 212000,
+      "wiki_items": 2,
+      "twtr_users": 20,
+      "twtr_followers": 99680,
+      "ig_users": 42,
+      "ig_followers": 4148
+    },
+    {
+      "person": "Agn\u0117 \u0160irinskien\u0117",
+      "google_items": 171000,
+      "wiki_items": 3,
+      "twtr_users": 0,
+      "twtr_followers": 0,
+      "ig_users": 0,
+      "ig_followers": 0
+    },
+    {
+      "person": "Karolina Zivkovic",
+      "google_items": 225,
+      "wiki_items": 0,
+      "twtr_users": 1,
+      "twtr_followers": 0,
+      "ig_users": 10,
+      "ig_followers": 171
+    },
+    {
+      "person": "Oleksii Potiekhin",
+      "google_items": 13200,
+      "wiki_items": 0,
+      "twtr_users": 1,
+      "twtr_followers": 3,
+      "ig_users": 0,
+      "ig_followers": 0
+    }
+  ]
+}

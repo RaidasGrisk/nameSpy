@@ -1,3 +1,5 @@
+acora
+pyahocorasick
 flask
 flask-restful
 beautifulsoup4
@@ -5,9 +7,10 @@ unidecode
 future
 fake-useragent
 requests
+requests[socks]
 google-api-python-client
 googletrans
 spacy
-stanfordnlp
-find-job-titles
 gunicorn
+flair
+stem

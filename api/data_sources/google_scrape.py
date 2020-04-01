@@ -1,6 +1,7 @@
 """
 
 source: https://github.com/abenassi/Google-Search-API
+TODO: clean up this mess
 
 """
 
@@ -23,6 +24,8 @@ from fake_useragent.fake import FakeUserAgent, UserAgent  # noqa # isort:skip
 import sys
 import time
 import unidecode
+import requests
+import json
 
 
 class GoogleResult(object):
@@ -38,32 +41,31 @@ class GoogleResult(object):
         self.cached = None  # Cached version link of page
         self.page = None  # Results page this one was on
         self.index = None  # What index on this page it was on
-        self.number_of_results = None # The total number of results the query returned
-
-    def __repr__(self):
-        name = self._limit_str_size(self.name, 55)
-        description = self._limit_str_size(self.description, 49)
-
-        list_google = ["GoogleResult(",
-                       "name={}".format(name), "\n", " " * 13,
-                       "description={}".format(description)]
-
-        return "".join(list_google)
-
-    def _limit_str_size(self, str_element, size_limit):
-        """Limit the characters of the string, adding .. at the end."""
-        if not str_element:
-            return None
-
-        elif len(str_element) > size_limit:
-            return unidecode(str_element[:size_limit]) + ".."
-
-        else:
-            return unidecode(str_element)
+    #
+    # def __repr__(self):
+    #     name = self._limit_str_size(self.name, 500)
+    #     description = self._limit_str_size(self.description, 500)
+    #
+    #     list_google = ["GoogleResult(",
+    #                    "name={}".format(name), "\n", " " * 13,
+    #                    "description={}".format(description)]
+    #
+    #     return "".join(list_google)
+    #
+    # def _limit_str_size(self, str_element, size_limit):
+    #     """Limit the characters of the string, adding .. at the end."""
+    #     if not str_element:
+    #         return None
+    #
+    #     elif len(str_element) > size_limit:
+    #         return unidecode(str_element[:size_limit]) + ".."
+    #
+    #     else:
+    #         return unidecode(str_element)
 
 
 # PUBLIC
-def get_google_search_scrape(query, exact_match, pages=1, lang='en', ncr=False, void=True, time_period=False, sort_by_date=False, first_page=0, number_of_results_only=False):
+def get_google_search_scrape(query, exact_match, proxies, pages=1, lang='en', ncr=False, void=True, time_period=False, sort_by_date=False, first_page=0):
     """Returns a list of GoogleResult.
 
     Args:
@@ -79,20 +81,11 @@ def get_google_search_scrape(query, exact_match, pages=1, lang='en', ncr=False, 
     results = []
     for i in range(first_page, first_page + pages):
         url = _get_search_url(query, exact_match, i, lang=lang, ncr=ncr, time_period=time_period, sort_by_date=sort_by_date)
-        html = get_html(url)
+        html = get_html(url, proxies)
 
         if html:
             soup = BeautifulSoup(html, "html.parser")
             divs = soup.findAll("div", attrs={"class": "g"})
-
-            # total search results
-            # google will store this in different div id depending on
-            # if the search is ncr or not
-            results_div = soup.find("div", attrs={"id": ["resultStats", 'slim_appbar']})
-            number_of_results = _get_number_of_results(results_div)
-
-            if number_of_results_only:
-                return {'items': number_of_results}
 
             j = 0
             for li in divs:
@@ -107,7 +100,6 @@ def get_google_search_scrape(query, exact_match, pages=1, lang='en', ncr=False, 
                 res.description = _get_description(li)
                 res.thumb = _get_thumb()
                 res.cached = _get_cached(li)
-                res.number_of_results = number_of_results
 
                 if void is True:
                     if res.description is None:
@@ -269,7 +261,6 @@ def _get_search_url(query, exact_match, page=0, per_page=10, lang='en', ncr=Fals
         'year': 'qdr:y'
     }
 
-
     tbs_param = []
     # Set time period for query if given
     if time_period and time_period in time_mapping:
@@ -301,25 +292,38 @@ def _get_search_url(query, exact_match, page=0, per_page=10, lang='en', ncr=Fals
     return url
 
 
-def get_html(url):
+def get_html(url, proxies):
     ua = UserAgent()
     header = ua.random
 
     try:
-        request = urllib.request.Request(url)
-        request.add_header("User-Agent", header)
-        html = urllib.request.urlopen(request).read()
+        # request = urllib.request.Request(url)
+        # request.add_header("User-Agent", header)
+
+        headers = {'User-Agent': header}
+        r = requests.get(url, headers=headers, proxies=proxies)
+        html = r.text
+
+        if 'https://www.google.com/recaptcha/api.js' in html:
+            print('Google search returned captcha')
+            return None
+
         return html
-    except urllib.error.HTTPError as e:
-        print("Error accessing:", url)
-        print(e)
-        if e.code == 503 and 'CaptchaRedirect' in e.read():
-            print("Google is requiring a Captcha. "
-                  "For more information check: 'https://support.google.com/websearch/answer/86640'")
-        if e.code == 503:
-            sys.exit("503 Error: service is currently unavailable. Program will exit.")
-        return None
+
     except Exception as e:
-        print("Error accessing:", url)
         print(e)
-        sys.exit()
+        return None
+
+    # except urllib.error.HTTPError as e:
+    #     print("Error accessing:", url)
+    #     print(e)
+    #     if e.code == 503 and 'CaptchaRedirect' in e.read():
+    #         print("Google is requiring a Captcha. "
+    #               "For more information check: 'https://support.google.com/websearch/answer/86640'")
+    #     if e.code == 503:
+    #         sys.exit("503 Error: service is currently unavailable. Program will exit.")
+    #     return None
+    # except Exception as e:
+    #     print("Error accessing:", url)
+    #     print(e)
+    #     sys.exit()

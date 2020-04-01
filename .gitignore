@@ -10,6 +10,9 @@ yarn-debug.log*
 yarn-error.log*
 private.py
 
+# Files too big
+*.pt
+
 # Editor directories and files
 .vscode
 *.suo

@@ -7,10 +7,10 @@ import re
 from googletrans import Translator
 
 
-def google_search_scrape(person_name, exact_match, pages=1):
+def google_search_scrape(person_name, exact_match, proxies):
 
     def reorganize_data(search_results):
-        data = {'items': [], 'totalResults': search_results[0].number_of_results}
+        data = {'items': []}
         for item in search_results:
 
             # little trick to fix bug inside name
@@ -24,37 +24,43 @@ def google_search_scrape(person_name, exact_match, pages=1):
                                   'title': item.name})
         return data
 
-    search_results = get_google_search_scrape(person_name, exact_match)
+    search_results = get_google_search_scrape(person_name, exact_match, proxies)
     search_results = reorganize_data(search_results)
 
     return search_results
 
 
-def google_translate(search_results):
+def google_translate(search_results, proxies):
     # https://github.com/ssut/py-googletrans
     # TODO: do in one batch by giving an array
 
     # collect items to translate
     snippets = [item['snippet'] for item in search_results['items']]
     titles = [item['title'] for item in search_results['items']]
-    text_to_translate = snippets + titles
+
+    # okay, this is pretty ugly but here is what is being done:
+    # I want to combine whole text into one string to send only one request to google translate
+    # due to this snippets and titles are combined with special separator *||* (with hope that it will not break)
+    # later on all is reorganized back to spippets and titles
+    # text_to_translate = titles + snippets
+    text_to_translate = [' ||| '.join([title + ' ||| ' + snippet for title, snippet in zip(titles, snippets)])]
 
     # clear non alpha num
     # e.g ☀ throws error in translator
     # re is fastest
     # https://stackoverflow.com/questions/1276764/stripping-everything-but-alphanumeric-chars-from-a-string-in-python
-    text_to_translate = [re.sub(r'\W+', ' ', text) for text in text_to_translate]
+    # keep . and , and add else if needed
+    text_to_translate = [re.sub(r"[^\w.,|']", ' ', text) for text in text_to_translate]
 
     # translate
-    translator = Translator()
+    translator = Translator(proxies=proxies)
     translated = [item.text for item in translator.translate(text_to_translate, dest='en')]
 
-    for item in text_to_translate:
-        translator.translate(item, dest='en')
-
     # ungroup
-    snippets_translated = translated[:len(snippets)]
-    titles_translated = translated[len(snippets):]
+    # snippets_translated = translated[:len(snippets)]
+    # titles_translated = translated[len(snippets):]
+    titles_translated = translated[0].split('|||')[0::2]
+    snippets_translated = translated[0].split('|||')[1::2]
 
     # assign
     for item, snippet, title in zip(search_results['items'], snippets_translated, titles_translated):
@@ -141,10 +147,10 @@ import unidecode
 import re
 
 
-def get_google_search_num_items(person_name):
+def get_google_search_num_items(person_name, exact_match=True):
 
     USER_AGENT = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
-    params = {'q': person_name}
+    params = {'q': [('"'+person_name+'"').encode('utf8') if exact_match else person_name.encode('utf8')][0]}
     response = requests.get('https://www.google.com/search', params=params, headers=USER_AGENT)
 
     soup = BeautifulSoup(response.text, "html.parser")

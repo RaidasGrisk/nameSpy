@@ -1,0 +1,24 @@
+FROM python:3.7-slim
+
+# installing dependencies
+RUN pip install stem
+RUN pip install requests
+RUN pip install requests[socks]
+
+# copy files
+COPY /api/proxy/proxy_generator.py ./api/
+
+# install dependencies
+WORKDIR /api
+
+# install and config tor
+RUN apt update
+RUN apt install tor -y
+
+RUN echo HashedControlPassword $(tor --hash-password "kjhadfjkasf12a32sf456" | tail -n 1) >> /etc/tor/torrc
+RUN echo "ControlPort 9051" >> /etc/tor/torrc
+
+# set variables
+CMD service tor stop &&
+    service tor start &&
+    python -c "from proxy_generator import ProxyChanger; proxy_changer = ProxyChanger(tor_password='kjhadfjkasf12a32sf456'); [proxy_changer.get_new_proxy(minutes_between_changes=1) for _ in range(5)]"

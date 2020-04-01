@@ -40,4 +40,7 @@ python endpoint_get_job_title.py
 Natalija Bunke IG followers	16800
 Karolina Meschino IG followers	288800
 
+# unique characters in twitter search
+Edmundas Balčikonis vs Edmundas Balcikonis
+
 ```

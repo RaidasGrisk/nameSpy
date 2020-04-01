@@ -33,7 +33,7 @@ docker build -f deploy/job_title/Dockerfile . --tag gcr.io/namesapi-158101076088
 docker push gcr.io/namesapi-1581010760883/jobtitle
 
 gcloud run deploy --image gcr.io/namesapi-1581010760883/jobtitle
-gcloud run services update gcr.io/namesapi-1581010760883/jobtitle  --memory 2560
+gcloud run services update jobtitle --memory 2G
 
 ###
 # https://cloud.google.com/compute/docs/machine-types

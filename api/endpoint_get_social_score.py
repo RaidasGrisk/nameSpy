@@ -5,12 +5,12 @@ from data_sources.google import get_google_search_num_items
 
 from helpers import get_entities, process_entities
 from helpers import get_api_output_head_from_input_entities
-from globals import nlp_models
+import globals
 
 
 def get_social_score(input):
 
-    entities = get_entities(input, nlp_models)
+    entities = get_entities(input, globals.nlp_models)
     print(entities)
     person_name = process_entities(entities)
 
