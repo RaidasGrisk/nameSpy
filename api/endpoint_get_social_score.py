@@ -10,7 +10,7 @@ import globals
 
 def get_social_score(input):
 
-    entities = get_entities(input, globals.nlp_models)
+    entities = get_entities(input.title(), globals.nlp_models)
     print(entities)
     person_name = process_entities(entities)
 

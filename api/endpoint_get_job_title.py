@@ -8,14 +8,14 @@ from helpers import get_api_output_head_from_input_entities
 import globals
 from private import tor_password
 
-from proxy.proxy_generator import ProxyChanger
+from proxy.proxy_generator import ProxyChanger, check_if_can_connect_to_google_translate
 
 proxy_changer = ProxyChanger(tor_password=tor_password)
 
 
 def get_job_title(input, ner_threshold=0.95):
 
-    entities = get_entities(input, globals.nlp_models)
+    entities = get_entities(input.title(), globals.nlp_models)
     print(entities)
     person_name = process_entities(entities)
 
@@ -23,19 +23,18 @@ def get_job_title(input, ner_threshold=0.95):
         return {'warning': 'I am built to recognize names, but I dont see any :('}
 
     # proxy configure
-    proxy_changer.get_new_proxy(minutes_between_changes=1)
+    proxy_changer.get_new_proxy(minutes_between_changes=1, connection_check=check_if_can_connect_to_google_translate)
     proxies = {'http': 'socks5h://localhost:9050', 'https': 'socks5h://localhost:9050'}
 
-    print('Google search')
-    google_data = google_search_scrape(person_name, exact_match=True, proxies={})
-    print('Google translate')
+    print('Google scrape')
+    google_data = google_search_scrape(person_name, exact_match=True, proxies={}, loc='us')
     google_data = google_translate(google_data, proxies=proxies)
 
     print('Job titles')
     job_titles_1 = get_job_titles_1(google_data)
     job_titles_2 = get_job_titles_2(google_data, ner_threshold=ner_threshold)
 
-    # combine bow job detection methods into one dict
+    # combine both job detection methods into one dict
     for key, value in job_titles_2.items():
         if job_titles_1.get(key):
             job_titles_1[key]['count'] += 1

@@ -3,6 +3,9 @@
 source: https://github.com/abenassi/Google-Search-API
 TODO: clean up this mess
 
+
+https://moz.com/ugc/geolocation-the-ultimate-tip-to-emulate-local-search
+
 """
 
 from __future__ import unicode_literals
@@ -16,16 +19,14 @@ from bs4 import BeautifulSoup
 import urllib.parse
 from urllib.parse import parse_qs, urlparse
 from unidecode import unidecode
-from re import match, findall
+from re import findall
 from urllib.parse import urlencode
 
-from fake_useragent.fake import FakeUserAgent, UserAgent  # noqa # isort:skip
+from fake_useragent.fake import UserAgent
 
-import sys
 import time
 import unidecode
 import requests
-import json
 
 
 class GoogleResult(object):
@@ -65,7 +66,7 @@ class GoogleResult(object):
 
 
 # PUBLIC
-def get_google_search_scrape(query, exact_match, proxies, pages=1, lang='en', ncr=False, void=True, time_period=False, sort_by_date=False, first_page=0):
+def get_google_search_scrape(query, exact_match, proxies, pages=1, lang='en', loc='us', ncr=True, void=True, time_period=False, sort_by_date=False, first_page=0):
     """Returns a list of GoogleResult.
 
     Args:
@@ -80,7 +81,7 @@ def get_google_search_scrape(query, exact_match, proxies, pages=1, lang='en', nc
 
     results = []
     for i in range(first_page, first_page + pages):
-        url = _get_search_url(query, exact_match, i, lang=lang, ncr=ncr, time_period=time_period, sort_by_date=sort_by_date)
+        url = _get_search_url(query, exact_match, i, lang=lang, ncr=ncr, loc=loc, time_period=time_period, sort_by_date=sort_by_date)
         html = get_html(url, proxies)
 
         if html:
@@ -243,16 +244,20 @@ def _get_number_of_results(results_div):
         return 0
 
 
-def _get_search_url(query, exact_match, page=0, per_page=10, lang='en', ncr=False, time_period=False, sort_by_date=False):
+def _get_search_url(query, exact_match, page=0, per_page=10, lang='en', loc='us', ncr=True, time_period=False, sort_by_date=False):
     # note: num per page might not be supported by google anymore (because of
     # google instant)
 
     params = {
         'nl': lang,
-        'q': [('"'+query+'"').encode('utf8') if exact_match else query.encode('utf8')][0],
         'start': page * per_page,
         'num': per_page
     }
+
+    if exact_match:
+        params['as_epq'] = query.encode('utf8')
+    else:
+        params['q'] = query.encode('utf8')
 
     time_mapping = {
         'hour': 'qdr:h',
@@ -272,8 +277,10 @@ def _get_search_url(query, exact_match, page=0, per_page=10, lang='en', ncr=Fals
 
     # This will allow to search Google with No Country Redirect
     if ncr:
-        params['gl'] = 'us' # Geographic Location: US
-        params['pws'] = '0' # 'pws' = '0' disables personalised search
+        params['gl'] = loc # Geographic Location
+    else:
+        params['gl'] = 'us' # Geographic Location
+        params['pws'] = '0' # 'pws' = '0' disables personalised search, is this related to browsing history?
         params['gws_rd'] = 'cr' # Google Web Server ReDirect: CountRy.
 
     params = urlencode(params)

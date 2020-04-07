@@ -39,16 +39,16 @@
         <transition name="fade" mode="out-in" appear>
           <div class="section" style="transition-delay: 1.8s">
             <div class="is-size-4 is-uppercase has-text-weight-bold">
-              <p>Enough talk, <br>try me.</p>
+              <p>Enough talk, <br>try me</p>
             </div>
 
             <div class="content is-size-7">
-              <p>Type any name and see what's up.<br>How about your own name?</p>
+              <p>Read the DOCS or <br>type in a name and see what's up</p>
             </div>
 
             <div class="field has-addons has-addons-centered">
               <p class="control">
-                <input class="input is-small" v-model='input' type="text" placeholder="e.g. Rick Morty">
+                <input class="input is-small" v-model='input' type="text" placeholder="">
               </p>
             </div>
 
@@ -56,14 +56,14 @@
               <p class="control">
                 <a class="button is-small is-info is-inverted is-focused" @click="getModelApiData(social_score)">
                   <div class="content is-small">
-                    Web score
+                    web score
                   </div>
                 </a>
               </p>
               <p class="control">
-                <a class="button is-small is-success is-inverted is-focused" disabled> <!-- @click="getModelApiData(job_title)" -->
+                <a class="button is-small is-success is-inverted is-focused" @click="getModelApiData(job_title)">
                   <div class="content is-small">
-                    Job title
+                    occupation
                   </div>
                 </a>
               </p>
@@ -90,7 +90,7 @@
     </section>
 
     <br><br>
-    <section v-if="output">
+    <section v-if="output && lastAPICalled == social_score">
       <div class="is-size-4 is-uppercase has-text-weight-bold has-text-centered has-text-white-ter">
         <p>Here, <br>have some perspective</p>
       </div>
@@ -122,10 +122,11 @@ export default {
       input: '',
       output: null,
       processingAPIRequest: false,
+      lastAPICalled: '',
 
       // endpoints
-      job_title: 'job_title',
-      social_score: 'social_score',
+      job_title: 'https://jobtitle-mu7u3ykctq-lz.a.run.app/api/job_title',
+      social_score: 'https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score',
 
       // table data
       gridData: [
@@ -155,10 +156,11 @@ export default {
       this.output = null
       this.processingAPIRequest = true
       var vm = this
-      var url = "https://socialscore-mu7u3ykctq-lz.a.run.app/api/" + endpoint + "?input=" + this.input
+      var url = endpoint + "?input=" + this.input
       axios.get(url).then(function (response){
           vm.output = response.data
           vm.processingAPIRequest = false
+          vm.lastAPICalled = endpoint
         }
       )
     },

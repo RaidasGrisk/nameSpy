@@ -26,7 +26,7 @@ docker build -f deploy/social_score/Dockerfile . --tag gcr.io/namesapi-158101076
 docker push gcr.io/namesapi-1581010760883/socialscore
 
 gcloud run deploy --image gcr.io/namesapi-1581010760883/socialscore
-gcloud run services update socialscore --memory 512
+gcloud run services update socialscore --memory 2G
 
 ####
 docker build -f deploy/job_title/Dockerfile . --tag gcr.io/namesapi-1581010760883/jobtitle
@@ -103,7 +103,9 @@ EXTERNAL_IP=$(gcloud compute instances list --format="get(networkInterfaces[0].a
 echo http://$EXTERNAL_IP:8080
 
 # update VM instance with new image
-gcloud compute instances update-container --container-image=gcr.io/namesapi-1581010760883/vue-app vue-app-vm
+docker build -t vue_app -f deploy/web/Dockerfile .
+docker tag vue_app gcr.io/$PROJECT_ID/vue-app:v1
+gcloud compute instances update-container --container-image=gcr.io/namesapi-1581010760883/vue-app:v1 vue-app-vm
 
 # cleanup
 gcloud compute firewall-rules delete vue-fw

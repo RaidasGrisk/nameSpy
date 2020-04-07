@@ -7,7 +7,22 @@ import re
 from googletrans import Translator
 
 
-def google_search_scrape(person_name, exact_match, proxies):
+def retry_if_google_search_fail(fn, max_tries=5):
+    def wrapper(*args, **kwargs):
+        for _ in range(max_tries):
+            output = fn(*args, **kwargs)
+            if len(output['items']) == 0:
+                print('Google returned 0 items')
+                continue
+            else:
+                if len(output['items']) == 0:
+                    print('Google search failed')
+                return output
+    return wrapper
+
+
+@retry_if_google_search_fail
+def google_search_scrape(person_name, exact_match, proxies, loc):
 
     def reorganize_data(search_results):
         data = {'items': []}
@@ -24,7 +39,7 @@ def google_search_scrape(person_name, exact_match, proxies):
                                   'title': item.name})
         return data
 
-    search_results = get_google_search_scrape(person_name, exact_match, proxies)
+    search_results = get_google_search_scrape(person_name, exact_match, proxies, loc=loc)
     search_results = reorganize_data(search_results)
 
     return search_results

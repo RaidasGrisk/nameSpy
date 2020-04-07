@@ -2,7 +2,7 @@
   <nav class="navbar is-spaced has-shadow is-primary is-transparent">
     <div class="navbar-brand">
       <a class="navbar-item" href="/">
-        <img src="@/assets/Picture2.png" alt="Logo">
+        <img src="@/assets/Picture3.png" alt="Logo">
       </a>
       <a class="navbar-item" href="/">
         <a href="https://github.com/raidasgrisk" target="_blank" title="Github" class="navbar-item">
@@ -31,24 +31,24 @@ export default {
   name: 'Navigation',
   data() {
     return {
-      // links: [
-      //   {
-      //     id: 0,
-      //     text: 'Home',
-      //     page: '/Home'
-      //   },
-      //   {
-      //     id: 1,
-      //     text: 'Search',
-      //     page: '/Search'
-      //   },
-      //   {
-      //     id: 2,
-      //     text: 'Contacts',
-      //     page: '/Contacts'
-      //   }
-      // ],
-      // showNav: false
+      links: [
+        // {
+        //   id: 0,
+        //   text: 'Docs',
+        //   page: '/Docs'
+        // },
+        // {
+        //   id: 1,
+        //   text: 'Search',
+        //   page: '/Search'
+        // },
+        // {
+        //   id: 2,
+        //   text: 'Contacts',
+        //   page: '/Contacts'
+        // }
+      ],
+      showNav: true
     }
   }
 }
