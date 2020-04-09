@@ -1,25 +1,10 @@
-"""
-TODO: shit with deployment and dependencies installation of pyahorasic due to c dependencies
-Have to install gcc prior to installing this
-
-Making my own is not decent decision as this works pretty well and fast
-I struggle with part of word or separate word patterns
-
-
-"""
-
-# ------------ #
-
 
 """
 The `find_job_titles` library finds mentions of job titles in strings.
-
 In order to do so it compiles a search datastructure (Aho Corasick) and uses
     a precompiled list of >70k job titles as a reference list.
-
 It returns the longest matching job title, including cross-overlapping matches,
     together with the start and end position in the given string.
-
 TODO:
 * also compare to https://github.com/scrapinghub/webstruct/blob/master/webstruct/utils.py#L155
 """
@@ -32,6 +17,13 @@ import ahocorasick
 
 
 Match = namedtuple('Match', ['start', 'end', 'match'])
+
+# ----- #
+# not sure if this must be done but for now lest do this
+# It could be the case that this is preventing an error later on
+import os
+file_to_sort = 'job_titles/titles_combined.txt'
+os.system('sort -o {} {}'.format(file_to_sort, file_to_sort))
 
 
 def load_titles():
@@ -99,10 +91,10 @@ class BaseFinder(object):
             return self.find_raw(string)
 
 
+# https://github.com/scoder/acora
 class FinderAcora(BaseFinder):
     """
     Finder class based on "acora" library.
-
     Note: Building data structure seems to be significantly slower than with
           pyahocorasick
     """
@@ -132,7 +124,6 @@ class FinderAcora(BaseFinder):
 class FinderPyaho(BaseFinder):
     """
     Finder class based on "pyahocorasick" library.
-
     TODO:
     - use pickle and unpickle support for `self.autom`
     """
@@ -174,6 +165,10 @@ def get_job_titles(google_data):
     titles_parsed = {}
     finder = Finder()
     for item in google_data['items']:
+        """
+        TODO: try except is not good here. finadall fails sometimes for unknown reason with 
+        RuntimeError: generator raised StopIteration. Have to investigate and fix this
+        """
         try:
             job_titles = finder.findall(item['title'] + '. ' + item['snippet'])
             job_titles = [title.match for title in job_titles]
@@ -192,3 +187,64 @@ def get_job_titles(google_data):
             continue
 
     return titles_parsed
+
+
+
+# ------ #
+# experiments
+# import ahocorasick
+# from collections import namedtuple
+#
+#
+# class MatchFinder:
+#     def __init__(self):
+#
+#         self.autom = ahocorasick.Automaton()
+#
+#         with open('job_titles/titles_combined.txt') as f:
+#             titles = f.readlines()
+#         titles = [i.strip() for i in titles]
+#         for idx, key in enumerate(titles):
+#             self.autom.add_word(key, (idx, key))
+#
+#         self.autom.make_automaton()
+#
+#     def longest_match(self, matches):
+#         """
+#         find respective longest matches from all overlapping aho corasick matches
+#         """
+#         longest_match = matches[0]
+#         if longest_match is None:
+#             return
+#
+#         for match in matches:
+#
+#             # if (a contains b) or (b contains a)
+#             if (match.start >= longest_match.start and match.end <= longest_match.end) or \
+#                     (longest_match.start >= match.start and longest_match.end <= match.end):
+#                 longest_match = max(longest_match, match, key=lambda x: x.end - x.start)
+#
+#         return longest_match.match[1]
+#
+#     def find_all_matches(self, search_string):
+#
+#         matches = []
+#         Match = namedtuple('Match', ['start', 'end', 'match'])
+#         for end, match in self.autom.iter(search_string):
+#             start = end - len(match) + 1
+#             match = Match(start=start, end=start + len(match), match=match)
+#             print(match)
+#             matches.append(match)
+#
+#         # filter longest match
+#         final_match = self.longest_match(matches)
+#
+#         return final_match
+#
+# search_string = 'asdasd asd CEO asd asdasd asd second grade 1st Grade Teacher,  helper asd asd asd   a kjasdkjh kjhaskdjh asjkdh akjsdh ajkshdkjah asd asd second grade 1st Grade Teacher,  helper asd asd asd   a kjasdkjh kjhaskdjh asjkdh akjsdh ajkshdkjah s dkjashdjk hasjkdh akjshd kjashdkj haskjdh aksjdh kjashdkj ahsdjk haskjdh akjshd kajshdkjashsd a'
+#
+# finder = Finder()
+# finder.findall(search_string)
+#
+# finder = MatchFinder()
+# out = finder.find_all_matches(search_string)

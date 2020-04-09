@@ -33,14 +33,23 @@ python endpoint_get_job_title.py
 
 ```
 
-# BUGS
+# TODO
 
 ``` bash
-# insta followers count bug with k and .
+
 Natalija Bunke IG followers	16800
 Karolina Meschino IG followers	288800
 
-# unique characters in twitter search
 Edmundas Balčikonis vs Edmundas Balcikonis
+
+language option in occupation API
+carl hust occupation API error    OK
+IG user info scrape
+
+github landing page logo and description
+DOCS page on WEBSITE
+
+hard match findall fails with iter exception: melissa respondek
+Totally lost, now its working, can it be that titles have to be sorted alphabetically?
 
 ```

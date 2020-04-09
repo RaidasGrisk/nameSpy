@@ -41,6 +41,7 @@ def process_entities(entities):
 
 
 def get_domain_from_url(url):
+    # better use: from urllib.parse import urlparse ???
     regex = '^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)'
     return re.search(regex, url)[0]
 

@@ -7,6 +7,7 @@ def get_basic_info(user_name):
 
     output = {}
 
+    # proxies={'http': 'http://167.71.183.113:8888', 'https': 'http://167.71.183.113:8888'}
     instagram_page = requests.get('https://www.instagram.com/' + user_name)
     soup = BeautifulSoup(instagram_page.text, 'html.parser')
 
@@ -22,6 +23,7 @@ def get_basic_info(user_name):
                 output['following_count'] = int(words[2].replace('k', '000').replace(',', '').replace('.', ''))
                 output['posts_count'] = int(words[4].replace('k', '000').replace(',', '').replace('.', ''))
             except:
+                print('Failed to parse IG user info, now trying another html structure')
                 continue
             break
 
@@ -39,7 +41,7 @@ def get_basic_info(user_name):
     return output
 
 
-def instagram_users(input):
+def get_instagram_users(input):
 
     # user search endpoint
     input = input.replace(' ', '+')

@@ -13,21 +13,26 @@ from proxy.proxy_generator import ProxyChanger, check_if_can_connect_to_google_t
 proxy_changer = ProxyChanger(tor_password=tor_password)
 
 
-def get_job_title(input, ner_threshold=0.95):
+def get_job_title(input, ner_threshold=0.95, google_search_loc='en', filter_input=True):
 
-    entities = get_entities(input.title(), globals.nlp_models)
-    print(entities)
-    person_name = process_entities(entities)
+    output = dict()
 
-    if not person_name:
-        return {'warning': 'I am built to recognize names, but I dont see any :('}
+    if filter_input:
+        entities = get_entities(input.title(), globals.nlp_models)
+        print(entities)
+        person_name = process_entities(entities)
+        output.update(get_api_output_head_from_input_entities(entities))
+        if not person_name:
+            return {'warning': 'I am built to recognize names, but I dont see any :('}
+    else:
+        person_name = input
 
     # proxy configure
     proxy_changer.get_new_proxy(minutes_between_changes=1, connection_check=check_if_can_connect_to_google_translate)
     proxies = {'http': 'socks5h://localhost:9050', 'https': 'socks5h://localhost:9050'}
 
     print('Google scrape')
-    google_data = google_search_scrape(person_name, exact_match=True, proxies={}, loc='us')
+    google_data = google_search_scrape(person_name, exact_match=True, proxies={}, loc=google_search_loc)
     google_data = google_translate(google_data, proxies=proxies)
 
     print('Job titles')
@@ -51,9 +56,7 @@ def get_job_title(input, ner_threshold=0.95):
     for title, _ in job_titles.items():
         job_titles[title]['sources'] = list(job_titles[title]['sources'])
 
-    # making final output
-    output = dict()
-    output.update(get_api_output_head_from_input_entities(entities))
+    # make final output
     output['google'] = {'titles': job_titles}
     if len(google_data['items']) == 0:
         output['google'].update({'warning': 'google did not return the search results'})
@@ -78,9 +81,11 @@ class job_title(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('input', type=str)
         parser.add_argument('ner_threshold', type=float, default=0.95)
+        parser.add_argument('google_search_loc', type=str, default='us')
+        parser.add_argument('filter_input', type=int, default=1)
         args = parser.parse_args()
         try:
-            output = get_job_title(args['input'], args['ner_threshold'])
+            output = get_job_title(args['input'], args['ner_threshold'], args['google_search_loc'], args['filter_input'])
         except Exception as e:
             output = {'something went wrong': ':(', 'traceback': str(e)}
 

@@ -9,9 +9,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 private.py
-
-# Files too big
-*.pt
+web/dist
 
 # Editor directories and files
 .vscode
@@ -22,3 +20,5 @@ private.py
 
 # large files
 stanford*
+facebook-names-unique.txt
+*.pt

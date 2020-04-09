@@ -14,10 +14,7 @@ def retry_if_google_search_fail(fn, max_tries=5):
             if len(output['items']) == 0:
                 print('Google returned 0 items')
                 continue
-            else:
-                if len(output['items']) == 0:
-                    print('Google search failed')
-                return output
+            return output
     return wrapper
 
 
@@ -165,7 +162,12 @@ import re
 def get_google_search_num_items(person_name, exact_match=True):
 
     USER_AGENT = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
-    params = {'q': [('"'+person_name+'"').encode('utf8') if exact_match else person_name.encode('utf8')][0]}
+    params = {}
+    if exact_match:
+        params['as_epq'] = person_name.encode('utf8')
+    else:
+        params['q'] = person_name.encode('utf8')
+
     response = requests.get('https://www.google.com/search', params=params, headers=USER_AGENT)
 
     soup = BeautifulSoup(response.text, "html.parser")

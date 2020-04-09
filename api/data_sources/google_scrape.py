@@ -174,8 +174,8 @@ def _get_link(li):
         link = a["href"]
     except Exception:
         return None
-    return _filter_link(link)
-
+    # return _filter_link(link)
+    return link
 
 def _get_google_link(li):
     """Return google link from a search."""
@@ -276,6 +276,7 @@ def _get_search_url(query, exact_match, page=0, per_page=10, lang='en', loc='us'
     params['tbs'] = ','.join(tbs_param)
 
     # This will allow to search Google with No Country Redirect
+    # https://developers.google.com/adwords/api/docs/appendix/geotargeting?csw=1
     if ncr:
         params['gl'] = loc # Geographic Location
     else:
