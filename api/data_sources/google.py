@@ -9,10 +9,10 @@ from googletrans import Translator
 
 def retry_if_google_search_fail(fn, max_tries=5):
     def wrapper(*args, **kwargs):
-        for _ in range(max_tries):
+        for i in range(max_tries):
             output = fn(*args, **kwargs)
             if len(output['items']) == 0:
-                print('Google returned 0 items')
+                print('Google returned 0 items, trying again {}'.format(i))
                 continue
             return output
     return wrapper
@@ -42,13 +42,13 @@ def google_search_scrape(person_name, exact_match, proxies, loc):
     return search_results
 
 
-def google_translate(search_results, proxies):
+def google_translate(google_data, proxies):
     # https://github.com/ssut/py-googletrans
     # TODO: do in one batch by giving an array
 
     # collect items to translate
-    snippets = [item['snippet'] for item in search_results['items']]
-    titles = [item['title'] for item in search_results['items']]
+    snippets = [item['snippet'] for item in google_data['items']]
+    titles = [item['title'] for item in google_data['items']]
 
     # okay, this is pretty ugly but here is what is being done:
     # I want to combine whole text into one string to send only one request to google translate
@@ -75,11 +75,11 @@ def google_translate(search_results, proxies):
     snippets_translated = translated[0].split('|||')[1::2]
 
     # assign
-    for item, snippet, title in zip(search_results['items'], snippets_translated, titles_translated):
+    for item, snippet, title in zip(google_data['items'], snippets_translated, titles_translated):
         item['snippet'] = snippet
         item['title'] = title
 
-    return search_results
+    return google_data
 
 
 def google_search(person_name, num_pages=5):

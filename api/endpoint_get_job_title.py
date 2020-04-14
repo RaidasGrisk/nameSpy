@@ -32,7 +32,12 @@ def get_job_title(input, ner_threshold=0.95, google_search_loc='en', filter_inpu
     proxies = {'http': 'socks5h://localhost:9050', 'https': 'socks5h://localhost:9050'}
 
     print('Google scrape')
-    google_data = google_search_scrape(person_name, exact_match=True, proxies={}, loc=google_search_loc)
+    # TODO: passing location (google_search_loc) triggers capthca. Modified to pass None to overcome this
+    google_data = google_search_scrape(person_name, exact_match=True, proxies=None, loc=None)  # loc = google_search_loc
+
+    if not google_data:
+        return {'warning': 'google did not return the search results'}
+
     google_data = google_translate(google_data, proxies=proxies)
 
     print('Job titles')
@@ -58,8 +63,6 @@ def get_job_title(input, ner_threshold=0.95, google_search_loc='en', filter_inpu
 
     # make final output
     output['google'] = {'titles': job_titles}
-    if len(google_data['items']) == 0:
-        output['google'].update({'warning': 'google did not return the search results'})
 
     return output
 

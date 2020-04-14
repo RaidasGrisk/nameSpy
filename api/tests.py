@@ -24,12 +24,16 @@ with job_title_app.test_client() as c:
          'google_search_loc': 'lt'},
 
         {'input': 'Bart Simpson',
-         'google_search_loc': 'us'}
+         'google_search_loc': 'us'},
+
+        {'input': 'Jurgita Antuchevičienė',
+         'google_search_loc': 'lt'}
     ]
 
     for input in inputs:
         resp = c.get('api/job_title?{}'.format(urllib.parse.urlencode(input)))
         print(json.loads(resp.data))
+        print('\n\n')
 
 # ---------- #
 with social_score_app.test_client() as c:
@@ -58,3 +62,4 @@ with social_score_app.test_client() as c:
     for input in inputs:
         resp = c.get('api/social_score?{}'.format(urllib.parse.urlencode(input)))
         print(json.loads(resp.data))
+        print('\n\n')

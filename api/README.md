@@ -52,4 +52,6 @@ DOCS page on WEBSITE
 hard match findall fails with iter exception: melissa respondek
 Totally lost, now its working, can it be that titles have to be sorted alphabetically?
 
+Alina Kalenkovic vs Alina Kalenkovič list assignment out of range error!
+
 ```

@@ -2,6 +2,15 @@ import requests
 import random
 from bs4 import BeautifulSoup
 
+# this is supposed to turn off info logging
+# https://stackoverflow.com/questions/29651505/disable-info-logging-messages-in-ipython-notebook
+# the issue is that tor constantly outputs the following:
+# INFO:stem:Error while receiving a control message (SocketClosed): received exception "read of closed file"
+# this eats up logging space in google cloud so lets try turning this off
+import logging
+logger = logging.getLogger()
+logger.setLevel(logging.CRITICAL)
+
 
 def get_proxies():
     url = 'https://free-proxy-list.net/'

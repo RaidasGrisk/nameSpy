@@ -66,7 +66,7 @@ class GoogleResult(object):
 
 
 # PUBLIC
-def get_google_search_scrape(query, exact_match, proxies, pages=1, lang='en', loc='us', ncr=True, void=True, time_period=False, sort_by_date=False, first_page=0):
+def get_google_search_scrape(query, exact_match, proxies, pages=1, lang='en', loc='us', ncr=False, void=True, time_period=False, sort_by_date=False, first_page=0):
     """Returns a list of GoogleResult.
 
     Args:
@@ -81,7 +81,7 @@ def get_google_search_scrape(query, exact_match, proxies, pages=1, lang='en', lo
 
     results = []
     for i in range(first_page, first_page + pages):
-        url = _get_search_url(query, exact_match, i, lang=lang, ncr=ncr, loc=loc, time_period=time_period, sort_by_date=sort_by_date)
+        url = _get_search_url(query, exact_match, i, lang=lang, ncr=ncr, loc=loc)
         html = get_html(url, proxies)
 
         if html:
@@ -244,14 +244,14 @@ def _get_number_of_results(results_div):
         return 0
 
 
-def _get_search_url(query, exact_match, page=0, per_page=10, lang='en', loc='us', ncr=True, time_period=False, sort_by_date=False):
+def _get_search_url(query, exact_match, page=0, per_page=10, lang='en', loc='us', ncr=True):
     # note: num per page might not be supported by google anymore (because of
     # google instant)
 
     params = {
-        'nl': lang,
-        'start': page * per_page,
-        'num': per_page
+        # 'nl': lang,
+        # 'start': page * per_page,
+        # 'num': per_page
     }
 
     if exact_match:
@@ -259,30 +259,16 @@ def _get_search_url(query, exact_match, page=0, per_page=10, lang='en', loc='us'
     else:
         params['q'] = query.encode('utf8')
 
-    time_mapping = {
-        'hour': 'qdr:h',
-        'week': 'qdr:w',
-        'month': 'qdr:m',
-        'year': 'qdr:y'
-    }
-
-    tbs_param = []
-    # Set time period for query if given
-    if time_period and time_period in time_mapping:
-        tbs_param.append(time_mapping[time_period])
-
-    if sort_by_date:
-        tbs_param.append('sbd:1')
-    params['tbs'] = ','.join(tbs_param)
-
     # This will allow to search Google with No Country Redirect
     # https://developers.google.com/adwords/api/docs/appendix/geotargeting?csw=1
-    if ncr:
+    # TODO: IMPORTANT! adding a gl parameter triggers google bot detector and throws captcha every time
+    # TODO: It could be that all addition params does increase the changes of captcha
+    if ncr and loc:
         params['gl'] = loc # Geographic Location
-    else:
-        params['gl'] = 'us' # Geographic Location
-        params['pws'] = '0' # 'pws' = '0' disables personalised search, is this related to browsing history?
-        params['gws_rd'] = 'cr' # Google Web Server ReDirect: CountRy.
+    # else:
+    #     params['gl'] = 'us' # Geographic Location
+    #     params['pws'] = '0' # 'pws' = '0' disables personalised search, is this related to browsing history?
+    #     params['gws_rd'] = 'cr' # Google Web Server ReDirect: CountRy.
 
     params = urlencode(params)
 
