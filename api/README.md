@@ -42,11 +42,11 @@ Karolina Meschino IG followers	288800
 
 Edmundas Balčikonis vs Edmundas Balcikonis
 
-language option in occupation API
+language option in occupation API       cannot do as this activates google scrpae detection
 carl hust occupation API error    OK
 IG user info scrape
 
-github landing page logo and description
+github landing page logo and description    OK
 DOCS page on WEBSITE
 
 hard match findall fails with iter exception: melissa respondek

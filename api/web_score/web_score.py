@@ -1,17 +1,39 @@
-import random
+"""
+Data source, look for facebook lists: https://wiki.skullsecurity.org/Passwords
+
+"""
 
 # ----------- #
 # fetch a sample of random people
-names_file_path = 'web_score/data/facebook-names-unique.txt'
-num_lines = sum(1 for line in open(names_file_path))
-random_names = random.choices(range(num_lines), k=500)
+import random
+import os
 
-name_nr = 0
-with open(names_file_path) as f:
-    for line in f:
-        if name_nr in random_names:
-            print(line)
-        name_nr += 1
+names_file_path = 'web_score/data/facebook-names-unique.txt'
+num_lines = int(os.popen('wc -l < ' + names_file_path).read().rstrip())  # 100128460
+random_idx = set(random.choices(range(num_lines), k=500))
+random_names = [x.rstrip() for i, x in enumerate(open(names_file_path)) if i in random_idx]
+
+with open('web_score/data/random_names.txt', 'w') as outfile:
+    outfile.write("\n".join(random_names))
+
+# ----------- #
+# call the api and save
+import requests
+import json
+
+for name in random_names:
+    url = 'https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score?input={}&filter_input=0'.format(name)
+    response = requests.get(url)
+    print(response.text)
+
+    with open('web_score/data/resp/{}.txt'.format(name), 'w') as outfile:
+        json.dump(response.json(), outfile)
+
+# ----------- #
+# load and structure
+with open('data.txt') as json_file:
+    data = json.load(json_file)
+
 
 # ----------- #
 # call APIs to collect data
