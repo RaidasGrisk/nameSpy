@@ -1,6 +1,6 @@
 flask
 flask-restful
-beautifulsoup4
+beautifulsoup4==4.8.2
 unidecode
 future
 fake-useragent
@@ -10,3 +10,5 @@ google-api-python-client
 googletrans
 spacy
 gunicorn
+statsmodels
+stem

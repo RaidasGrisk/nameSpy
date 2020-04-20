@@ -3,12 +3,12 @@ from bs4 import BeautifulSoup
 import json
 
 
-def get_basic_info(user_name):
+def get_basic_info(user_name, proxies):
 
     output = {}
 
     # proxies={'http': 'http://167.71.183.113:8888', 'https': 'http://167.71.183.113:8888'}
-    instagram_page = requests.get('https://www.instagram.com/' + user_name)
+    instagram_page = requests.get('https://www.instagram.com/' + user_name, proxies)
     soup = BeautifulSoup(instagram_page.text, 'html.parser')
 
     # TODO: private public?
@@ -31,27 +31,26 @@ def get_basic_info(user_name):
     if not output:
         js_items = soup.findAll('script', attrs={'type': 'text/javascript'})
         for item in js_items:
+            # TODO: somehow the following line only works with beautifulsoup4==4.8.2
             if 'edge_followed_by' in item.text:
                 js_json = json.loads(item.text.replace('window._sharedData = ', '')[:-1])
-                # js_json['country_code']
                 output['followers_count'] = int(js_json['entry_data']['ProfilePage'][0]['graphql']['user']['edge_followed_by']['count'])
                 output['following_count'] = int(js_json['entry_data']['ProfilePage'][0]['graphql']['user']['edge_follow']['count'])
                 output['posts_count'] = int(js_json['entry_data']['ProfilePage'][0]['graphql']['user']['edge_owner_to_timeline_media']['count'])
-
     return output
 
 
-def get_instagram_users(input):
+def get_instagram_users(input, proxies):
 
     # user search endpoint
     input = input.replace(' ', '+')
     endpoint = 'https://www.instagram.com/web/search/topsearch/?context=blended&query={}'.format(input)
-    response = requests.get(endpoint)
+    response = requests.get(endpoint, proxies=proxies)
     search_output = response.json()
 
     users = []
     for user in search_output['users'][:5]:
-        basic_info = get_basic_info(user['user']['username'])
+        basic_info = get_basic_info(user['user']['username'], proxies)
         user_info = {'username': user['user']['username']}
         user_info.update(basic_info)
         users.append(user_info)

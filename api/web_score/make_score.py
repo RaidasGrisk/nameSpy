@@ -2,51 +2,16 @@ import os
 import json
 import pandas as pd
 import numpy as np
-import pylab as plt
+
+from statsmodels.distributions.empirical_distribution import ECDF
+import pickle
 
 # pandas print options
 pd.set_option('display.max_columns', None)  # or 1000
 pd.set_option('display.max_rows', None)  # or 1000
-pd.set_option('display.max_colwidth', -1)  # or 199
+pd.set_option('display.max_colwidth', None)  # or 199
 pd.set_option('display.width', None)  # or 199
 
-# ----------- #
-# load and structure
-finished_names = [i for i in os.listdir('web_score/data/resp')]
-
-data = pd.DataFrame()
-for name in finished_names:
-    with open('web_score/data/resp/{}'.format(name)) as f:
-        response = json.load(f)
-
-        if response.get('input'):
-            response_ = {}
-            response_['input'] = [response['input']]
-            response_['google_items'] = response['google']['items']
-            response_['wikipedia_items'] = response['wikipedia']['items']
-
-            response_['twitter_users'] = response['twitter']['num_users']
-            response_['twitter_followers_first'] = [response['twitter']['users'][0].get('followers_count', np.nan) if response['twitter']['users'] else np.nan][0]
-            response_['twitter_followers_mean'] = np.nanmean([i.get('followers_count', np.nan) for i in response['twitter']['users']])
-            response_['twitter_followers_max'] = np.nanmax([i.get('followers_count', np.nan) for i in response['twitter']['users']] + [np.nan])
-
-            response_['instagram_users'] = response['instagram']['num_users']
-            response_['instagram_followers_first'] = [response['instagram']['users'][0].get('followers_count', np.nan) if response['instagram']['users'] else np.nan][0]
-            response_['instagram_followers_mean'] = np.nanmean([i.get('followers_count', np.nan) for i in response['instagram']['users']])
-            response_['instagram_followers_max'] = np.nanmax([i.get('followers_count', np.nan) for i in response['instagram']['users']] + [np.nan])
-
-        data = data.append(pd.DataFrame.from_dict(response_))
-
-# clean
-data = data.set_index('input')
-data = data.sort_index()
-
-# -------- #
-# make stats distributions
-
-from statsmodels.distributions.empirical_distribution import ECDF
-import pickle
-import pylab as plt
 
 class Scorer:
     def __init__(self):
@@ -70,22 +35,98 @@ class Scorer:
         return self.scale(self.model(value))
 
 
-    def plot(self):
-        plt.plot(self.model.x, self.model.y)
-        plt.plot(self.model.x, self.scale(self.model.y))
+    def plot(self, label):
+        import pylab as plt
+        plt.figure(label)
+        mask = (0 < self.scale(self.model.y)) & (self.scale(self.model.y) < 1)
+        plt.plot(self.model.x[mask], self.scale(self.model.y)[mask])
 
 
-fit_data = data['google_items'].dropna().values.reshape(-1, 1)
+def data_restructure(response):
+    response_ = {}
 
-insta_scorer = Scorer()
-insta_scorer.fit(fit_data.ravel())
-insta_scorer.score(220)
-insta_scorer.plot()
+    response_['google_items'] = response['google']['items']
+    response_['wikipedia_items'] = response['wikipedia']['items']
 
-# save
-with open('web_score/scorers/insta_scorer.pkl', 'wb') as f:
-    pickle.dump(insta_scorer, f)
+    response_['twitter_users'] = response['twitter']['num_users']
+    response_['twitter_followers_first'] = [response['twitter']['users'][0].get('followers_count', np.nan) if response['twitter']['users'] else np.nan][0]
+    response_['twitter_followers_mean'] = np.nanmean([i.get('followers_count', np.nan) for i in response['twitter']['users']])
+    response_['twitter_followers_max'] = np.nanmax([i.get('followers_count', np.nan) for i in response['twitter']['users']] + [np.nan])
 
-# load
-with open('web_score/scorers/insta_scorer.pkl', 'rb') as f:
-    object = pickle.load(f)
+    response_['instagram_users'] = response['instagram']['num_users']
+    response_['instagram_followers_first'] = [response['instagram']['users'][0].get('followers_count', np.nan) if response['instagram']['users'] else np.nan][0]
+    response_['instagram_followers_mean'] = np.nanmean([i.get('followers_count', np.nan) for i in response['instagram']['users']])
+    response_['instagram_followers_max'] = np.nanmax([i.get('followers_count', np.nan) for i in response['instagram']['users']] + [np.nan])
+    return response_
+
+
+def get_score(scorer_dict, json):
+    input_values = data_restructure(json)
+    scores = {}
+    output_keys = ['google', 'wiki', 'twitter', 'ig']
+    for scorer_item, output_key in zip(scorer_dict.keys(), output_keys):
+        value = 0 if np.isnan(input_values[scorer_item]) else input_values[scorer_item]
+        score = scorer_dict[scorer_item].score(value)
+        scores[output_key] = score
+    scores['web_score'] = sum(scores.values()) / len(scores.values())
+
+    # post process
+    scores = {k: np.around(scores[k], 2) for k in ['web_score'] + output_keys}
+
+    return scores
+
+
+def train_models():
+
+    # ----------- #
+    # load and structure
+    finished_names = [i for i in os.listdir('web_score/data/resp')]
+    data = pd.DataFrame()
+    for name in finished_names:
+        with open('web_score/data/resp/{}'.format(name)) as f:
+            response = json.load(f)
+            # how do we check if there's enough data to calc the score?
+            if 'google' not in response.keys():
+                continue
+            response_ = data_restructure(response)
+            data = data.append(pd.DataFrame(response_, index=[0]))
+
+    # -------- #
+    # make scorer object
+    scorer_dict = {}
+    for value in ['google_items', 'wikipedia_items', 'twitter_followers_mean', 'instagram_followers_mean']:
+        scorer_dict[value] = Scorer()
+        scorer_dict[value].fit(data[value].dropna().ravel())
+        print(value, scorer_dict[value].score(0))
+        scorer_dict[value].plot(label=value)
+
+    # save
+    with open('web_score/scorers/scorer_dict.pkl', 'wb') as f:
+        pickle.dump(scorer_dict, f)
+
+    # load
+    # with open('web_score/scorers/scorer_dict.pkl', 'rb') as f:
+    #     scorer_dict = pickle.load(f)
+
+
+# test
+# input1 = {'input': 'Rob Koskan',
+#           'google': {'items': 77},
+#           'wikipedia': {'items': 0, 'wordcount': 0},
+#           'twitter': {'num_users': 0, 'users': []},
+#           'instagram': {'num_users': 1, 'users': [{'username': 'rmkoskan', 'followers_count': 104, 'following_count': 67, 'posts_count': 158}]}}
+#
+# input2 = {'input': 'Rob Koskan',
+#           'google': {'items': 0},
+#           'wikipedia': {'items': 0, 'wordcount': 0},
+#           'twitter': {'num_users': 0, 'users': []},
+#           'instagram': {'num_users': 1, 'users': [{'username': 'rmkoskan', 'followers_count': 104, 'following_count': 67, 'posts_count': 158}]}}
+#
+# input3 = {'input': 'Rob Koskan',
+#           'google': {'items': 400},
+#           'wikipedia': {'items': 0, 'wordcount': 0},
+#           'twitter': {'num_users': 0, 'users': [{'username': 'rmkoskan', 'followers_count': 104, 'following_count': 67, 'posts_count': 158}]},
+#           'instagram': {'num_users': 1, 'users': [{'username': 'rmkoskan', 'followers_count': 104, 'following_count': 67, 'posts_count': 158}]}}
+#
+#
+# get_score(scorer_dict, input3)

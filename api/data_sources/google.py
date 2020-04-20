@@ -1,9 +1,4 @@
 from data_sources.google_scrape import get_google_search_scrape
-from googleapiclient.discovery import build
-from collections import Counter, OrderedDict
-from private import GOOGLE_KEYS
-import re
-
 from googletrans import Translator
 
 
@@ -13,6 +8,16 @@ def retry_if_google_search_fail(fn, max_tries=5):
             output = fn(*args, **kwargs)
             if len(output['items']) == 0:
                 print('Google returned 0 items, trying again {}'.format(i))
+                continue
+            return output
+    return wrapper
+
+def retry_if_google_numresults_fail(fn, max_tries=5):
+    def wrapper(*args, **kwargs):
+        for i in range(max_tries):
+            output = fn(*args, **kwargs)
+            if output == 0:
+                print('Google did not return the number of results, trying again')
                 continue
             return output
     return wrapper
@@ -82,93 +87,37 @@ def google_translate(google_data, proxies):
     return google_data
 
 
-def google_search(person_name, num_pages=5):
-    my_api_key = GOOGLE_KEYS['my_api_key']
-    my_cse_id = GOOGLE_KEYS['my_cse_id']
-    service = build("customsearch", "v1", developerKey=my_api_key)
-
-    search_results = service.cse().list(q=person_name, cx=my_cse_id).execute()
-
-    def process_google_response(google_response):
-        output = {'totalResults': google_response['queries']['request'][0]['totalResults']}
-        fields_to_parse_from_items = ['title',
-                                      'displayLink',
-                                      'snippet']
-        parsed_items = []
-        for item in google_response['items']:
-            parsed_item_fields = {}
-            for data_field in fields_to_parse_from_items:
-                # print(data_field, item[data_field])
-                parsed_item_fields[data_field] = item[data_field]
-            parsed_items.append(parsed_item_fields)
-
-        output['items'] = parsed_items
-
-        return output
-
-    search_results = process_google_response(search_results)
-
-    return search_results
-
-
-def get_google_data_analytics(search_results, nlp_models, person_name, ingore_name):
-
-    def clean_text(text, nlp_models, person_name, ingore_name=True):
-        import re
-        import unicodedata
-
-        output = text.replace('\n', ' ')
-        output = re.sub(r'([^\s\w]|_)+', ' ', output).lower()  # remove non alphanum chars
-        output = re.sub(r'[0-9]', ' ', output)  # remove numbers
-        output = ''.join((c for c in unicodedata.normalize('NFD', output) if unicodedata.category(c) != 'Mn'))  # weird chars to latin
-        output = output.replace('  ', ' ')  # replace double spaces with space
-        output = re.sub(r'\b[a-z]{1,2}\b', ' ', output)  # remove words that are 2 or less chars
-
-        # remove stop words
-        nlp = nlp_models['EN']
-        output = ' '.join(token.lemma_ for token in nlp(output) if not token.is_stop)
-
-        # remove name and surename
-        # TODO:  liet raides ir lot, etc, previous cleaning should apply to this
-        if ingore_name:
-            for name_part in person_name.split():
-                name_part = name_part.lower()
-                output = output.replace(name_part, '')
-
-        return output
-
-    # combine into one string
-    text_items_combined = ' '.join([item['snippet'] + ' ' + item['title'] for item in search_results['items']])
-
-    # extract entities
-    # from helpers import get_entities
-    # nlp = nlp_models['EN']
-    # entities = get_entities(text_items_combined, {'EN': nlp})
-
-    # count words
-    text_items_cleaned = clean_text(text_items_combined, nlp_models, person_name, ingore_name)
-    frequent_words = OrderedDict(Counter(text_items_cleaned.split()).most_common()[:25])
-
-    return {'frequent_words': frequent_words}
-
-
 # ------ #
 import requests
 from bs4 import BeautifulSoup
 import unidecode
 import re
+from fake_useragent.fake import UserAgent
+import time
 
-
+# TODO: this needs to be refactored and fixed, now its a mess
+# TODO: generally, this must be combined with google_scrape and functions inside
+# TODO: e.g. wrapper to try again, get_url etc.
+@retry_if_google_numresults_fail
 def get_google_search_num_items(person_name, exact_match=True):
 
-    USER_AGENT = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'}
+    ua = UserAgent()
+    USER_AGENT = {'User-Agent': ua.random}
+
     params = {}
     if exact_match:
         params['as_epq'] = person_name.encode('utf8')
     else:
         params['q'] = person_name.encode('utf8')
 
-    response = requests.get('https://www.google.com/search', params=params, headers=USER_AGENT)
+
+    https_bool = int(time.time()) % 2 == 0
+    url = 'https://www.google.com/search' if https_bool else 'http://www.google.com/search'
+    response = requests.get(url, params=params, headers=USER_AGENT)
+
+    if 'https://www.google.com/recaptcha/api.js' in response.text:
+        print('Google search returned captcha')
+        return 0
 
     soup = BeautifulSoup(response.text, "html.parser")
     results_div = soup.find("div", attrs={"id": ["resultStats", 'slim_appbar']})

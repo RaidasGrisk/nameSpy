@@ -56,6 +56,9 @@ with social_score_app.test_client() as c:
          'google_search_loc': 'lt'},
 
         {'input': 'Bart Simpson',
+         'google_search_loc': 'us'},
+
+        {'input': 'lady gaga',
          'google_search_loc': 'us'}
     ]
 

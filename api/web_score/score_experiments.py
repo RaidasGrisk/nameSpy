@@ -41,45 +41,50 @@ data = data.set_index('input')
 data = data.sort_index()
 
 # -------- #
-# make stats distributions
-
+# SKLEARN
+# TODO: can estimate ecdf with miltidim, but getting cdf is tricky
 # https://jakevdp.github.io/PythonDataScienceHandbook/05.13-kernel-density-estimation.html
 # https://scikit-learn.org/stable/auto_examples/neighbors/plot_kde_1d.html
-
 # https://machinelearningmastery.com/probability-density-estimation/
+
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import MinMaxScaler, QuantileTransformer, PowerTransformer, Normalizer
 from sklearn.neighbors import KernelDensity
-from matplotlib import pyplot
+from matplotlib import pyplot as plt
 
-fit_data = data['google_items'].dropna().values.reshape(-1, 1)
-fit_data = np.hstack((np.random.normal(loc=20, scale=5, size=100), np.random.normal(loc=40, scale=5, size=50))).reshape(-1, 1)
-not_outlier = abs(fit_data - np.mean(fit_data)) < (2 * np.std(fit_data))
-fit_data = fit_data[not_outlier].reshape(-1, 1)
+# define the model pipeline
+scaler = QuantileTransformer()
+model = KernelDensity(bandwidth=0.75, kernel='gaussian')  # bandwidth is basically smoothness of the curve
+model = Pipeline([('scale', scaler), ('fit', model)])
 
-model = KernelDensity(bandwidth=500, kernel='gaussian')  # bandwidth is basically smoothness of the curve
+# fit
+fit_data = data[['google_items', 'instagram_followers_mean']].dropna().values.astype('float')  # 'google_items', 'wikipedia_items', 'twitter_followers_mean', 'instagram_followers_mean'
 model.fit(fit_data)
+probs = np.exp(model.score_samples(np.atleast_2d(fit_data)))
+print(probs)
 
-np.exp(model.score_samples(np.array([-99999, 40, 99999]).reshape(-1, 1)))
-np.exp(model.score(np.array([40]).reshape(-1, 1)))
+# https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.nquad.html
+# TODO: this is too slow
+from scipy import integrate
+def f_kde(a, b):
+    fit_data_ = np.atleast_2d([a, b])
+    return np.exp(model.score_samples(np.atleast_2d(fit_data_)))
+integrate.nquad(f_kde, [[0, 10],[0, 10]])
 
-probabilities = np.exp(model.score_samples(fit_data))
-pyplot.hist(fit_data, bins=50, density=True)
-pyplot.scatter(fit_data, probabilities, color='black', s=1, zorder=2)  # cmap='viridis'
-pyplot.show()
-
-# how to scale it to -1 to 1, where 0 is average person 1 is very well known?
-from sklearn.preprocessing import MinMaxScaler
-
-scaler = MinMaxScaler()
-scaler.fit(probabilities.reshape(-1, 1))
-scaler.transform(np.exp([model.score(np.array([9999999]).reshape(-1, 1))]).reshape(-1, 1))
-
+# plot
+x, y = np.mgrid[0:1000:100j, 0:1000:100j]
+probs = np.exp(model.score_samples(np.atleast_2d(np.vstack([x.ravel(), y.ravel()]).T)))
+f = np.reshape(probs.T, x.shape)
+plt.contourf(x, y, f, 20, cmap='Blues')
+plt.plot(probs)
 
 # ------------ #
 
 import scipy.stats
-kde = scipy.stats.gaussian_kde(fit_data.ravel())
-probabilities = kde.pdf(fit_data.ravel())
+kde = scipy.stats.gaussian_kde(fit_data.T)
+probabilities = kde.pdf(fit_data.T)
 
+kde.evaluate(np.atleast_2d([[16400, 213.6], [16400, 5000.6]]))
 
 my_area = 0
 my_area_values = []
@@ -88,45 +93,13 @@ for i in range(1,probabilities.shape[0]):
     my_area_values.append(my_area)
 
 # ----------- #
+# STATSMODELS
+# TODO: simple yet can not do with multiple
+# TODO: as for now lets combine a couple of these and do an average
 from statsmodels.distributions.empirical_distribution import ECDF
 
 ecdf = ECDF(fit_data.ravel())
-pyplot.plot(ecdf.x, ecdf.y)
-pyplot.plot(ecdf.x, (ecdf.y - 0.5) * 2)
+plt.plot(ecdf.x, ecdf.y)
+plt.plot(ecdf.x, (ecdf.y - 0.5) * 2)
 
 ecdf(145)
-values = ecdf.__dict__['x']
-middle_value = values[int(len(values)/2)]
-
-class Scorer:
-    def __init__(self):
-        self.model = None
-
-
-    def fit(self, data):
-        self.model = ECDF(data.ravel())
-        model_values = self.model.x
-        self.middle_value = model_values[int(len(model_values)/2)]
-
-
-    def scale(self, value):
-        """
-        Given that input is cumulative prob of a value,
-        returns a score ranging from -1 to 1, where 0 is an average score (i.e. probability = 0.5)
-        """
-        return (value - 0.5) * 2
-
-    def score(self, value):
-        return self.scale(self.model(value))
-
-
-    def plot(self):
-        pyplot.plot(ecdf.x, ecdf.y)
-        pyplot.plot(ecdf.x, self.scale(ecdf.y))
-
-
-insta_scorer = Scorer()
-insta_scorer.fit(fit_data)
-insta_scorer.score(10000000)
-insta_scorer.plot()
-
