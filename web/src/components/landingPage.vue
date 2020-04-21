@@ -127,20 +127,17 @@ export default {
       // endpoints
       job_title: 'https://jobtitle-mu7u3ykctq-lz.a.run.app/api/job_title',
       social_score: 'https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score',
+      // 'https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score'
+      // 'http://localhost:8080/api/social_score'
 
       // table data
       gridData: [
-        {'person': 'Albert Einstein', 'google_items': 62800000, 'wiki_items': 4511, 'twtr_users': 20, 'twtr_followers': 143596, 'ig_users': 31, 'ig_followers': 810100},
-        {'person': 'Nicki Minaj', 'google_items': 115000000, 'wiki_items': 2800, 'twtr_users': 20, 'twtr_followers': 20602384, 'ig_users': 27, 'ig_followers': 623500},
-        {'person': 'Charles Darwin', 'google_items': 14500000, 'wiki_items': 3936, 'twtr_users': 20, 'twtr_followers': 2875083, 'ig_users': 26, 'ig_followers': 506},
-        {'person': 'Elon Musk', 'google_items': 91000000, 'wiki_items': 838, 'twtr_users': 20, 'twtr_followers': 31396013, 'ig_users': 16, 'ig_followers': 6383},
-        {'person': 'Bart Simpson', 'google_items': 12900000, 'wiki_items': 432, 'twtr_users': 20, 'twtr_followers': 46045, 'ig_users': 21, 'ig_followers': 25700},
-        {'person': 'Karolina Meschino', 'google_items': 695000, 'wiki_items': 4, 'twtr_users': 1, 'twtr_followers': 132, 'ig_users': 41, 'ig_followers': 289300},
-        // {'person': 'Guido van Rossum', 'google_items': 478000, 'wiki_items': 98, 'twtr_users': 3, 'twtr_followers': 168370, 'ig_users': 3, 'ig_followers': 951},
-        // {'person': 'Evan You', 'google_items': 212000, 'wiki_items': 2, 'twtr_users': 20, 'twtr_followers': 99680, 'ig_users': 42, 'ig_followers': 4148},
-        // {'person': 'Agnė Širinskienė', 'google_items': 171000, 'wiki_items': 3, 'twtr_users': 0, 'twtr_followers': 0, 'ig_users': 0, 'ig_followers': 0},
-        // {'person': 'Karolina Zivkovic', 'google_items': 225, 'wiki_items': 0, 'twtr_users': 1, 'twtr_followers': 0, 'ig_users': 10, 'ig_followers': 171},
-        // {'person': 'Oleksii Potiekhin', 'google_items': 13200, 'wiki_items': 0, 'twtr_users': 1, 'twtr_followers': 3, 'ig_users': 0, 'ig_followers': 0}
+        {'person': 'Elon Musk', 'web_score': 1.0, 'google_items': 54300000, 'wiki_items': 857, 'twtr_users': 20, 'twtr_followers': 33221297, 'ig_users': 47, 'ig_followers': 739500},
+        {'person': 'Albert Einstein', 'web_score': 1.0, 'google_items': 53100000, 'wiki_items': 4633, 'twtr_users': 20, 'twtr_followers': 149914, 'ig_users': 16, 'ig_followers': 826200},
+        {'person': 'Nicki Minaj', 'web_score': 1.0, 'google_items': 79500000, 'wiki_items': 2816, 'twtr_users': 20, 'twtr_followers': 20519671, 'ig_users': 53, 'ig_followers': 108100},
+        {'person': 'Charles Darwin', 'web_score': 0.98, 'google_items': 19000000, 'wiki_items': 3975, 'twtr_users': 20, 'twtr_followers': 2907030, 'ig_users': 17, 'ig_followers': 629},
+        {'person': 'Bart Simpson', 'web_score': 0.97, 'google_items': 16000000, 'wiki_items': 427, 'twtr_users': 20, 'twtr_followers': 46493, 'ig_users': 26, 'ig_followers': 977},
+        {'person': 'Karolina Meschino', 'web_score': 0.86, 'google_items': 435000, 'wiki_items': 4, 'twtr_users': 1, 'twtr_followers': 132, 'ig_users': 31, 'ig_followers': 298200}
       ]
     }
   },
@@ -183,12 +180,13 @@ export default {
         // map API data to gridData table
         var newRow = {
           'person': this.output['input'],
-          'google_items': this.output['google']['items'],
-          'wiki_items': this.output['wikipedia']['items'],
-          'twtr_users': this.output['twitter']['num_users'],
-          'twtr_followers': this.checkIfArrayIsEmpty(this.output['twitter']['users'], 0)['followers_count'],
-          'ig_users': this.output['instagram']['num_users'],
-          'ig_followers': this.checkIfArrayIsEmpty(this.output['instagram']['users'], 0)['followers_count'],
+          'web_score': this.output['scores']['web_score'],
+          'google_items': this.output['data']['google']['items'],
+          'wiki_items': this.output['data']['wikipedia']['items'],
+          'twtr_users': this.output['data']['twitter']['num_users'],
+          'twtr_followers': this.checkIfArrayIsEmpty(this.output['data']['twitter']['users'], 0)['followers_count'],
+          'ig_users': this.output['data']['instagram']['num_users'],
+          'ig_followers': this.checkIfArrayIsEmpty(this.output['data']['instagram']['users'], 0)['followers_count'],
           'class': 'is-success'
         }
         this.gridData.push(newRow)

@@ -103,8 +103,8 @@ EXTERNAL_IP=$(gcloud compute instances list --format="get(networkInterfaces[0].a
 echo http://$EXTERNAL_IP:8080
 
 # update VM instance with new image
-docker build -t vue_app -f deploy/web/Dockerfile .
-docker tag vue_app gcr.io/$PROJECT_ID/vue-app:v1
+docker build -t vue_app -f deploy/web/Dockerfile . --tag gcr.io/namesapi-1581010760883/vue-app:v1
+docker push gcr.io/namesapi-1581010760883/vue-app:v1
 gcloud compute instances update-container --container-image=gcr.io/namesapi-1581010760883/vue-app:v1 vue-app-vm
 
 # cleanup

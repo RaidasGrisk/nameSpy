@@ -5,15 +5,16 @@
         <div class="table-container">
         <table class="table is-narrow is-fullwidth" style="font-size: 10px !important;">
           <thead>
-            <th v-for="key in gridColumns()" v-bind:key="key">
+            <th v-for="key in gridColumns()" :key="key">
               {{ key }}
             </th>
           </thead>
           <tfoot>
           </tfoot>
           <tbody>
-            <tr v-for="entry in gridData" v-bind:key="entry">
-              <td v-for="key in gridColumns()" v-bind:key="key" :class="entry['class']">
+            <!-- iter over entry and idx, to dodge vue warn of using non-primitive value as key -->
+            <tr v-for="(entry, idx) in gridData" :key="idx">
+              <td v-for="key in gridColumns()" :key="key" :class="entry['class']">
                 {{ entry[key] }}
               </td>
             </tr>
