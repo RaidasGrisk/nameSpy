@@ -43,7 +43,9 @@
             </div>
 
             <div class="content is-size-7">
-              <p>Read the DOCS or <br>type in a name and see what's up</p>
+              <p>Read the
+                <router-link to="/Docs" class="has-text-success">DOCS</router-link>
+                or <br>type in a name and see what's up</p>
             </div>
 
             <div class="field has-addons has-addons-centered">
@@ -76,8 +78,8 @@
 
     <section>
       <div class="columns is-centered">
-        <div class="box" style="min-width: 30vh;" v-if="processingAPIRequest">
-          <progress class="progress is-medium is-primary" max="100"></progress>
+        <div class="box has-text-centered" style="min-width: 30vh;" v-if="processingAPIRequest">
+          <progress class="progress is-small is-primary" max="100"></progress>
         </div>
         <div class="box is-size-7" v-if="output">
           <vue-json-pretty

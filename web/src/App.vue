@@ -1,28 +1,24 @@
 <template>
   <div id="app">
     <NavBar/>
-    <landingPage/>
+    <router-view/>
     <Footer/>
   </div>
 </template>
 
 <script>
 
-import landingPage from './components/landingPage.vue'
 import NavBar from './components/NavBar.vue'
 import Footer from './components/Footer.vue'
 
 export default {
   name: 'app',
   components: {
-    landingPage,
     NavBar,
     Footer
-  }
+  } 
 }
 </script>
-
-
 
 <style lang="scss">
 
