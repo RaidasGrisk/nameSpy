@@ -4,7 +4,7 @@
     <div class="card-content">
       <div class="content">
 
-        <p><pre class='code'>https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score</pre></p>
+        <p><pre class='code' style="font-size: 11px">https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score</pre></p>
 
         <table class="table is-narrow is-fullwidth is-hoverable" style="font-size: 11px !important;">
           <thead>
@@ -35,13 +35,13 @@
 
         <div class="tab-contents">
           <div class="content" v-bind:class="{'is-active': isActive == 'Python'}">
-            <pre class='code'>{{python_code}}</pre>
+            <prism-editor :code="python_code" language="python"/>
           </div>
           <div class="content" v-bind:class="{'is-active': isActive == 'Bash'}">
-            <pre class='code'>{{bash_code}}</pre>
+            <prism-editor :code="bash_code" language="js"/>
           </div>
           <div class="content" v-bind:class="{'is-active': isActive == 'Javascript'}">
-            <pre class='code'>{{javascript_code}}</pre>
+            <prism-editor :code="javascript_code" language="js"/>
           </div>
           <div class="content" v-bind:class="{'is-active': isActive == 'Golang'}">
             <pre class='code'>{{golang_code}}</pre>
@@ -54,11 +54,18 @@
 
 <script>
 
+// import prismjs and color scheme for code highlight
+import "prismjs"
+import './prism-ghcolors.css'
+import "prismjs/components/prism-python.js"
+import PrismEditor from 'vue-prism-editor'
+
 export default {
 
   name: 'docsWebScore',
 
   components: {
+    PrismEditor
   },
 
   data() {
@@ -132,10 +139,6 @@ axios(options)
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 
-.code {
-  font-size: 11px;
-}
-
 /* This is related to bulma tabs
 It hides, shows the content */
 .tab-contents .content {
@@ -143,6 +146,22 @@ It hides, shows the content */
 }
 .tab-contents .content.is-active {
   display: block;
+}
+
+/* This is for prism not to conflict with bulma */
+/* https://github.com/jgthms/bulma/issues/1708 */
+.content .tag, .content .number {
+  display: inline;
+  padding: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  text-align: inherit;
+  vertical-align: inherit;
+  border-radius: inherit;
+  font-weight: inherit;
+  white-space: inherit;
+  background: inherit;
+  margin: inherit;
 }
 
 </style>

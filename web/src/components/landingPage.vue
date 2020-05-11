@@ -104,9 +104,13 @@
 
 <script>
 
+// Get the current location of the user:
+// Use it as input into the API call country
+// http://ip-api.com/json/
+
+
 import axios from "axios"
 import VueJsonPretty from 'vue-json-pretty'
-
 import SocialScoreBoard from './SocialScoreBoard'
 
 export default {
