@@ -1,7 +1,12 @@
-"""
+'''
 TODO: tor proxy and insta data wrapper to check if connection is ok
-TODO: google search 'NoneType' object has no attribute 'get_text'
-"""
+TODO: google search 'NoneType' object has no attribute 'get_text' ok
+
+TODO: fail when cannot connect to proxy:
+"HTTPSConnectionPool(host='www.google.com', port=443):
+Max retries exceeded with url: /search?as_epq=ryan+amegable (Caused by ProxyError('Cannot connect to proxy.',
+OSError('Tunnel connection failed: 502 Proxy Error (destination unreachable)')))"
+'''
 
 from data_sources.instagram import get_instagram_users
 from data_sources.wikipedia import get_wiki_search
@@ -24,8 +29,8 @@ import pickle
 
 class MyCustomUnpickler(pickle.Unpickler):
     def find_class(self, module, name):
-        if module == "__main__":
-            module = "web_score.make_score"
+        if module == '__main__':
+            module = 'web_score.make_score'
         return super().find_class(module, name)
 
 
@@ -34,7 +39,7 @@ with open('web_score/scorers/scorer_dict.pkl', 'rb') as f:
     scorer_dict = unpickler.load()
 
 
-def get_social_score(input, filter_input=True):
+def get_social_score(input, filter_input=True, use_proxy=0, collected_data=1):
 
     output = dict()
 
@@ -49,13 +54,21 @@ def get_social_score(input, filter_input=True):
         output.update(get_api_output_head_from_input_entities({'PERSON': [input.title()]}))
         person_name = input
 
+    # proxy config
+    if use_proxy == 1:
+        proxies = {'http': 'http://raidas:V91rGdAltc3MxYT1@proxy.packetstream.io:31112',
+                   'https': 'http://raidas:V91rGdAltc3MxYT1@proxy.packetstream.io:31112'}
+    # elif use_proxy == 2:
+    #     proxy_changer.get_new_proxy(minutes_between_changes=1, connection_check=lambda: True)
+    #     proxies = {'http': 'socks5h://localhost:9050', 'https': 'socks5h://localhost:9050'}
+    else:
+        proxies = {}
+
     print('Google counts')
-    google_counts = get_google_search_num_items(person_name, exact_match=True)
+    google_counts = get_google_search_num_items(person_name, proxies, exact_match=True)
     print('Wikipedia')
     wiki_data = get_wiki_search(person_name)
     print('Instagram')
-    proxy_changer.get_new_proxy(minutes_between_changes=1, connection_check=lambda: True)
-    proxies = {'http': 'socks5h://localhost:9050', 'https': 'socks5h://localhost:9050'}
     instagram_data = get_instagram_users(person_name, proxies)
     print(instagram_data)
     print('Twitter')
@@ -70,6 +83,10 @@ def get_social_score(input, filter_input=True):
 
     output['scores'] = get_score(scorer_dict, output_data['data'])
     output.update(output_data)
+
+    if collected_data == 0:
+        print('del data key')
+        del output['data']
 
     return output
 
@@ -91,11 +108,14 @@ class social_score(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('input', type=str)
         parser.add_argument('filter_input', type=int, default=1)
+        parser.add_argument('use_proxy', type=int, default=0)
+        parser.add_argument('collected_data', type=int, default=1)
         args = parser.parse_args()
         try:
-            output = get_social_score(args['input'], args['filter_input'])
-        except:
-            output = {'something went wrong': ':('}
+            output = get_social_score(**args)
+        except Exception as e:
+            output = {'something went wrong': ':(',
+                      'traceback': str(e)}
 
         # this or cant communicate with javascript axios
         output = jsonify(output)

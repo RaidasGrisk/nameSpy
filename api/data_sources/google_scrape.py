@@ -66,7 +66,7 @@ class GoogleResult(object):
 
 
 # PUBLIC
-def get_google_search_scrape(query, exact_match, proxies, pages=1, lang='en', loc='us', ncr=False, void=True, time_period=False, sort_by_date=False, first_page=0):
+def get_google_search_scrape(query, exact_match, proxies, pages=1, lang='en', loc='us', ncr=True, void=True, time_period=False, sort_by_date=False, first_page=0):
     """Returns a list of GoogleResult.
 
     Args:

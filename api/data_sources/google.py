@@ -99,7 +99,7 @@ import time
 # TODO: generally, this must be combined with google_scrape and functions inside
 # TODO: e.g. wrapper to try again, get_url etc.
 @retry_if_google_numresults_fail
-def get_google_search_num_items(person_name, exact_match=True):
+def get_google_search_num_items(person_name, proxies, exact_match=True):
 
     ua = UserAgent()
     USER_AGENT = {'User-Agent': ua.random}
@@ -113,7 +113,14 @@ def get_google_search_num_items(person_name, exact_match=True):
 
     https_bool = int(time.time()) % 2 == 0
     url = 'https://www.google.com/search' if https_bool else 'http://www.google.com/search'
-    response = requests.get(url, params=params, headers=USER_AGENT)
+
+    # make sure to set google search country code when using proxies
+    # otherwise the results will differ with every proxy call
+    # TODO: this should be the same country that no proxy search would return
+    if proxies:
+        params['gl'] = 'us'
+
+    response = requests.get(url, params=params, headers=USER_AGENT, proxies=proxies)
 
     if 'https://www.google.com/recaptcha/api.js' in response.text:
         print('Google search returned captcha')

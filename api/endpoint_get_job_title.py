@@ -9,11 +9,10 @@ import globals
 from private import tor_password
 
 from proxy.proxy_generator import ProxyChanger, check_if_can_connect_to_google_translate
-
 proxy_changer = ProxyChanger(tor_password=tor_password)
 
 
-def get_job_title(input, ner_threshold=0.95, google_search_loc='en', filter_input=True):
+def get_job_title(input, ner_threshold=0.95, country_code='en', filter_input=True, use_proxy=0):
 
     output = dict()
 
@@ -25,15 +24,26 @@ def get_job_title(input, ner_threshold=0.95, google_search_loc='en', filter_inpu
         if not person_name:
             return {'warning': 'I am built to recognize names, but I dont see any :('}
     else:
+        output.update(get_api_output_head_from_input_entities({'PERSON': [input.title()]}))
         person_name = input
 
     # proxy configure
-    proxy_changer.get_new_proxy(minutes_between_changes=1, connection_check=check_if_can_connect_to_google_translate)
-    proxies = {'http': 'socks5h://localhost:9050', 'https': 'socks5h://localhost:9050'}
+    # proxy_changer.get_new_proxy(minutes_between_changes=1, connection_check=check_if_can_connect_to_google_translate)
+    # proxies = {'http': 'socks5h://localhost:9050', 'https': 'socks5h://localhost:9050'}
+
+    # proxy config
+    if use_proxy == 1:
+        proxies = {'http': 'http://raidas:V91rGdAltc3MxYT1@proxy.packetstream.io:31112',
+                   'https': 'http://raidas:V91rGdAltc3MxYT1@proxy.packetstream.io:31112'}
+    # elif use_proxy == 2:
+    #     proxy_changer.get_new_proxy(minutes_between_changes=1, connection_check=check_if_can_connect_to_google_translate)
+    #     proxies = {'http': 'socks5h://localhost:9050', 'https': 'socks5h://localhost:9050'}
+    else:
+        proxies = {}
 
     print('Google scrape')
     # TODO: passing location (google_search_loc) triggers capthca. Modified to pass None to overcome this
-    google_data = google_search_scrape(person_name, exact_match=True, proxies=None, loc=None)  # loc = google_search_loc
+    google_data = google_search_scrape(person_name, exact_match=True, proxies=proxies, loc=country_code)
 
     if not google_data:
         return {'warning': 'google did not return the search results'}
@@ -83,12 +93,14 @@ class job_title(Resource):
 
         parser = reqparse.RequestParser()
         parser.add_argument('input', type=str)
-        parser.add_argument('ner_threshold', type=float, default=0.95)
-        parser.add_argument('google_search_loc', type=str, default='us')
         parser.add_argument('filter_input', type=int, default=1)
+        parser.add_argument('use_proxy', type=int, default=0)
+        parser.add_argument('ner_threshold', type=float, default=0.95)
+        parser.add_argument('country_code', type=str, default='us')
+
         args = parser.parse_args()
         try:
-            output = get_job_title(args['input'], args['ner_threshold'], args['google_search_loc'], args['filter_input'])
+            output = get_job_title(**args)
         except Exception as e:
             output = {'something went wrong': ':(', 'traceback': str(e)}
 

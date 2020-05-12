@@ -25711,6 +25711,8 @@ Fibre Optics Jointer
 Fibre Technologist
 Fibrous Plasterer
 Fibrous Wallboard Inspector
+fictional character
+Fictional character
 Fiction and Nonfiction Author
 Fiction and Nonfiction Prose Writer
 Fiction And Nonfiction Writer, Prose
@@ -74396,3 +74398,4 @@ Z OS Mainframe Systems Programmer
 Zumba Instructor
 Zyglo Inspector
 Zyglo Technician
+Deuteragonist
