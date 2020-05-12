@@ -104,10 +104,6 @@
 
 <script>
 
-// Get the current location of the user:
-// Use it as input into the API call country
-// http://ip-api.com/json/
-
 
 import axios from "axios"
 import VueJsonPretty from 'vue-json-pretty'
@@ -133,8 +129,9 @@ export default {
       // endpoints
       job_title: 'https://jobtitle-mu7u3ykctq-lz.a.run.app/api/job_title',
       social_score: 'https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score',
-      // 'https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score'
-      // 'http://localhost:8080/api/social_score'
+
+      // end point params
+      country_code: 'us',
 
       // table data
       gridData: [
@@ -159,8 +156,16 @@ export default {
       this.output = null
       this.processingAPIRequest = true
       var vm = this
-      var url = endpoint + "?input=" + this.input
-      axios.get(url).then(function (response){
+
+      axios.get(endpoint, {
+        params: {
+          'input': vm.input,
+          'country_code': vm.country_code,
+          'filter_input': 0,
+          'use_proxy': 0,
+          'collected_data': 1
+        }
+      }).then(function (response){
           vm.output = response.data
           vm.processingAPIRequest = false
           vm.lastAPICalled = endpoint
@@ -200,6 +205,18 @@ export default {
       return this.gridData
     }
   },
+
+  mounted() {
+
+    // Get the current location of the user:
+    // Use it as input into the API call country
+    // http://ip-api.com/json/
+    var vm = this
+    axios.get('http://ip-api.com/json/').then(function (response){
+        vm.country_code = response.data['countryCode'].toLowerCase()
+      }
+    )
+  }
 
 }
 </script>

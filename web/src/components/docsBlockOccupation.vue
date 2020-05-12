@@ -35,7 +35,7 @@
 
         <div class="tab-contents">
           <div class="content" v-bind:class="{'is-active': isActive == 'Python'}">
-            <prism-editor :code="python_code" language="python"/>
+            <prism-editor :code="python_code" language="js"/>
           </div>
           <div class="content" v-bind:class="{'is-active': isActive == 'Bash'}">
             <prism-editor :code="bash_code" language="js"/>
@@ -44,7 +44,7 @@
             <prism-editor :code="javascript_code" language="js"/>
           </div>
           <div class="content" v-bind:class="{'is-active': isActive == 'Golang'}">
-            <pre class='code'>{{golang_code}}</pre>
+            <prism-editor :code="golang_code" language="js"/>
           </div>
         </div>
       </div>
@@ -57,7 +57,6 @@
 // import prismjs and color scheme for code highlight
 import "prismjs"
 import './prism-ghcolors.css'
-import "prismjs/components/prism-python.js"
 import PrismEditor from 'vue-prism-editor'
 
 export default {
@@ -81,6 +80,7 @@ export default {
 
       isActive: 'Python',
 
+      // code examples for each lang
       python_code: `
 import requests
 
@@ -108,6 +108,8 @@ curl -G "https://jobtitle-mu7u3ykctq-lz.a.run.app/api/job_title" \\
       `,
 
       javascript_code: `
+import axios from "axios"
+
 const options = {
   url: 'https://jobtitle-mu7u3ykctq-lz.a.run.app/api/job_title',
   method: 'GET',
@@ -124,6 +126,46 @@ axios(options)
   .then(response => {
     console.log(response.data);
   });
+      `,
+
+      golang_code: `
+package main
+
+import (
+    "fmt"
+    "io/ioutil"
+    "log"
+    "net/http"
+    "os"
+    "net/url"
+)
+
+func main() {
+
+    baseUrl, err := url.Parse("https://jobtitle-mu7u3ykctq-lz.a.run.app/api/job_title")
+
+    params := url.Values{}
+    params.Add("input", "bart simpson")
+    params.Add("filter_input", "1")
+    params.Add("use_proxy", "1")
+    params.Add("ner_threshold", "0.95")
+    params.Add("country_code", "us")
+    baseUrl.RawQuery = params.Encode()
+
+    response, err := http.Get(baseUrl.String())
+
+    if err != nil {
+        fmt.Print(err.Error())
+        os.Exit(1)
+    }
+
+    responseData, err := ioutil.ReadAll(response.Body)
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println(string(responseData))
+
+}
       `
 
 
@@ -166,6 +208,13 @@ It hides, shows the content */
   white-space: inherit;
   background: inherit;
   margin: inherit;
+}
+
+/* this is to fix editor box */
+div.prism-editor-wrapper {
+    max-height: 250px;
+    min-height: 250px;
+    overflow-y: auto;
 }
 
 </style>

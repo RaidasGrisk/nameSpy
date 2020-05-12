@@ -44,7 +44,7 @@
             <prism-editor :code="javascript_code" language="js"/>
           </div>
           <div class="content" v-bind:class="{'is-active': isActive == 'Golang'}">
-            <pre class='code'>{{golang_code}}</pre>
+            <prism-editor :code="golang_code" language="js"/>
           </div>
         </div>
       </div>
@@ -80,6 +80,8 @@ export default {
 
       isActive: 'Python',
 
+
+      // code examples for each lang
       python_code: `
 import requests
 
@@ -105,6 +107,8 @@ curl -G "https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score" \\
       `,
 
       javascript_code: `
+import axios from "axios"
+
 const options = {
   url: 'https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score',
   method: 'GET',
@@ -120,6 +124,45 @@ axios(options)
   .then(response => {
     console.log(response.data);
   });
+      `,
+
+      golang_code: `
+package main
+
+import (
+    "fmt"
+    "io/ioutil"
+    "log"
+    "net/http"
+    "os"
+    "net/url"
+)
+
+func main() {
+
+    baseUrl, err := url.Parse("https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score")
+
+    params := url.Values{}
+    params.Add("input", "Bart Simpson")
+    params.Add("filter_input", "1")
+    params.Add("use_proxy", "1")
+    params.Add("collected_data", "1")
+    baseUrl.RawQuery = params.Encode()
+
+    response, err := http.Get(baseUrl.String())
+
+    if err != nil {
+        fmt.Print(err.Error())
+        os.Exit(1)
+    }
+
+    responseData, err := ioutil.ReadAll(response.Body)
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println(string(responseData))
+
+}
       `
 
 
@@ -162,6 +205,13 @@ It hides, shows the content */
   white-space: inherit;
   background: inherit;
   margin: inherit;
+}
+
+/* this is to fix editor box */
+div.prism-editor-wrapper {
+    max-height: 250px;
+    min-height: 250px;
+    overflow-y: auto;
 }
 
 </style>

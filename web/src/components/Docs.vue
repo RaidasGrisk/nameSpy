@@ -47,7 +47,7 @@
               <div class="content">Endpoints:
               <ul><b>web-score</b> returns a score and the collected data (optional) asociated with how well a particular name is known on the internet and social networks.
               The web-score ranges between -1 and 1, where 0 is an average person, 1 is a super-star, -1 is someone totally unknown.</ul>
-              <ul><b>occupation</b> returns a list of job and occupation titles as well as its sources (url links) related to particular person.</ul>
+              <ul><b>occupation</b> returns a list of job and occupation titles as well as its sources (url links) related to the name.</ul>
 
               </div>
             </div>
