@@ -16,7 +16,7 @@
           </tfoot>
           <tbody>
             <!-- iter over entry and idx, to dodge vue warn of using non-primitive value as key -->
-            <tr v-for="value in argsTable" :key="value">
+            <tr v-for="(value, idx) in argsTable" :key="idx">
               <td>{{ value[0] }}</td>
               <td>{{ value[1] }}</td>
               <td>{{ value[2] }}</td>
@@ -24,12 +24,35 @@
           </tbody>
         </table>
 
-        <div class="tabs">
+        <div class="tabs is-small">
           <ul>
-            <li v-bind:class="{'is-active': isActive == 'Python'}"><a v-on:click="isActive = 'Python'">Python</a></li>
-            <li v-bind:class="{'is-active': isActive == 'Bash'}"><a v-on:click="isActive = 'Bash'">Bash</a></li>
-            <li v-bind:class="{'is-active': isActive == 'Javascript'}"><a v-on:click="isActive = 'Javascript'">Javascript</a></li>
-            <li v-bind:class="{'is-active': isActive == 'Golang'}"><a v-on:click="isActive = 'Golang'">Golang</a></li>
+            <li v-bind:class="{'is-active': isActive == 'Python'}">
+              <a v-on:click="isActive = 'Python'">
+                <span class="icon is-small"><font-awesome-icon :icon="['fab', 'python']" /></span>
+                <span>py</span>
+              </a>
+            </li>
+
+            <li v-bind:class="{'is-active': isActive == 'Bash'}">
+              <a v-on:click="isActive = 'Bash'">
+                <span class="icon is-small"><font-awesome-icon :icon="['fa', 'terminal']" /></span>
+                <span>bash</span>
+              </a>
+            </li>
+
+            <li v-bind:class="{'is-active': isActive == 'Javascript'}">
+              <a v-on:click="isActive = 'Javascript'">
+                <span class="icon is-small"><font-awesome-icon :icon="['fab', 'js']" /></span>
+                <span>js</span>
+              </a>
+            </li>
+
+            <li v-bind:class="{'is-active': isActive == 'Golang'}">
+              <a v-on:click="isActive = 'Golang'">
+                <span class="icon is-small"><img src="https://img.icons8.com/ios/50/000000/golang.png"/></span>
+                <span>go</span>
+              </a>
+            </li>
           </ul>
         </div>
 
@@ -208,10 +231,10 @@ It hides, shows the content */
 }
 
 /* this is to fix editor box */
-div.prism-editor-wrapper {
+/* div.prism-editor-wrapper {
     max-height: 250px;
     min-height: 250px;
     overflow-y: auto;
-}
+} */
 
 </style>

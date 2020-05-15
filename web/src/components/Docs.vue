@@ -92,50 +92,7 @@ export default {
   data() {
     return {
       activeMenuItem: 'Home',
-      isActive: 'Python',
-
-      python_code: `
-import requests
-
-url = 'https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score?'
-
-payload = {
-    'input': 'Bart Simpson',
-    'filter_input': 0,
-    'use_proxy': 1,
-    'return_data': 1
-}
-
-response = requests.get(url, params=payload)
-print(response.json())
-      `,
-
-      bash_code: `
-curl -G "https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score" \
-  --data-urlencode "input=bart simpson" \
-  --data-urlencode "filter_input=0" \
-  --data-urlencode "use_proxy=1" \
-  --data-urlencode "return_data=1"
-      `,
-
-      javascript_code: `
-const options = {
-  url: 'https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score',
-  method: 'GET',
-  data: {
-    input: "bart simpson",
-    filter_input: 1,
-    use_proxy: 1,
-    return_data: 1,
-  }
-};
-
-axios(options)
-  .then(response => {
-    console.log(response.status);
-  });
-      `
-
+      isActive: 'Python'
 
     }
   },

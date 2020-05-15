@@ -135,12 +135,12 @@ export default {
 
       // table data
       gridData: [
-        {'person': 'Elon Musk', 'web_score': 1.0, 'google_items': 54300000, 'wiki_items': 857, 'twtr_users': 20, 'twtr_followers': 33221297, 'ig_users': 47, 'ig_followers': 739500},
-        {'person': 'Albert Einstein', 'web_score': 1.0, 'google_items': 53100000, 'wiki_items': 4633, 'twtr_users': 20, 'twtr_followers': 149914, 'ig_users': 16, 'ig_followers': 826200},
-        {'person': 'Nicki Minaj', 'web_score': 1.0, 'google_items': 79500000, 'wiki_items': 2816, 'twtr_users': 20, 'twtr_followers': 20519671, 'ig_users': 53, 'ig_followers': 108100},
-        {'person': 'Charles Darwin', 'web_score': 0.98, 'google_items': 19000000, 'wiki_items': 3975, 'twtr_users': 20, 'twtr_followers': 2907030, 'ig_users': 17, 'ig_followers': 629},
-        {'person': 'Bart Simpson', 'web_score': 0.97, 'google_items': 16000000, 'wiki_items': 427, 'twtr_users': 20, 'twtr_followers': 46493, 'ig_users': 26, 'ig_followers': 977},
-        {'person': 'Karolina Meschino', 'web_score': 0.86, 'google_items': 435000, 'wiki_items': 4, 'twtr_users': 1, 'twtr_followers': 132, 'ig_users': 31, 'ig_followers': 298200}
+        {'person': 'Albert Einstein', 'web_score': 1.0, 'google_items': 59100000, 'wiki_items': 4769, 'twtr_users': 20, 'twtr_followers': 1699679, 'ig_users': 21, 'ig_followers': 828300},
+        {'person': 'Nicki Minaj', 'web_score': 1.0, 'google_items': 84600000, 'wiki_items': 2842, 'twtr_users': 20, 'twtr_followers': 20533394, 'ig_users': 49, 'ig_followers': 114572876},
+        {'person': 'Elon Musk', 'web_score': 1.0, 'google_items': 70000000, 'wiki_items': 873, 'twtr_users': 20, 'twtr_followers': 34195789, 'ig_users': 47, 'ig_followers': 852900},
+        {'person': 'Charles Darwin', 'web_score': 0.79, 'google_items': 20100000, 'wiki_items': 3997, 'twtr_users': 20, 'twtr_followers': 2913852, 'ig_users': 21, 'ig_followers': 657},
+        {'person': 'Bart Simpson', 'web_score': 0.98, 'google_items': 15700000, 'wiki_items': 426, 'twtr_users': 20, 'twtr_followers': 47348, 'ig_users': 37, 'ig_followers': 97200},
+        {'person': 'Karolina Meschino', 'web_score': 0.86, 'google_items': 614000, 'wiki_items': 4, 'twtr_users': 1, 'twtr_followers': 134, 'ig_users': 30, 'ig_followers': 303700}
       ]
     }
   },
@@ -161,7 +161,7 @@ export default {
         params: {
           'input': vm.input,
           'country_code': vm.country_code,
-          'filter_input': 0,
+          'filter_input': 1,
           'use_proxy': 0,
           'collected_data': 1
         }
@@ -173,12 +173,19 @@ export default {
       )
     },
 
-    checkIfArrayIsEmpty(array, index) {
-      if (array.length == 0) {
-        return {'followers_count': 0}
+    // Retruns the max of followers for the grid data
+    getFollowersNumber(array) {
+      var followers = []
+      array.forEach(function (arrayItem) {
+        followers.push(arrayItem.followers_count)
+      })
+
+      if (followers.length > 0) {
+        return Math.max(...followers)
       } else {
-        return array[index]
+        return 0
       }
+
     },
 
     getGridData() {
@@ -195,9 +202,9 @@ export default {
           'google_items': this.output['data']['google']['items'],
           'wiki_items': this.output['data']['wikipedia']['items'],
           'twtr_users': this.output['data']['twitter']['num_users'],
-          'twtr_followers': this.checkIfArrayIsEmpty(this.output['data']['twitter']['users'], 0)['followers_count'],
+          'twtr_followers': this.getFollowersNumber(this.output['data']['twitter']['users']),
           'ig_users': this.output['data']['instagram']['num_users'],
-          'ig_followers': this.checkIfArrayIsEmpty(this.output['data']['instagram']['users'], 0)['followers_count'],
+          'ig_followers': this.getFollowersNumber(this.output['data']['instagram']['users']),
           'class': 'is-success'
         }
         this.gridData.push(newRow)
