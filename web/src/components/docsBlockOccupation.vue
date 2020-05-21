@@ -37,7 +37,7 @@
             <li v-bind:class="{'is-active': isActive == 'Bash'}">
               <a v-on:click="isActive = 'Bash'">
                 <span class="icon is-small"><font-awesome-icon :icon="['fa', 'terminal']" /></span>
-                <span>bash</span>
+                <span>Curl</span>
               </a>
             </li>
 
