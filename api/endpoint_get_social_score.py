@@ -56,8 +56,8 @@ def get_social_score(input, filter_input=True, use_proxy=0, collected_data=1):
 
     # proxy config
     if use_proxy == 1:
-        proxies = {'http': 'http://raidas:V91rGdAltc3MxYT1@proxy.packetstream.io:31112',
-                   'https': 'http://raidas:V91rGdAltc3MxYT1@proxy.packetstream.io:31112'}
+        proxies = {'http': 'http://f3t0zfun:03qLGKGeOdrkbiTE@proxy.proxy-cheap.com:31112',
+                   'https': 'http://f3t0zfun:03qLGKGeOdrkbiTE@proxy.proxy-cheap.com:31112'}
     # elif use_proxy == 2:
     #     proxy_changer.get_new_proxy(minutes_between_changes=1, connection_check=lambda: True)
     #     proxies = {'http': 'socks5h://localhost:9050', 'https': 'socks5h://localhost:9050'}
@@ -65,6 +65,7 @@ def get_social_score(input, filter_input=True, use_proxy=0, collected_data=1):
         proxies = {}
 
     print('Google counts')
+    # TODO: if proxies are set set the google search country code param to us
     google_counts = get_google_search_num_items(person_name, proxies, exact_match=True)
     print('Wikipedia')
     wiki_data = get_wiki_search(person_name)

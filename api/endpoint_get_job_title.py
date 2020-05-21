@@ -33,8 +33,8 @@ def get_job_title(input, ner_threshold=0.95, country_code='en', filter_input=Tru
 
     # proxy config
     if use_proxy == 1:
-        proxies = {'http': 'http://raidas:V91rGdAltc3MxYT1@proxy.packetstream.io:31112',
-                   'https': 'http://raidas:V91rGdAltc3MxYT1@proxy.packetstream.io:31112'}
+        proxies = {'http': 'http://f3t0zfun:03qLGKGeOdrkbiTE@proxy.proxy-cheap.com:31112',
+                   'https': 'http://f3t0zfun:03qLGKGeOdrkbiTE@proxy.proxy-cheap.com:31112'}
     # elif use_proxy == 2:
     #     proxy_changer.get_new_proxy(minutes_between_changes=1, connection_check=check_if_can_connect_to_google_translate)
     #     proxies = {'http': 'socks5h://localhost:9050', 'https': 'socks5h://localhost:9050'}

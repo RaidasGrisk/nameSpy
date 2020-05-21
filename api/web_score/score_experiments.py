@@ -21,6 +21,9 @@ for name in finished_names:
         if response.get('input'):
             response_ = {}
             response_['input'] = [response['input']]
+
+            response = response['data']
+
             response_['google_items'] = response['google']['items']
             response_['wikipedia_items'] = response['wikipedia']['items']
 
@@ -58,7 +61,7 @@ model = KernelDensity(bandwidth=0.75, kernel='gaussian')  # bandwidth is basical
 model = Pipeline([('scale', scaler), ('fit', model)])
 
 # fit
-fit_data = data[['google_items', 'instagram_followers_mean']].dropna().values.astype('float')  # 'google_items', 'wikipedia_items', 'twitter_followers_mean', 'instagram_followers_mean'
+fit_data = data[['google_items', 'instagram_followers_mean']].fillna(0).values.astype('float')  # 'google_items', 'wikipedia_items', 'twitter_followers_mean', 'instagram_followers_mean'
 model.fit(fit_data)
 probs = np.exp(model.score_samples(np.atleast_2d(fit_data)))
 print(probs)
@@ -103,3 +106,14 @@ plt.plot(ecdf.x, ecdf.y)
 plt.plot(ecdf.x, (ecdf.y - 0.5) * 2)
 
 ecdf(145)
+
+# ----------- #
+# https://jakevdp.github.io/blog/2013/12/01/kernel-density-estimation/
+# https://www.statsmodels.org/dev/generated/statsmodels.nonparametric.kernel_density.KDEMultivariate.html
+from statsmodels.nonparametric.kernel_density import KDEMultivariate
+
+fit_data = data[['google_items', 'wikipedia_items', 'twitter_followers_mean', 'instagram_followers_mean']].fillna(0).values.astype('float')  # 'google_items', 'wikipedia_items', 'twitter_followers_mean', 'instagram_followers_mean'
+ecdf = KDEMultivariate(data=fit_data, var_type='u'*fit_data.shape[-1], bw=[1]*fit_data.shape[-1])  # bw=0.2 * np.ones_like(fit_data)
+ecdf.cdf(fit_data[0, :])
+ecdf.cdf([0, 0, 0, 1])
+ecdf.cdf([0, 1, 0, 0])
