@@ -18947,6 +18947,7 @@ Detention Worker
 Dethistler Operator
 Detonator Assembler
 Detonator Maker
+Deuteragonist
 Developer Advisor
 Developer Advocate
 Developer Analyst
@@ -74398,4 +74399,3 @@ Z OS Mainframe Systems Programmer
 Zumba Instructor
 Zyglo Inspector
 Zyglo Technician
-Deuteragonist

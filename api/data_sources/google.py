@@ -110,7 +110,6 @@ def get_google_search_num_items(person_name, proxies, exact_match=True):
     else:
         params['q'] = person_name.encode('utf8')
 
-
     https_bool = int(time.time()) % 2 == 0
     url = 'https://www.google.com/search' if https_bool else 'http://www.google.com/search'
 

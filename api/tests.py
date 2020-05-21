@@ -9,25 +9,28 @@ with job_title_app.test_client() as c:
     inputs = [
         {'input': 'carl hust',
          'ner_threshold': 0.90,
-         'google_search_loc': 'gb'},
+         'country_code': 'gb'},
 
         {'input': 'melissa respondek',
          'ner_threshold': 0.90,
-         'google_search_loc': 'lt'},
+         'country_code': 'lt'},
 
         {'input': 'egle tauraite',
          'ner_threshold': 0.95,
-         'google_search_loc': 'lt'},
+         'country_code': 'lt',
+         'use_proxy': 1},
 
         {'input': 'John Lee',
          'ner_threshold': 0.95,
-         'google_search_loc': 'lt'},
+         'country_code': 'lt',
+         'use_proxy': 1},
 
         {'input': 'Bart Simpson',
-         'google_search_loc': 'us'},
+         'country_code': 'us'},
 
         {'input': 'Jurgita Antuchevičienė',
-         'google_search_loc': 'lt'}
+         'country_code': 'lt',
+         'use_proxy': 1}
     ]
 
     for input in inputs:
@@ -41,25 +44,31 @@ with social_score_app.test_client() as c:
     inputs = [
         {'input': 'carl hust',
          'ner_threshold': 0.90,
-         'google_search_loc': 'gb'},
+         'country_code': 'gb'},
 
         {'input': 'melissa respondek',
          'ner_threshold': 0.90,
-         'google_search_loc': 'lt'},
+         'country_code': 'lt'},
 
         {'input': 'egle tauraite',
          'ner_threshold': 0.95,
-         'google_search_loc': 'lt'},
+         'country_code': 'lt',
+         'use_proxy': 1},
 
         {'input': 'John Lee',
          'ner_threshold': 0.95,
-         'google_search_loc': 'lt'},
+         'country_code': 'lt',
+         'use_proxy': 1},
 
         {'input': 'Bart Simpson',
-         'google_search_loc': 'us'},
+         'country_code': 'us',
+         'use_proxy': 1,
+         'collected_data': 0},
 
         {'input': 'lady gaga',
-         'google_search_loc': 'us'}
+         'country_code': 'us',
+         'use_proxy': 1,
+         'collected_data': 0}
     ]
 
     for input in inputs:
