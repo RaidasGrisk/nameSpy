@@ -5,33 +5,33 @@
 
     <section class="main-content columns is-fullheight">
 
-      <aside class="column is-2 is-narrow-mobile is-hidden-mobile is-fullheight section left-menu">
+      <aside class="column is-3 is-narrow-mobile is-hidden-mobile is-fullheight section left-menu">
         <p class="menu-label">Documentation</p>
         <ul class="menu-list">
           <li>
-            <a href="#" v-bind:class="{'is-active': activeMenuItem == 'Home'}" v-on:click="activeMenuItem = 'Home'">
+            <a href="#intro" v-bind:class="{'is-active': activeMenuClass('intro')}" v-on:click="activeMenuItem = 'intro'" >
               <span class="icon"><i class="fa fa-home"></i></span>Intro
             </a>
           </li>
           <li>
-            <a href="#endpoints" v-bind:class="{'is-active': activeMenuItem == 'Endpoints'}" v-on:click="activeMenuItem = 'Endpoints'">
+            <a href="#endpoints" v-bind:class="{'is-active': activeMenuClass('endpoints')}" v-on:click="activeMenuItem = 'endpoints'">
               <span class="icon"><i class="fa fa-table"></i></span>Endpoints
             </a>
             <ul>
               <li>
-                <a href="#endpoints" v-bind:class="{'is-active': activeMenuItem == 'web score'}" v-on:click="activeMenuItem = 'web score'">
+                <a href="#webscore" v-bind:class="{'is-active': activeMenuClass('webscore')}" v-on:click="activeMenuItem = 'webscore'">
                   <span class="icon is-small"><i class="fa fa-link"></i></span>Web score
                 </a>
               </li>
               <li>
-                <a href="#occupation" v-bind:class="{'is-active': activeMenuItem == 'occupation'}" v-on:click="activeMenuItem = 'occupation'">
+                <a href="#occupation" v-bind:class="{'is-active': activeMenuClass('occupation')}" v-on:click="activeMenuItem = 'occupation'">
                   <span class="icon is-small"><i class="fa fa-link"></i></span>Occupation
                 </a>
               </li>
             </ul>
           </li>
           <li>
-            <a href="#about" v-bind:class="{'is-active': activeMenuItem == 'Data and about'}" v-on:click="activeMenuItem = 'Data and about'">
+            <a href="#about" v-bind:class="{'is-active': activeMenuClass('about')}" v-on:click="activeMenuItem = 'about'">
               <span class="icon"><i class="fa fa-info"></i></span>About
             </a>
           </li>
@@ -41,7 +41,7 @@
       <div class="container column is-6">
         <div class="section">
 
-          <div class="card">
+          <div id="intro" class="card">
             <div class="card-header"><p class="card-header-title">Intro</p></div>
             <div class="card-content">
               <div class="content">Endpoints:
@@ -54,7 +54,8 @@
           </div>
           <br />
 
-          <div id="endpoints"><docsBlockWebScore/></div><br/>
+          <div id="endpoints"></div>
+          <div id="webscore"><docsBlockWebScore/></div><br/>
           <div id="occupation"><docsBlockOccupation/></div><br/>
 
           <div class="card is-hidden1" id="about">
@@ -91,17 +92,56 @@ export default {
 
   data() {
     return {
-      activeMenuItem: 'Home',
-      isActive: 'Python'
-
+      activeMenuItem: 'intro',
+      idBlocks: ['intro', 'endpoints', 'webscore', 'occupation', 'about']
     }
   },
 
   methods: {
 
+    activeMenuClass(item) {
+      return item == this.activeMenuItem
     },
-  computed: {
 
+    // https://jschof.com/vue/scroll-tracking-in-vue-applications-some-gotchas/
+    // utility copied from https://stackoverflow.com/questions/123999/how-to-tell-if-a-dom-element-is-visible-in-the-current-viewport
+    elementInViewport(el) {
+      var top = el.offsetTop;
+      var height = el.offsetHeight;
+      var bottom = top + height;
+
+      while(el.offsetParent) {
+        el = el.offsetParent;
+        top += el.offsetTop;
+      }
+
+      return (
+        !(top < window.pageYOffset && bottom < window.pageYOffset) &&
+          !(top > (window.pageYOffset + (window.innerHeight)) && bottom > window.pageYOffset + (window.innerHeight))
+      );
+    },
+
+    handleScroll() {
+      const elementsInViewArray = this.idBlocks.map(number => {
+        const el = document.getElementById(number);
+        if(this.elementInViewport(el)) {
+          return number;
+        }
+      });
+
+      this.activeMenuItem = elementsInViewArray.find(number => number)
+    }
+
+  },
+
+  created() {
+    document.addEventListener('scroll', this.handleScroll);
+  },
+  destroyed() {
+    document.removeEventListener('scroll', this.handleScroll);
+  },
+
+  computed: {
   },
 
 }

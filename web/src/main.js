@@ -7,9 +7,14 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
+// Docs icons
 import { faPython, faJs, faLinux } from '@fortawesome/free-brands-svg-icons'
 import { faTerminal } from '@fortawesome/free-solid-svg-icons'
 library.add(faPython, faJs, faLinux, faTerminal)
+
+// Social icons
+import { faTwitter, faGithub } from '@fortawesome/free-brands-svg-icons'
+library.add(faTwitter, faGithub)
 
 Vue.config.productionTip = false
 
