@@ -1,15 +1,18 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+from data_sources.async_utils import make_async_requests
+from data_sources.requests_utils import requests_retry_session
 
-
-def get_basic_info(user_name, proxies):
+# TODO: hard to replicate but sometimes this parse does not do the job
+# TODO: guess is that the response html structure depends on the caller location
+# TODO: when doing this through proxy the response structure is not parsed sometimes
+# TODO: maybe fix the proxy location?
+# TODO: another solution would be to work with async calls and set single proxy for whole batch
+def parse_html_to_user_info(html):
 
     output = {}
-
-    # proxies={'http': 'http://167.71.183.113:8888', 'https': 'http://167.71.183.113:8888'}
-    instagram_page = requests.get('https://www.instagram.com/' + user_name, proxies)
-    soup = BeautifulSoup(instagram_page.text, 'html.parser')
+    soup = BeautifulSoup(html, 'html.parser')
 
     # TODO: private public?
     # TODO: description
@@ -43,15 +46,24 @@ def get_basic_info(user_name, proxies):
 def get_instagram_users(input, proxies):
 
     # user search endpoint
-    input = input.replace(' ', '+')
-    endpoint = 'https://www.instagram.com/web/search/topsearch/?context=blended&query={}'.format(input)
-    response = requests.get(endpoint, proxies=proxies)
+    # get usernames associated with name surname
+    url = 'https://www.instagram.com/web/search/topsearch'
+    params = {'query': input.replace(' ', '+'), 'context': 'blended'}
+
+    response = requests_retry_session().get(url, params=params, proxies=proxies)
     search_output = response.json()
 
+    # get htmls of user pages
+    # make async calls to save some time
+    user_names = [i['user']['username'] for i in search_output['users'][:5]]
+    user_pages = ['https://www.instagram.com/' + i for i in user_names]
+    user_pages_html = make_async_requests(user_pages, proxies)
+
+    # parse info from htmls
     users = []
-    for user in search_output['users'][:5]:
-        basic_info = get_basic_info(user['user']['username'], proxies)
-        user_info = {'username': user['user']['username']}
+    for user_html, username in zip(user_pages_html, user_names):
+        basic_info = parse_html_to_user_info(user_html)
+        user_info = {'username': username}
         user_info.update(basic_info)
         users.append(user_info)
 
@@ -60,3 +72,4 @@ def get_instagram_users(input, proxies):
     output['users'] = users
 
     return output
+
