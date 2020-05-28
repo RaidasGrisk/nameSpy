@@ -92,7 +92,7 @@ class job_title(Resource):
     def get(self):
 
         parser = reqparse.RequestParser()
-        parser.add_argument('input', type=str)
+        parser.add_argument('input', type=str, required=True)
         parser.add_argument('filter_input', type=int, default=1)
         parser.add_argument('use_proxy', type=int, default=0)
         parser.add_argument('ner_threshold', type=float, default=0.95)

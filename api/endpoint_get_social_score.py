@@ -56,16 +56,17 @@ def get_social_score(input, filter_input=True, use_proxy=0, collected_data=1):
 
     # proxy config
     if use_proxy == 1:
-        proxies = {'http': 'http://f3t0zfun:03qLGKGeOdrkbiTE@proxy.proxy-cheap.com:31112',
-                   'https': 'http://f3t0zfun:03qLGKGeOdrkbiTE@proxy.proxy-cheap.com:31112'}
+        proxies = {'http': 'http://f3t0zfun:03qLGKGeOdrkbiTE_country-UnitedStates@proxy.proxy-cheap.com:31112',
+                   'https': 'http://f3t0zfun:03qLGKGeOdrkbiTE_country-UnitedStates@proxy.proxy-cheap.com:31112'}
     # elif use_proxy == 2:
     #     proxy_changer.get_new_proxy(minutes_between_changes=1, connection_check=lambda: True)
     #     proxies = {'http': 'socks5h://localhost:9050', 'https': 'socks5h://localhost:9050'}
     else:
         proxies = {}
 
+    # TODO: This whole block could be ran async?
+    # http://www.hydrogen18.com/blog/python-await-multiple.html
     print('Google counts')
-    # TODO: if proxies are set set the google search country code param to us
     google_counts = get_google_search_num_items(person_name, proxies, exact_match=True)
     print('Wikipedia')
     wiki_data = get_wiki_search(person_name)
@@ -98,6 +99,7 @@ from flask import jsonify
 from flask_restful import Resource, Api, reqparse
 import os
 
+
 app = Flask(__name__)
 api = Api(app)
 app.config['JSON_SORT_KEYS'] = False  # do not sort data
@@ -107,16 +109,16 @@ class social_score(Resource):
     def get(self):
 
         parser = reqparse.RequestParser()
-        parser.add_argument('input', type=str)
+        parser.add_argument('input', type=str, required=True)
         parser.add_argument('filter_input', type=int, default=1)
         parser.add_argument('use_proxy', type=int, default=0)
         parser.add_argument('collected_data', type=int, default=1)
         args = parser.parse_args()
+
         try:
             output = get_social_score(**args)
         except Exception as e:
-            output = {'something went wrong': ':(',
-                      'traceback': str(e)}
+            output = {'something went wrong': ':(', 'traceback': str(e)}
 
         # this or cant communicate with javascript axios
         output = jsonify(output)
