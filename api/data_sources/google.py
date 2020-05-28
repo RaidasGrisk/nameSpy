@@ -1,6 +1,6 @@
 from data_sources.google_scrape import get_google_search_scrape
 from googletrans import Translator
-
+from data_sources.requests_utils import requests_retry_session
 
 def retry_if_google_search_fail(fn, max_tries=5):
     def wrapper(*args, **kwargs):
@@ -119,12 +119,15 @@ def get_google_search_num_items(person_name, proxies, exact_match=True):
     if proxies:
         params['gl'] = 'us'
 
-    response = requests.get(url, params=params, headers=USER_AGENT, proxies=proxies)
+    # retry params
+    response = requests_retry_session().get(url, params=params, headers=USER_AGENT, proxies=proxies)
 
     if 'https://www.google.com/recaptcha/api.js' in response.text:
         print('Google search returned captcha')
         return 0
 
+    # TODO: what it rezults are in fact 0?
+    # TODO: example sosicc cequel tycoonkingz
     soup = BeautifulSoup(response.text, "html.parser")
     results_div = soup.find("div", attrs={"id": ["resultStats", 'slim_appbar']})
 
