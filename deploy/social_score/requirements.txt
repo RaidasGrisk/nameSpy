@@ -12,3 +12,5 @@ spacy
 gunicorn
 statsmodels
 stem
+aiohttp
+asyncio
