@@ -27,6 +27,8 @@ random_names = [line.strip() for line in open('web_score/data/random_names.txt')
 finished_names = [i.replace('.txt', '') for i in os.listdir('web_score/data/resp')]
 random_names = [i for i in random_names if i not in finished_names]
 localhost = True
+
+# sync
 for name in random_names:
 
     if localhost:
@@ -44,34 +46,28 @@ for name in random_names:
     with open('web_score/data/resp/{}.txt'.format(name), 'w') as outfile:
         json.dump(response_json, outfile)
 
+# async
+from data_sources.async_utils import make_async_requests
 
-# ----------- #
-# call APIs to collect data
-import aiohttp
-import asyncio
+n = 10
+name_batches = [random_names[i:i+max(1, n)] for i in range(0, len(random_names), max(1, n))]
 
+for batch in name_batches:
 
-async def fetch(session, url):
-    async with session.get(url) as response:
-        return await response.text()
+    # url = 'https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score?input={}&filter_input=0&use_proxy=1'
+    url = 'http://localhost:8080/api/social_score?input={}&filter_input=0&use_proxy=1'
+    urls = [url.format(i) for i in batch]
+    responses = make_async_requests(urls)
 
+    for response, name in zip(responses, batch):
+        response_json = json.loads(response)
+        print(response_json)
 
-async def main():
-    urls = [
-            'http://python.org',
-            'https://google.com',
-            'http://yifei.me'
-        ]
-    tasks = []
-    async with aiohttp.ClientSession() as session:
-        for url in urls:
-            tasks.append(fetch(session, url))
-        htmls = await asyncio.gather(*tasks)
-        for html in htmls:
-            print(html[:100])
-
-if __name__ == '__main__':
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
-
+        # check for errors
+        if 'input' in response_json.keys():
+            with open('web_score/data/resp/{}.txt'.format(name), 'w') as outfile:
+                json.dump(response_json, outfile)
+        else:
+            print(response_json)
+            print(name)
 

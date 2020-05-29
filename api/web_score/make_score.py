@@ -86,23 +86,38 @@ def train_models():
         with open('web_score/data/resp/{}'.format(name)) as f:
             response = json.load(f)
             # how do we check if there's enough data to calc the score?
-            if 'google' not in response.keys():
+            if 'data' not in response.keys():
                 continue
-            response_ = data_restructure(response)
+            response_ = data_restructure(response['data'])
+            response_['input'] = name.split('.')[0]
             data = data.append(pd.DataFrame(response_, index=[0]))
+
+    # drop users where IG accounts are available but data on followers was not retrieved
+    data = data[~((data['instagram_users'] > 0) & (data['instagram_followers_first'].isnull()))]
 
     # -------- #
     # make scorer object
     scorer_dict = {}
     for value in ['google_items', 'wikipedia_items', 'twitter_followers_mean', 'instagram_followers_mean']:
         scorer_dict[value] = Scorer()
-        scorer_dict[value].fit(data[value].dropna().ravel())
+        x_fit = data[value]
+        x_fit = x_fit.dropna()
+        x_fit = x_fit[x_fit.between(x_fit.quantile(.01), x_fit.quantile(.99))]  # without outliers
+        scorer_dict[value].fit(x_fit.ravel())
+
+        # exception:
+        # due to weird wiki data where an unknown and an average name has 0 items
+        # this has to be fixed manually. All probs where items <= 0 has prob of 0.5
+        # meaning that names with 0 wiki items are average names. There are no names that has score of -1.
+        if value == 'wikipedia_items':
+            scorer_dict[value].model.y[scorer_dict[value].model.x <= 0] = 0.5
+
         print(value, scorer_dict[value].score(0))
         scorer_dict[value].plot(label=value)
 
     # save
-    with open('web_score/scorers/scorer_dict.pkl', 'wb') as f:
-        pickle.dump(scorer_dict, f)
+    # with open('web_score/scorers/scorer_dict.pkl', 'wb') as f:
+    #     pickle.dump(scorer_dict, f)
 
     # load
     # with open('web_score/scorers/scorer_dict.pkl', 'rb') as f:
@@ -127,6 +142,6 @@ def train_models():
 #           'wikipedia': {'items': 0, 'wordcount': 0},
 #           'twitter': {'num_users': 0, 'users': [{'username': 'rmkoskan', 'followers_count': 104, 'following_count': 67, 'posts_count': 158}]},
 #           'instagram': {'num_users': 1, 'users': [{'username': 'rmkoskan', 'followers_count': 104, 'following_count': 67, 'posts_count': 158}]}}
-#
+
 #
 # get_score(scorer_dict, input3)
