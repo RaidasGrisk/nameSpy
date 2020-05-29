@@ -50,7 +50,7 @@
 
             <div class="field has-addons has-addons-centered">
               <p class="control">
-                <input class="input is-small" v-model='input' type="text" placeholder="">
+                <input class="input is-small" v-model='input' type="text" placeholder="e.g. Bart Simpson">
               </p>
             </div>
 
