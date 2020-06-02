@@ -37,21 +37,8 @@ python endpoint_get_job_title.py
 
 ``` bash
 
-Natalija Bunke IG followers	16800
-Karolina Meschino IG followers	288800
-
-Edmundas Balčikonis vs Edmundas Balcikonis
-
-language option in occupation API       cannot do as this activates google scrpae detection
-carl hust occupation API error    OK
-IG user info scrape
-
-github landing page logo and description    OK
-DOCS page on WEBSITE
-
-hard match findall fails with iter exception: melissa respondek
-Totally lost, now its working, can it be that titles have to be sorted alphabetically?
-
-Alina Kalenkovic vs Alina Kalenkovič list assignment out of range error!
+Two issues:
+what if google rezults are in fact 0? example sosicc cequel tycoonkingz
+intagram does not return user data. Not sure what triggers it.
 
 ```
