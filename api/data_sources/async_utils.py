@@ -9,14 +9,18 @@ def make_async_requests(urls, proxies=None):
     proxy = proxies.get('http') if proxies else ''
 
     async def fetch(session, url, proxy):
+
+        # setting a timeout for bad proxies
+        timeout = aiohttp.ClientTimeout(total=5)
+
         # setting 5 retries in case of proxy fail
         # sometimes the url (due to proxies) is unreachable
         # TODO: should specify the exact exception(s) as this could be due to other reasons
         for _ in range(5):
             try:
-                async with session.get(url, proxy=proxy) as response:
+                async with session.get(url, proxy=proxy, timeout=timeout) as response:
                     return await response.text()
-            except Exception as e:  # aiohttp.ClientError
+            except Exception as e:  # TODO: aiohttp.ClientError
                 print(str(e))
 
     async def fetch_all(urls, loop):
@@ -32,7 +36,7 @@ def make_async_requests(urls, proxies=None):
     return responses
 
 # ----------------- #
-
+#
 #
 # # ----------- #
 # # call APIs to collect data
@@ -44,7 +48,6 @@ def make_async_requests(urls, proxies=None):
 #            'https': 'http://f3t0zfun:03qLGKGeOdrkbiTE@proxy.proxy-cheap.com:31112'}
 #
 # proxy = proxies.get('http')
-# proxy = ''
 #
 # async def fetch(session, url, proxy):
 #     async with session.get(url, proxy=proxy) as response:
@@ -52,7 +55,7 @@ def make_async_requests(urls, proxies=None):
 #
 #
 # async def fetch_all(urls, loop):
-#     async with aiohttp.ClientSession(loop=loop) as session:
+#     async with aiohttp.ClientSession(loop=loop, proxy=proxy) as session:
 #         results = await asyncio.gather(*[fetch(session, url, proxy) for url in urls], return_exceptions=True)
 #         return results
 #
@@ -102,4 +105,4 @@ def make_async_requests(urls, proxies=None):
 # for url in urls:
 #     r = session.get(url)
 #     print(r.json())
-#
+
