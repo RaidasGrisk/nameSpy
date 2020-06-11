@@ -1,3 +1,21 @@
+"""
+# tis url works fine
+# will get blocked after a while if many requests are made > 150
+# might work for longer if shuffling headers and user-agent
+# still will have to use proxy
+https://www.instagram.com/graphql/query/?query_hash=c76146de99bb02f6415203be841dd25a&variables={"id":2738070677,"include_reel":false,"fetch_mutual":false,"first":0}
+
+# many different hashes
+https://github.com/ping/instagram_private_api/blob/54427574583d33544c006c9f6a13cb6bc306a714/instagram_web_api/client.py#L387
+
+# this contains all I need but does not work over proxy?
+# works sometimes, prob due to random pc being logged into fb, else not
+# prob due to headers and cookies or something else
+# ok this requires login and redirects to /accounts/login if not logged in
+'https://www.instagram.com/raidasgriskevicius/?__a=1'
+
+"""
+
 import requests
 from bs4 import BeautifulSoup
 import json
@@ -10,6 +28,13 @@ from data_sources.requests_utils import requests_retry_session
 # TODO: maybe fix the proxy location?
 # TODO: another solution would be to work with async calls and set single proxy for whole batch
 def parse_html_to_user_info(html):
+    """
+    Depreciated, looks like there is a better way to get this data
+    using another endpoints through graphql
+
+    :param html:
+    :return:
+    """
 
     output = {}
     soup = BeautifulSoup(html, 'html.parser')
@@ -43,6 +68,12 @@ def parse_html_to_user_info(html):
     return output
 
 
+def parse_json_to_user_info(user_info):
+    output = {}
+    output['followers_count'] = user_info.get('data').get('user').get('edge_followed_by').get('count')
+    return output
+
+
 def get_instagram_users(input, proxies):
 
     # user search endpoint
@@ -53,18 +84,22 @@ def get_instagram_users(input, proxies):
     response = requests_retry_session().get(url, params=params, proxies=proxies)
     search_output = response.json()
 
-    # get htmls of user pages
+    # get info of users
     # make async calls to save some time
     user_names = [i['user']['username'] for i in search_output['users'][:5]]
-    user_pages = ['https://www.instagram.com/' + i for i in user_names]
-    user_pages_html = make_async_requests(user_pages, proxies)
+    user_ids = [i['user']['pk'] for i in search_output['users'][:5]]
+    url = 'https://www.instagram.com/graphql/query/' \
+          '?query_hash=c76146de99bb02f6415203be841dd25a&' \
+          'variables={{"id":{},"include_reel":false,"fetch_mutual":false,"first":0}}'
+    user_urls = [url.format(id) for id in user_ids]
+    user_data = make_async_requests(user_urls, proxies)
+    user_data = [json.loads(i) for i in user_data]
 
-    # parse info from htmls
+    # parse info
     users = []
-    for user_html, username in zip(user_pages_html, user_names):
-        basic_info = parse_html_to_user_info(user_html)
-        user_info = {'username': username}
-        user_info.update(basic_info)
+    for data, name in zip(user_data, user_names):
+        user_info = {'username': name}
+        user_info.update(parse_json_to_user_info(data))
         users.append(user_info)
 
     output = {}
@@ -72,4 +107,3 @@ def get_instagram_users(input, proxies):
     output['users'] = users
 
     return output
-
