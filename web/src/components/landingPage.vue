@@ -17,7 +17,13 @@
             Hi, my names is
           </div>
           <div class="is-size-4 is-uppercase has-text-weight-bold has-text-success">
-            NameSpy <br> 🧐
+            NameSpy
+          </div>
+          <div class="content is-size-7 has-text-weight-bold has-text-success">
+            I am a REST API service
+          </div>
+          <div class="content is-size-4">
+            🧐
           </div>
         </div>
       </transition>
@@ -29,9 +35,18 @@
               <p>What I do?</p>
             </div>
             <div class="content is-size-7"  style="transition-delay: 0.9s">
-              <p>You give me a name <br>
-              I give you what I know about it.</p>
+              <p>
+                You give me a name <br>
+                I give you what I know about it:
+              </p>
             </div>
+            <div class="content is-size-7 has-text-weight-bold">
+              <p>
+                web score<br>
+                occupation titles
+              </p>
+            </div>
+
           </div>
         </transition>
 
