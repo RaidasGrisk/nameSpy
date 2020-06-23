@@ -4,7 +4,7 @@
     <div class="card-content">
       <div class="content">
 
-        <p><pre class='code' style="font-size: 11px">https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score</pre></p>
+        <p><pre class='code' style="font-size: 11px">https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/web_score</pre></p>
 
         <table class="table is-narrow is-fullwidth is-hoverable" style="font-size: 11px !important;">
           <thead>
@@ -108,7 +108,7 @@ export default {
       python_code: `
 import requests
 
-url = 'https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score'
+url = 'https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/web_score'
 
 payload = {
     'input': 'Bart Simpson',
@@ -122,7 +122,7 @@ print(response.json())
       `,
 
       bash_code: `
-curl -G "https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score" \\
+curl -G "https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/web_score" \\
   --data-urlencode "input=bart simpson" \\
   --data-urlencode "filter_input=0" \\
   --data-urlencode "use_proxy=1" \\
@@ -133,7 +133,7 @@ curl -G "https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score" \\
 import axios from "axios"
 
 const options = {
-  url: 'https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score',
+  url: 'https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/web_score',
   method: 'GET',
   data: {
     input: "bart simpson",
@@ -163,7 +163,7 @@ import (
 
 func main() {
 
-    baseUrl, err := url.Parse("https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score")
+    baseUrl, err := url.Parse("https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/web_score")
 
     params := url.Values{}
     params.Add("input", "Bart Simpson")

@@ -142,8 +142,8 @@ export default {
       lastAPICalled: '',
 
       // endpoints
-      job_title: 'https://jobtitle-mu7u3ykctq-lz.a.run.app/api/job_title',
-      social_score: 'https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score',
+      job_title: 'https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/job_title',
+      social_score: 'https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/web_score',
 
       // end point params
       country_code: 'us',
@@ -177,15 +177,17 @@ export default {
           'input': vm.input,
           'country_code': vm.country_code,
           'filter_input': 1,
-          'use_proxy': 0,
+          'use_proxy': 1,
           'collected_data': 1
         }
       }).then(function (response){
           vm.output = response.data
           vm.processingAPIRequest = false
           vm.lastAPICalled = endpoint
-        }
-      )
+      }).catch(function (error){
+        vm.output = error.response.data
+        vm.processingAPIRequest = false
+      })
     },
 
     // Retruns the max of followers for the grid data

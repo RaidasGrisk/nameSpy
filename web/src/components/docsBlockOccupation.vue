@@ -4,7 +4,7 @@
     <div class="card-content">
       <div class="content">
 
-        <p><pre class='code' style="font-size: 11px">https://jobtitle-mu7u3ykctq-lz.a.run.app/api/job_title</pre></p>
+        <p><pre class='code' style="font-size: 11px">https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/job_title</pre></p>
 
         <table class="table is-narrow is-fullwidth is-hoverable" style="font-size: 11px !important;">
           <thead>
@@ -109,7 +109,7 @@ export default {
       python_code: `
 import requests
 
-url = 'https://jobtitle-mu7u3ykctq-lz.a.run.app/api/job_title'
+url = 'https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/job_title'
 
 payload = {
     'input': 'Bart Simpson',
@@ -124,7 +124,7 @@ print(response.json())
       `,
 
       bash_code: `
-curl -G "https://jobtitle-mu7u3ykctq-lz.a.run.app/api/job_title" \\
+curl -G "https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/job_title" \\
   --data-urlencode "input=bart simpson" \\
   --data-urlencode "filter_input=0" \\
   --data-urlencode "use_proxy=1" \\
@@ -136,7 +136,7 @@ curl -G "https://jobtitle-mu7u3ykctq-lz.a.run.app/api/job_title" \\
 import axios from "axios"
 
 const options = {
-  url: 'https://jobtitle-mu7u3ykctq-lz.a.run.app/api/job_title',
+  url: 'https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/job_title',
   method: 'GET',
   data: {
     input: "bart simpson",
@@ -167,7 +167,7 @@ import (
 
 func main() {
 
-    baseUrl, err := url.Parse("https://jobtitle-mu7u3ykctq-lz.a.run.app/api/job_title")
+    baseUrl, err := url.Parse("https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/job_title")
 
     params := url.Values{}
     params.Add("input", "bart simpson")
