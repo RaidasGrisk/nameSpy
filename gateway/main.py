@@ -11,10 +11,12 @@ api = Api(app, prefix='/v1')
 # ------------- #
 # database connection
 from pymongo import MongoClient
-from private import mongo_details
+from private import mongo_details  # dict with user/psw/cluster/connection url
 
 
-url = mongo_details['url'].format(mongo_details['user'], mongo_details['password'], mongo_details['cluster'])
+url = mongo_details['url'].format(mongo_details['user'],
+                                  mongo_details['password'],
+                                  mongo_details['cluster'])
 db_client = MongoClient(url)
 
 
@@ -23,7 +25,7 @@ db_client = MongoClient(url)
 def auth(fn, *args, **kwargs):
     def inner(*args, **kwargs):
 
-        api_keys = {'asdasd', '123'}
+        api_keys = {'123'}
         api_key = request.args.get('api_key')
 
         # if key is not provided limit by number of same IP requests per time period
@@ -87,6 +89,7 @@ def log(db_client, request, response):
 class job_title(Resource):
     def get(self):
         response = proxy(request, 'https://jobtitle-mu7u3ykctq-lz.a.run.app/api/job_title')
+        response.headers.add('Access-Control-Allow-Origin', '*')
         log(db_client, request, response)
         return response
 
@@ -94,6 +97,7 @@ class job_title(Resource):
 class web_score(Resource):
     def get(self):
         response = proxy(request, 'https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score')
+        response.headers.add('Access-Control-Allow-Origin', '*')
         log(db_client, request, response)
         return response
 
