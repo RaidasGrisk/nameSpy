@@ -15,6 +15,6 @@ Browse [documentation here](http://namespy.ml/#/Docs).
 ## Quick start
 
 ```
-https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score?input=bart simpson
-https://jobtitle-mu7u3ykctq-lz.a.run.app/api/job_title?input=lady gaga
+https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/web_score?input=bart simpson
+https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/job_title?input=lady gaga
 ```
