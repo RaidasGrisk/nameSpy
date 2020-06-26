@@ -34,16 +34,16 @@
             <div class="is-size-4 is-uppercase has-text-weight-bold">
               <p>What I do?</p>
             </div>
-            <div class="content is-size-7"  style="transition-delay: 0.9s">
+            <div class="is-size-7"  style="transition-delay: 0.9s">
               <p>
                 You give me a name <br>
                 I give you what I know about it:
               </p>
             </div>
-            <div class="content is-size-7 has-text-weight-bold">
+            <div class="is-size-7 has-text-weight-bold has-text-success">
               <p>
                 web score<br>
-                occupation titles
+                occupation
               </p>
             </div>
 
