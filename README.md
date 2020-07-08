@@ -16,5 +16,5 @@ Browse [documentation here](http://34.83.209.94/#/Docs).
 
 ```
 https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/web_score?use_proxy=1&input=bart simpson
-https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/job_title?use_proxy=1&input=lady gaga&use_proxy=1
+https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/job_title?use_proxy=1&input=lady gaga
 ```
