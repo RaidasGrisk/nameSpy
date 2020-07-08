@@ -10,11 +10,11 @@ NAMESPY is a rest-api service providing details about names. Give a full name th
 
 ## Documentation
 
-Browse [documentation here](http://namespy.ml/#/Docs).
+Browse [documentation here](http://34.83.209.94/#/Docs).
 
 ## Quick start
 
 ```
-https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/web_score?input=bart simpson
-https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/job_title?input=lady gaga
+https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/web_score?use_proxy=1&input=bart simpson
+https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/job_title?use_proxy=1&input=lady gaga&use_proxy=1
 ```
