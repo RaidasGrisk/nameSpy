@@ -10,7 +10,7 @@ NAMESPY is a rest-api service providing details about names. Give a full name th
 
 ## Documentation
 
-Browse [documentation here](http://34.83.209.94/#/Docs).
+Browse [documentation here](https://www.namespy.dev/#/Docs).
 
 ## Quick start
 
