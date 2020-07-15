@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 // router compontnts
-import Home from '../components/landingPage'
+import Home from '../components/LandingPage'
 import Docs from '../components/Docs'
 
 

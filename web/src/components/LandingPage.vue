@@ -234,15 +234,35 @@ export default {
 
     // Get the current location of the user:
     // Use it as input into the API call country
-    // http://ip-api.com/json/
     var vm = this
-    axios.get('http://ip-api.com/json/').then(function (response){
-        vm.country_code = response.data['countryCode'].toLowerCase()
+
+    // http://ip-api.com/json/
+    // wont work if the website use SSL
+    // axios.get('http://ip-api.com/json/').then(function (response){
+    //     vm.country_code = response.data['countryCode'].toLowerCase()
+    //   }
+    // )
+
+    // https://geolocation-db.com/json/
+    axios.get('https://geolocation-db.com/json/').then(function (response){
+        vm.country_code = response.data['country_code'].toLowerCase()
       }
     )
-  }
 
+    // api.ipify.org + api.ipstack.com
+    // not as nice as it neets to call multiple APIs
+    // axios.get('https://api.ipify.org/?format=json').then(function (response){
+    //
+    //   // get the location of the client and set API param
+    //   let access_key = 'fb7f9964a23b45a6a28debbc8115226f'
+    //   let ip_address = response.data['ip']
+    //   axios.get(`http://api.ipstack.com/${ip_address}?access_key=${access_key}`).then(function (response){
+    //       vm.country_code = response.data['country_code'].toLowerCase()
+    //   })
+    // })
+  }
 }
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -78,8 +78,8 @@
 
 <script>
 
-import docsBlockWebScore from './docsBlockWebScore'
-import docsBlockOccupation from './docsBlockOccupation'
+import docsBlockWebScore from './DocsBlockWebScore'
+import docsBlockOccupation from './DocsBlockOccupation'
 
 export default {
 

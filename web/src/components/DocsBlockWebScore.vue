@@ -97,7 +97,7 @@ export default {
       argsTable: [
         ['input', 'string', 'first name last name'],
         ['filter_input (optional)', 'int', '1 to filter input by detecting name and surname, 0 not to. Default value 1'],
-        ['use_proxy (optional)', 'int', '1 to use proxy while collecting data, 0 not to. Implemented to bypass google/IG scrape detection. Default value 0'],
+        ['use_proxy (optional)', 'int', '1 to use proxy while collecting data, 0 not to. Implemented to bypass google/IG scrape detection. Default value 1'],
         ['collected_data (optional)', 'int', 'return detailed data that is collected during the scoring process. Default value 1']
       ],
 

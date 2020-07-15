@@ -98,7 +98,7 @@ export default {
       argsTable: [
         ['input', 'string', 'first name last name'],
         ['filter_input (optional)', 'int', '1 to filter input by detecting name and surname, 0 not to. Default value 1'],
-        ['use_proxy (optional)', 'int', '1 to use proxy while collecting data, 0 not to. Implemented due to bypass google/IG scrape detection. Default value 0'],
+        ['use_proxy (optional)', 'int', '1 to use proxy while collecting data, 0 not to. Implemented due to bypass google/IG scrape detection. Default value 1'],
         ['ner_threshold (optional)', 'float', 'Detection probability threshold of word asociated with occupation/job-titles. Lower threshold implies looser detection. Default value 0.95 (returns words that are detected as occupation/job-title with probability of >95%)'],
         ['country_code (optional)', 'string', 'Country code through which to do the google search. Provide the value if known, this improves the results. <a href="https://developers.google.com/custom-search/docs/xml_results_appendices#countryCodes" target="_blank">Available country codes</a>. Default value us']
       ],
