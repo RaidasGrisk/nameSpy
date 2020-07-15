@@ -32,7 +32,10 @@ def auth(fn, *args, **kwargs):
         if not api_key:
 
             time_frame = str(datetime.datetime.now() - datetime.timedelta(days=1))
-            filter = {'request.ip': request.remote_addr, 'time': {'$gte': time_frame}}
+            filter = {
+                'request.ip': request.headers.get('X-Forwarded-For', request.remote_addr),
+                'time': {'$gte': time_frame}
+            }
             call_count = db_client['logs']['api_calls'].count_documents(filter)
 
             if call_count > 50:
@@ -70,17 +73,23 @@ def proxy(request, to_url):
 # logging
 def log(db_client, request, response):
 
-    log = {'time': str(datetime.datetime.now())}
+    print(request.headers)
 
-    log['request'] = {}
-    log['request']['ip'] = request.remote_addr
-    log['request']['path'] = request.path
-    log['request']['args'] = request.args.to_dict()
+    # make log entry
+    log = {
+        'time': str(datetime.datetime.now()),
+        'request': {
+            'ip': request.headers.get('X-Forwarded-For', request.remote_addr),
+            'path': request.path,
+            'args': request.args.to_dict()
+        },
+        'response': {
+            'status_code': response.status_code,
+            'response': json.loads(response.response[0])
+        }
+    }
 
-    log['response'] = {}
-    log['response']['status_code'] = response.status_code
-    log['response']['response'] = json.loads(response.response[0])
-
+    # push log to db
     db_client['logs']['api_calls'].insert_one(log)
 
     return True

@@ -17,10 +17,7 @@ from helpers import get_entities, process_entities
 from helpers import get_api_output_head_from_input_entities
 import globals
 
-from private import tor_password
-from proxy.proxy_generator import ProxyChanger
-proxy_changer = ProxyChanger(tor_password=tor_password)
-
+from private import proxy_dict
 
 # having hard time loading these pickled files
 # https://stackoverflow.com/questions/50465106/attributeerror-when-reading-a-pickle-file
@@ -39,7 +36,7 @@ with open('web_score/scorers/scorer_dict.pkl', 'rb') as f:
     scorer_dict = unpickler.load()
 
 
-def get_social_score(input, filter_input=True, use_proxy=0, collected_data=1):
+def get_social_score(input, filter_input=True, use_proxy=1, collected_data=1):
 
     output = dict()
 
@@ -55,12 +52,9 @@ def get_social_score(input, filter_input=True, use_proxy=0, collected_data=1):
         person_name = input
 
     # proxy config
+    # proxy config
     if use_proxy == 1:
-        proxies = {'http': 'http://f3t0zfun:03qLGKGeOdrkbiTE_country-UnitedStates@proxy.proxy-cheap.com:31112',
-                   'https': 'http://f3t0zfun:03qLGKGeOdrkbiTE_country-UnitedStates@proxy.proxy-cheap.com:31112'}
-    # elif use_proxy == 2:
-    #     proxy_changer.get_new_proxy(minutes_between_changes=1, connection_check=lambda: True)
-    #     proxies = {'http': 'socks5h://localhost:9050', 'https': 'socks5h://localhost:9050'}
+        proxies = proxy_dict
     else:
         proxies = {}
 
@@ -111,7 +105,7 @@ class social_score(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('input', type=str, required=True)
         parser.add_argument('filter_input', type=int, default=1)
-        parser.add_argument('use_proxy', type=int, default=0)
+        parser.add_argument('use_proxy', type=int, default=1)
         parser.add_argument('collected_data', type=int, default=1)
         args = parser.parse_args()
 

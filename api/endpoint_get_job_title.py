@@ -6,13 +6,11 @@ from job_titles.ner_flair_model import get_job_titles as get_job_titles_2
 from helpers import get_entities, process_entities
 from helpers import get_api_output_head_from_input_entities
 import globals
-from private import tor_password
-
-from proxy.proxy_generator import ProxyChanger, check_if_can_connect_to_google_translate
-proxy_changer = ProxyChanger(tor_password=tor_password)
+from private import proxy_dict
 
 
-def get_job_title(input, ner_threshold=0.95, country_code='en', filter_input=True, use_proxy=0):
+
+def get_job_title(input, ner_threshold=0.95, country_code='en', filter_input=True, use_proxy=1):
 
     output = dict()
 
@@ -33,16 +31,13 @@ def get_job_title(input, ner_threshold=0.95, country_code='en', filter_input=Tru
 
     # proxy config
     if use_proxy == 1:
-        proxies = {'http': 'http://f3t0zfun:03qLGKGeOdrkbiTE@proxy.proxy-cheap.com:31112',
-                   'https': 'http://f3t0zfun:03qLGKGeOdrkbiTE@proxy.proxy-cheap.com:31112'}
-    # elif use_proxy == 2:
-    #     proxy_changer.get_new_proxy(minutes_between_changes=1, connection_check=check_if_can_connect_to_google_translate)
-    #     proxies = {'http': 'socks5h://localhost:9050', 'https': 'socks5h://localhost:9050'}
+        proxies = proxy_dict
     else:
         proxies = {}
 
     print('Google scrape')
     # TODO: passing location (google_search_loc) triggers capthca. Modified to pass None to overcome this
+    # TODO: if search results in fact returns nothing, it should not say google did not return the serach results
     google_data = google_search_scrape(person_name, exact_match=True, proxies=proxies, loc=country_code)
 
     if not google_data:
@@ -94,7 +89,7 @@ class job_title(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('input', type=str, required=True)
         parser.add_argument('filter_input', type=int, default=1)
-        parser.add_argument('use_proxy', type=int, default=0)
+        parser.add_argument('use_proxy', type=int, default=1)
         parser.add_argument('ner_threshold', type=float, default=0.95)
         parser.add_argument('country_code', type=str, default='us')
 
