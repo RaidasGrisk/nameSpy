@@ -35,8 +35,8 @@ def auth(fn, *args, **kwargs):
             filter = {'request.ip': request.remote_addr, 'time': {'$gte': time_frame}}
             call_count = db_client['logs']['api_calls'].count_documents(filter)
 
-            if call_count > 20:
-                return make_response(jsonify({'message': 'You have reached a limit of 20 calls a day. Get an api_key!'}), 401)
+            if call_count > 50:
+                return make_response(jsonify({'message': 'You have reached a limit of 50 calls a day. Get an api_key!'}), 401)
 
         # if api_key is provided but is not in the db
         elif api_key not in api_keys:
