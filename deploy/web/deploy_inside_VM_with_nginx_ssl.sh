@@ -87,7 +87,8 @@ sudo nano conf.d/default.conf
 # }
 
 # do this from root dir of the project
+# copy dist folder into the VM
 gcloud compute scp --recurse web/dist vue-app-vm:/home/raidas
 
-# now login into the vm and move the files
-sudo mv dist/* /home/mrraidas/nginx-ssl/public
+# move the folder into the root dir, from which the nginx is serving the web
+gcloud compute ssh vue-app-vm --command="sudo rm -r /home/mrraidas/nginx-ssl/public/* && sudo mv dist/* /home/mrraidas/nginx-ssl/public"
