@@ -73,8 +73,6 @@ def proxy(request, to_url):
 # logging
 def log(db_client, request, response):
 
-    print(request.headers)
-
     # make log entry
     log = {
         'time': str(datetime.datetime.now()),

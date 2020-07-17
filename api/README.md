@@ -24,6 +24,7 @@ All of this is stored in private.py
 touch private.py
 echo "GOOGLE_KEYS = {}" >> private.py
 echo "TWITTER_KEYS = {}" >> private.py
+echo "proxy_dict = {}" >> private.py
 ```
 
 # serve
@@ -38,7 +39,9 @@ python endpoint_get_job_title.py
 ``` bash
 
 Two issues:
-what if google rezults are in fact 0? example sosicc cequel tycoonkingz
+what if google rezults are in fact 0? example "sosicc cequel tycoonkingz"
 intagram does not return user data. Not sure what triggers it.
+
+Add explanation popups to landing page to exaplien web score and occupations
 
 ```
