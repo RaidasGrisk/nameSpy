@@ -1,50 +1,16 @@
-from data_sources.google_scrape import get_google_search_scrape
 from googletrans import Translator
 from data_sources.requests_utils import requests_retry_session
 
-def retry_if_google_search_fail(fn, max_tries=5):
+# this works on the premise that the fn will be ran
+# again if it returns False, else the loop will stop
+def retry_if_fn_returned_false(fn, max_tries=5):
     def wrapper(*args, **kwargs):
         for i in range(max_tries):
             output = fn(*args, **kwargs)
-            if len(output['items']) == 0:
-                print('Google returned 0 items, trying again {}'.format(i))
+            if output == False:
                 continue
             return output
     return wrapper
-
-def retry_if_google_numresults_fail(fn, max_tries=5):
-    def wrapper(*args, **kwargs):
-        for i in range(max_tries):
-            output = fn(*args, **kwargs)
-            if output == 0:
-                print('Google did not return the number of results, trying again')
-                continue
-            return output
-    return wrapper
-
-
-@retry_if_google_search_fail
-def google_search_scrape(person_name, exact_match, proxies, loc):
-
-    def reorganize_data(search_results):
-        data = {'items': []}
-        for item in search_results:
-
-            # little trick to fix bug inside name
-            # it parses the text above the title containing a link
-            # lets remove this as this is not what we want
-            # point_of_remove = [i for i in item.link.split('/') if len(i) > 1][-1]
-            # item.name = item.name.split(point_of_remove)[-1]
-
-            data['items'].append({'displayLink': item.link,
-                                  'snippet': item.description,
-                                  'title': item.name})
-        return data
-
-    search_results = get_google_search_scrape(person_name, exact_match, proxies, loc=loc)
-    search_results = reorganize_data(search_results)
-
-    return search_results
 
 
 def google_translate(google_data, proxies):
@@ -93,65 +59,166 @@ from bs4 import BeautifulSoup
 import unidecode
 import re
 from fake_useragent.fake import UserAgent
-import time
 
-# TODO: this needs to be refactored and fixed, now its a mess
-# TODO: generally, this must be combined with google_scrape and functions inside
-# TODO: e.g. wrapper to try again, get_url etc.
-@retry_if_google_numresults_fail
-def get_google_search_num_items(person_name, proxies, exact_match=True):
 
-    ua = UserAgent()
-    USER_AGENT = {'User-Agent': ua.random}
+@retry_if_fn_returned_false
+def get_google_search_response(person_name, exact_match, proxies, country_code):
 
-    params = {}
-    if exact_match:
-        params['as_epq'] = person_name.encode('utf8')
-    else:
-        params['q'] = person_name.encode('utf8')
+    # set params
+    params = {
+        'as_epq' if exact_match else 'q': person_name.encode('utf8')
+    }
 
-    https_bool = int(time.time()) % 2 == 0
-    url = 'https://www.google.com/search' if https_bool else 'http://www.google.com/search'
-
-    # make sure to set google search country code when using proxies
-    # otherwise the results will differ with every proxy call
-    # TODO: this should be the same country that no proxy search would return
+    # make sure to set google search country code because
+    # when using proxies the google results will depend on
+    # the random country the proxy is located at and
+    # the results will differ with every random proxy call
+    #
+    # also keep in mind that including this parameter (as well as others, likely)
+    # will increase the prob of triggering bot detection
+    # so using this without a proxy will quickly result
+    # in google banning the ip address and asking for recaptcha
+    # TODO: even though the parameter is set, the search results
+    #  differ when returned from different proxy/client
+    #  maybe this is fine as this returns different search results
+    #  implying that it is actually working in terms of loc spec
+    #  it might vary just because it varies by default in the loc
     if proxies:
         params['gl'] = 'us'
+    if country_code:
+        params['gl'] = country_code
 
-    # retry params
-    response = requests_retry_session().get(url, params=params, headers=USER_AGENT, proxies=proxies)
+    # set headers - this is important!!!
+    # if headers are not set google does not return
+    # the number of search results and none of the divs
+    # responsible for storing number of results are there.
+    # Basically, the structure of html is totally different.
+    # TODO: not sure if need to use UserAgent() as sometimes
+    #  fails, maybe just pick from a random of 10 headers
+    #  stored locally? Not sure if this is good long term solution
+    headers = {'User-Agent': UserAgent().random}
 
+    # make the request
+    url = 'https://www.google.com/search'
+    response = requests_retry_session().get(url,
+                                            params=params,
+                                            headers=headers,
+                                            proxies=proxies)
+
+    # if recaptcha in the response, the client that sent the request
+    # is blacklisted so lets return False
     if 'https://www.google.com/recaptcha/api.js' in response.text:
         print('Google search returned captcha')
-        return 0
+        return False
 
-    # TODO: what it rezults are in fact 0?
-    # TODO: example sosicc cequel tycoonkingz
-    soup = BeautifulSoup(response.text, "html.parser")
-    results_div = soup.find("div", attrs={"id": ["resultStats", 'slim_appbar']})
+    return response
 
-    def _get_number_of_results(results_div):
-        """Return the total number of results of the google search.
-        Note that the returned value will be the same for all the GoogleResult
-        objects from a specific query."""
+
+@retry_if_fn_returned_false
+def get_google_search_result_count(person_name, exact_match, proxies, country_code):
+
+    """
+    Returns either bool False or int as number of search results found.
+    False will trigger the decorator to run this exact function again
+    with a hope to get the function to return an int.
+
+    Major problem with it is that the results are chaotic and not
+    reproducible because google returns different structures depending
+    on the random proxy though which the requests is being sent.
+    """
+
+    response = get_google_search_response(person_name, exact_match, proxies, country_code)
+
+    # parse the results and extract the part of html
+    # which contains the number of search results found
+    soup = BeautifulSoup(response.text, 'html.parser')
+    results_div = soup.find('div', attrs={'id': ['resultStats', 'slim_appbar']})
+
+    # TODO: what if the results are in fact 0? e.g. sosicc cequel tycoonkingz
+    #  have to find a way to separate this case from other cases where we return False.
+    #  It should look something like this: if X (no results found) is in soup: return 0
+    if not results_div or not results_div.__getattribute__('text'):
+        print('Google search does not contain the search results div / or there are 0 results')
+        return False
+
+
+    def _parse_number_of_results(results_div_text):
+        """
+        parse total number of search results given the text
+        inside the div that should hold the number.
+
+        Basically the function finds numbers in the string and
+        returns the first number found as int
+        """
+
+        # clean the string by removing space and commas
+        # what we want is glued string from which we can
+        # easily extract the first number found
+        results_div_text = unidecode.unidecode(results_div_text)
+        results_div_text = ''.join([i for i in results_div_text if i.isalpha() or i.isnumeric()])
+
+        # first number is the one we are looking for
+        # the second number should be the time it took
+        # for google to return the search results
+        regex = r"[\d\s]+(?:\.(?:\s*\d){2,4})?"
+        m = re.search(regex, results_div_text)
+        results = int(m.group())
+
+        return results
+
+    number_of_results = _parse_number_of_results(results_div.__getattribute__('text'))
+    return number_of_results
+
+
+def get_google_search_result_items(person_name, exact_match, proxies, country_code):
+
+    response = get_google_search_response(person_name,
+                                          exact_match,
+                                          proxies,
+                                          country_code)
+
+    soup = BeautifulSoup(response.text, 'html.parser')
+    items_found = soup.findAll('div', attrs={'class': 'g'})
+
+    def _get_title(item):
+        a = item.find('h3')
+        if a is not None:
+            return a.text.strip()
+        return None
+
+    def _get_snippet(li):
+        sdiv = li.find('div', attrs={'class': 's'})
+        if sdiv:
+            stspan = sdiv.find('span', attrs={'class': 'st'})
+            if stspan is not None:
+                return stspan.text.strip()
+        else:
+            return None
+
+    def _get_url(li):
         try:
-            results_div_text = results_div.get_text()
-            results_div_text = unidecode.unidecode(results_div_text)
-            results_div_text = results_div_text.replace(' ', '').replace(',', '').replace('.', '')
-            if results_div_text:
-                regex = r"[\d\s]+(?:\.(?:\s*\d){2,4})?"
-                m = re.findall(regex, results_div_text)
+            a = li.find('a')
+            link = a['href']
+        except Exception:
+            return None
+        return link
 
-                # Clean up the number
-                num = m[0]
+    search_result_items = []
+    for item in items_found:
 
-                results = int(num)
-                return results
-        except Exception as e:
-            print(e)
-            return 0
+        search_result_ = {
+            'title': _get_title(item),
+            'snippet': _get_snippet(item),
+            'url': _get_url(item)
+        }
 
-    output = _get_number_of_results(results_div)
-    print(output)
-    return output
+        # sometimes some other items make it into the items_found list
+        # an example: "John Lee" -> {title': 'x', 'snippet': None}
+        # so remove items where titles or snippets are None
+        if search_result_['title'] and search_result_['snippet']:
+            search_result_items.append(search_result_)
+
+    # make sure the output is clean and can be used easily in the next steps
+
+    return {'items': search_result_items}
+

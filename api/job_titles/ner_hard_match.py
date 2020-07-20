@@ -176,7 +176,7 @@ def get_job_titles(google_data):
             if job_titles:
                 job_titles = [re.sub(r'\W+', ' ', i.lower()) for i in job_titles]
                 job_titles = [''.join((c for c in unicodedata.normalize('NFD', i) if unicodedata.category(c) != 'Mn')) for i in job_titles]
-                source = get_domain_from_url(item['displayLink'])
+                source = get_domain_from_url(item['url'])
                 for title in job_titles:
                     if titles_parsed.get(title):
                         titles_parsed[title]['count'] += 1
@@ -187,64 +187,3 @@ def get_job_titles(google_data):
             continue
 
     return titles_parsed
-
-
-
-# ------ #
-# experiments
-# import ahocorasick
-# from collections import namedtuple
-#
-#
-# class MatchFinder:
-#     def __init__(self):
-#
-#         self.autom = ahocorasick.Automaton()
-#
-#         with open('job_titles/titles_combined.txt') as f:
-#             titles = f.readlines()
-#         titles = [i.strip() for i in titles]
-#         for idx, key in enumerate(titles):
-#             self.autom.add_word(key, (idx, key))
-#
-#         self.autom.make_automaton()
-#
-#     def longest_match(self, matches):
-#         """
-#         find respective longest matches from all overlapping aho corasick matches
-#         """
-#         longest_match = matches[0]
-#         if longest_match is None:
-#             return
-#
-#         for match in matches:
-#
-#             # if (a contains b) or (b contains a)
-#             if (match.start >= longest_match.start and match.end <= longest_match.end) or \
-#                     (longest_match.start >= match.start and longest_match.end <= match.end):
-#                 longest_match = max(longest_match, match, key=lambda x: x.end - x.start)
-#
-#         return longest_match.match[1]
-#
-#     def find_all_matches(self, search_string):
-#
-#         matches = []
-#         Match = namedtuple('Match', ['start', 'end', 'match'])
-#         for end, match in self.autom.iter(search_string):
-#             start = end - len(match) + 1
-#             match = Match(start=start, end=start + len(match), match=match)
-#             print(match)
-#             matches.append(match)
-#
-#         # filter longest match
-#         final_match = self.longest_match(matches)
-#
-#         return final_match
-#
-# search_string = 'asdasd asd CEO asd asdasd asd second grade 1st Grade Teacher,  helper asd asd asd   a kjasdkjh kjhaskdjh asjkdh akjsdh ajkshdkjah asd asd second grade 1st Grade Teacher,  helper asd asd asd   a kjasdkjh kjhaskdjh asjkdh akjsdh ajkshdkjah s dkjashdjk hasjkdh akjshd kjashdkj haskjdh aksjdh kjashdkj ahsdjk haskjdh akjshd kajshdkjashsd a'
-#
-# finder = Finder()
-# finder.findall(search_string)
-#
-# finder = MatchFinder()
-# out = finder.find_all_matches(search_string)

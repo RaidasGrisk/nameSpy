@@ -1,4 +1,4 @@
-from data_sources.google import google_search_scrape, google_translate
+from data_sources.google import get_google_search_result_items, google_translate
 
 from job_titles.ner_hard_match import get_job_titles as get_job_titles_1
 from job_titles.ner_flair_model import get_job_titles as get_job_titles_2
@@ -7,7 +7,6 @@ from helpers import get_entities, process_entities
 from helpers import get_api_output_head_from_input_entities
 import globals
 from private import proxy_dict
-
 
 
 def get_job_title(input, ner_threshold=0.95, country_code='en', filter_input=True, use_proxy=1):
@@ -25,27 +24,18 @@ def get_job_title(input, ner_threshold=0.95, country_code='en', filter_input=Tru
         output.update(get_api_output_head_from_input_entities({'PERSON': [input.title()]}))
         person_name = input
 
-    # proxy configure
-    # proxy_changer.get_new_proxy(minutes_between_changes=1, connection_check=check_if_can_connect_to_google_translate)
-    # proxies = {'http': 'socks5h://localhost:9050', 'https': 'socks5h://localhost:9050'}
+    proxies = proxy_dict if use_proxy == 1 else {}
 
-    # proxy config
-    if use_proxy == 1:
-        proxies = proxy_dict
-    else:
-        proxies = {}
-
-    print('Google scrape')
-    # TODO: passing location (google_search_loc) triggers capthca. Modified to pass None to overcome this
-    # TODO: if search results in fact returns nothing, it should not say google did not return the serach results
-    google_data = google_search_scrape(person_name, exact_match=True, proxies=proxies, loc=country_code)
+    google_data = get_google_search_result_items(person_name,
+                                                 exact_match=True,
+                                                 proxies=proxies,
+                                                 country_code=country_code)
 
     if not google_data:
         return {'warning': 'google did not return the search results'}
 
     google_data = google_translate(google_data, proxies=proxies)
 
-    print('Job titles')
     job_titles_1 = get_job_titles_1(google_data)
     job_titles_2 = get_job_titles_2(google_data, ner_threshold=ner_threshold)
 

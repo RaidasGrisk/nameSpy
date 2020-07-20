@@ -13504,8 +13504,8 @@ Coffee-Urn Attendant
 Coffee Weigher
 Cofferdam-Construction Supervisor
 Coffin Maker
-Cofounder
 Co-founder
+Cofounder
 Co-Founder
 Co-founder and CEO
 Co-Founder and Chairman
@@ -26894,8 +26894,8 @@ Fitter, Type-Bar-And-Segment
 Fitter Up
 Fitter-Up
 Fitter / Welder
-Fitter-Welder
 Fitter, Welder
+Fitter-Welder
 Fitter/Welder
 Fitting Room Associate
 Fitting Room Attendant
@@ -28002,8 +28002,8 @@ Founder and CEO
 Founder and Chief Executive Officer
 Founder and Chief Technical Officer
 Founder and President
-Founder / CEO
 Founder & CEO
+Founder / CEO
 Founder, CEO & President
 Founder, Chairman, and Chief Creative Officer
 Founder, President and CEO
@@ -40413,8 +40413,8 @@ Maltster
 Malware Analyst
 Mammal Control Agent
 Mammal Keeper
-Mammalogist
 Mamma logist
+Mammalogist
 Mammalogy Teacher
 Mammographer
 Mammography Supervisor
@@ -45023,8 +45023,8 @@ Neurosurgery Spine Physician
 Neurosurgical Nurse
 Neurosurgical Nurse Practitioner
 Neurosurgical Physician Assistant
-Neurourologist
 Neuro-urologist
+Neurourologist
 New-Account Interviewer
 New Accounts Banking Representative
 New Accounts Clerk
@@ -49375,8 +49375,8 @@ Picker Feeder
 Picker Machine Operator
 Picker-Machine Operator
 Picker Operator
-Picker Packer
 Picker / Packer
+Picker Packer
 Picker/Puller
 Pickers Material Handlers
 Picker Tender
@@ -60370,8 +60370,8 @@ Set-Up Mechanic, Heading Machines
 Set-Up Mechanic, Stamping Machines
 Set Up Mold Technician
 Setup Operator
-Set Up Operator
 Set Up / Operator
+Set Up Operator
 Set-Up Operator
 Set-Up-Operator, Tool
 Set Up Person

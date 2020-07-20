@@ -51,7 +51,7 @@ def get_job_titles(google_data, ner_threshold):
         if job_titles:
             job_titles = [i.lower() for i in job_titles]
             job_titles = [''.join((c for c in unicodedata.normalize('NFD', i) if unicodedata.category(c) != 'Mn')) for i in job_titles]
-            source = [get_domain_from_url(item['displayLink']) if item['displayLink'] else 'unknown'][0]
+            source = [get_domain_from_url(item['url']) if item['url'] else 'unknown'][0]
             for title in job_titles:
                 if titles_parsed.get(title):
                     titles_parsed[title]['count'] += 1

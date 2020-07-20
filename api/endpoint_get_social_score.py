@@ -1,7 +1,4 @@
 '''
-TODO: tor proxy and insta data wrapper to check if connection is ok
-TODO: google search 'NoneType' object has no attribute 'get_text' ok
-
 TODO: fail when cannot connect to proxy:
 "HTTPSConnectionPool(host='www.google.com', port=443):
 Max retries exceeded with url: /search?as_epq=ryan+amegable (Caused by ProxyError('Cannot connect to proxy.',
@@ -11,7 +8,7 @@ OSError('Tunnel connection failed: 502 Proxy Error (destination unreachable)')))
 from data_sources.instagram import get_instagram_users
 from data_sources.wikipedia import get_wiki_search
 from data_sources.twitter import get_twitter_users
-from data_sources.google import get_google_search_num_items
+from data_sources.google import get_google_search_result_count
 
 from helpers import get_entities, process_entities
 from helpers import get_api_output_head_from_input_entities
@@ -51,37 +48,30 @@ def get_social_score(input, filter_input=True, use_proxy=1, collected_data=1):
         output.update(get_api_output_head_from_input_entities({'PERSON': [input.title()]}))
         person_name = input
 
-    # proxy config
-    # proxy config
-    if use_proxy == 1:
-        proxies = proxy_dict
-    else:
-        proxies = {}
+    proxies = proxy_dict if use_proxy == 1 else {}
 
-    # TODO: This whole block could be ran async?
+    # TODO: this whole block could be ran async?
     # http://www.hydrogen18.com/blog/python-await-multiple.html
-    print('Google counts')
-    google_counts = get_google_search_num_items(person_name, proxies, exact_match=True)
-    print('Wikipedia')
+    google_counts = get_google_search_result_count(person_name,
+                                                   exact_match=True,
+                                                   proxies=proxies,
+                                                   country_code='us')
     wiki_data = get_wiki_search(person_name)
-    print('Instagram')
     instagram_data = get_instagram_users(person_name, proxies)
-    print(instagram_data)
-    print('Twitter')
     twitter_data = get_twitter_users(person_name)
 
     # making final output
-    output_data = {'data': {}}
-    output_data['data']['google'] = {'items': google_counts}
-    output_data['data']['wikipedia'] = wiki_data
-    output_data['data']['twitter'] = twitter_data
-    output_data['data']['instagram'] = instagram_data
+    output_data = {'data': {
+        'google': {'items': google_counts},
+        'wikipedia': wiki_data,
+        'twitter': twitter_data,
+        'instagram': instagram_data
+    }}
 
     output['scores'] = get_score(scorer_dict, output_data['data'])
     output.update(output_data)
 
     if collected_data == 0:
-        print('del data key')
         del output['data']
 
     return output
