@@ -18,7 +18,7 @@ with job_title_app.test_client() as c:
         {'input': 'egle tauraite',
          'ner_threshold': 0.95,
          'country_code': 'lt',
-         'use_proxy': 1},
+         'use_proxy': 0},
 
         {'input': 'John Lee',
          'ner_threshold': 0.95,
