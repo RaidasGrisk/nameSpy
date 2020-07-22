@@ -88,6 +88,10 @@ def log(db_client, request, response):
     }
 
     # push log to db
+    # TODO: this fails with input = 'aurelija kurmyte'
+    #  throws: bson.errors.InvalidDocument: key 'upc.smm.lt' must not contain '.'
+    #  possible solution: https://stackoverflow.com/questions/28664383/mongodb-not-allowing-using-in-key
+    #  add param: check_keys=False
     db_client['logs']['api_calls'].insert_one(log)
 
     return True
