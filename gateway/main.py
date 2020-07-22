@@ -25,6 +25,7 @@ db_client = MongoClient(url)
 def auth(fn, *args, **kwargs):
     def inner(*args, **kwargs):
 
+        # TODO: Tie api_key search to the db
         api_keys = {'123'}
         api_key = request.args.get('api_key')
 
@@ -39,11 +40,13 @@ def auth(fn, *args, **kwargs):
             call_count = db_client['logs']['api_calls'].count_documents(filter)
 
             if call_count > 50:
-                return make_response(jsonify({'message': 'You have reached a limit of 50 calls a day. Get an api_key!'}), 401)
+                output = {'message': 'You have reached a limit of 50 calls a day. Get an api_key!'}
+                return make_response(jsonify(output), 401)
 
         # if api_key is provided but is not in the db
         elif api_key not in api_keys:
-            return make_response(jsonify({'message': 'Provided api_key does not exist'}), 401)
+            output = {'message': 'Provided api_key does not exist'}
+            return make_response(jsonify(output), 401)
 
         # else pass through
         return fn(*args, **kwargs)
@@ -56,7 +59,9 @@ def auth(fn, *args, **kwargs):
 @auth
 def proxy(request, to_url):
 
-    # parse request
+    # TODO: parse request headers and also pass method
+
+    # parse request args
     args = request.args.to_dict()
 
     # proxy to the endpoint
@@ -88,11 +93,10 @@ def log(db_client, request, response):
     }
 
     # push log to db
-    # TODO: this fails with input = 'aurelija kurmyte'
-    #  throws: bson.errors.InvalidDocument: key 'upc.smm.lt' must not contain '.'
-    #  possible solution: https://stackoverflow.com/questions/28664383/mongodb-not-allowing-using-in-key
-    #  add param: check_keys=False
-    db_client['logs']['api_calls'].insert_one(log)
+    # should use insert_one, but using insert because of the following issue:
+    # https://stackoverflow.com/questions/28664383/mongodb-not-allowing-using-in-key
+    # check_keys = false, to let insert dicts with keys containing '.' and '$'.
+    db_client['logs']['api_calls'].insert(log, check_keys=False)
 
     return True
 
