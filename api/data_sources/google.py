@@ -36,6 +36,9 @@ def google_translate(google_data, proxies):
     text_to_translate = [re.sub(r"[^\w.,|']", ' ', text) for text in text_to_translate]
 
     # translate
+    # TODO: Translator creates its own requests session, so I
+    #  should find a way to make it repeat the call to the server
+    #  if proxy fails and throws connection timeout error
     translator = Translator(proxies=proxies)
     translated = [item.text for item in translator.translate(text_to_translate, dest='en')]
 
