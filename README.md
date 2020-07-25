@@ -1,5 +1,7 @@
 <p align="center">
-    <a href="https://namespy.ml"><img src="https://raw.githubusercontent.com/RaidasGrisk/names_app/master/web/src/assets/Picture1.png" width="200" height="200"/></a>
+  <img width="200" height="200" src="https://raw.githubusercontent.com/RaidasGrisk/names_app/master/web/src/assets/Picture1.png">
+  <br>----<br>
+  <a href="https://www.namespy.dev/">namespy.dev</a>
 </p>
 
 ## NAMESPY
