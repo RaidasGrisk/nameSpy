@@ -21,7 +21,7 @@ def google_translate(google_data, proxies):
     snippets = [item['snippet'] for item in google_data['items']]
     titles = [item['title'] for item in google_data['items']]
 
-    # okay, this is pretty ugly but here is what is being done:
+    # okay, this is pretty ugly but here is the idea:
     # I want to combine whole text into one string to send only one request to google translate
     # due to this snippets and titles are combined with special separator *||* (with hope that it will not break)
     # later on all is reorganized back to spippets and titles
@@ -42,9 +42,7 @@ def google_translate(google_data, proxies):
     translator = Translator(proxies=proxies)
     translated = [item.text for item in translator.translate(text_to_translate, dest='en')]
 
-    # ungroup
-    # snippets_translated = translated[:len(snippets)]
-    # titles_translated = translated[len(snippets):]
+    # ungroup and split back to snippets and titles
     titles_translated = translated[0].split('|||')[0::2]
     snippets_translated = translated[0].split('|||')[1::2]
 
@@ -96,7 +94,7 @@ def get_google_search_response(person_name, exact_match, proxies, country_code):
     # the number of search results and none of the divs
     # responsible for storing number of results are there.
     # Basically, the structure of html is totally different.
-    # TODO: not sure if need to use UserAgent() as sometimes
+    # TODO: not sure if need to use UserAgent() as sometimes it
     #  fails, maybe just pick from a random of 10 headers
     #  stored locally? Not sure if this is good long term solution
     headers = {'User-Agent': UserAgent().random}
@@ -163,6 +161,7 @@ def get_google_search_result_count(person_name, exact_match, proxies, country_co
         # first number is the one we are looking for
         # the second number should be the time it took
         # for google to return the search results
+        # e.g Apie 54 500 000 rezult. (0,67 sek.)
         regex = r"[\d\s]+(?:\.(?:\s*\d){2,4})?"
         m = re.search(regex, results_div_text)
         results = int(m.group())
@@ -174,7 +173,12 @@ def get_google_search_result_count(person_name, exact_match, proxies, country_co
 
 
 def get_google_search_result_items(person_name, exact_match, proxies, country_code):
-
+    """
+    Parse google search response html into a list where each list item is 
+    a dict containing single search result item
+    e.g. [{'title': 'a', 'snippet': 'a', 'url': 'a'}, ...]
+    """
+    
     response = get_google_search_response(person_name,
                                           exact_match,
                                           proxies,
