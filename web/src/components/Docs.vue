@@ -8,11 +8,7 @@
       <aside class="column is-3 is-narrow-mobile is-hidden-mobile is-fullheight section left-menu">
         <p class="menu-label">Documentation</p>
         <ul class="menu-list">
-          <li>
-            <a href="#intro" v-bind:class="{'is-active': activeMenuClass('intro')}" v-on:click="activeMenuItem = 'intro'" >
-              <span class="icon"><i class="fa fa-home"></i></span>Intro
-            </a>
-          </li>
+
           <li>
             <a href="#endpoints" v-bind:class="{'is-active': activeMenuClass('endpoints')}" v-on:click="activeMenuItem = 'endpoints'">
               <span class="icon"><i class="fa fa-table"></i></span>Endpoints
@@ -41,27 +37,27 @@
       <div class="container column is-6">
         <div class="section">
 
-          <div id="intro" class="card">
-            <div class="card-header"><p class="card-header-title">Intro</p></div>
-            <div class="card-content">
-              <div class="content">Endpoints:
-              <ul><b>web-score</b> returns a score and the collected data (optional) asociated with how well a particular name is known on the internet and social networks.
-              The web-score ranges between -1 and 1, where 0 is an average person, 1 is a super-star, -1 is someone totally unknown.</ul>
-              <ul><b>occupation</b> returns a list of job and occupation titles as well as its sources (urls) related to the name.</ul>
-
-              </div>
-            </div>
-          </div>
-          <br />
-
           <div id="endpoints"></div>
           <div id="webscore"><docsBlockWebScore/></div><br/>
           <div id="occupation"><docsBlockOccupation/></div><br/>
+          <div id="about">
+
+
+          </div><br/>
 
           <div class="card is-hidden1" id="about">
             <div class="card-header"><p class="card-header-title">About</p></div>
             <div class="card-content">
               <div class="content">
+
+                <div class="columns" style="font-size: 11px !important;">
+                  <div class="column">
+                    <ExplainCardWebScore/>
+                  </div>
+                  <div class="column">
+                    <ExplainCardOccupation/>
+                  </div>
+                </div>
 
               </div>
             </div>
@@ -81,19 +77,25 @@
 import docsBlockWebScore from './DocsBlockWebScore'
 import docsBlockOccupation from './DocsBlockOccupation'
 
+import ExplainCardWebScore from './ExplainCardWebScore'
+import ExplainCardOccupation from './ExplainCardOccupation'
+
 export default {
 
   name: 'docs',
 
   components: {
     docsBlockWebScore,
-    docsBlockOccupation
+    docsBlockOccupation,
+
+    ExplainCardWebScore,
+    ExplainCardOccupation
   },
 
   data() {
     return {
-      activeMenuItem: 'intro',
-      idBlocks: ['intro', 'endpoints', 'webscore', 'occupation', 'about']
+      activeMenuItem: 'endpoints',
+      idBlocks: ['endpoints', 'webscore', 'occupation', 'about']
     }
   },
 

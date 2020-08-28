@@ -10,7 +10,6 @@
         </div>
       </transition>
 
-
       <transition name="fade" mode="out-in" appear>
         <div class="section"  style="transition-delay: 0.6s">
           <div class="is-size-4 is-uppercase has-text-weight-bold">
@@ -40,16 +39,24 @@
                 I give you what I know about it:
               </p>
             </div>
-            <div class="is-size-7 has-text-weight-bold has-text-success">
-              <p>
-                web score<br>
-                occupation
-              </p>
+
+            <!-- ExplainCard modals -->
+            <div class="is-size-7">
+              <ExplainCardWebScoreModal v-show="showModal_WebScore" @close="showModal_WebScore=false"/>
+              <ExplainCardOccupationModal v-show="showModal_Occupation" @close="showModal_Occupation=false"/>
+
+              <div @click="showModal_WebScore=true">
+                <a class="has-text-weight-bold has-text-success">web score</a>
+              </div>
+
+              <div @click="showModal_Occupation=true">
+                <a class="has-text-weight-bold has-text-success">occupation</a>
+              </div>
             </div>
+
 
           </div>
         </transition>
-
 
         <transition name="fade" mode="out-in" appear>
           <div class="section" style="transition-delay: 1.8s">
@@ -90,7 +97,6 @@
 
     </section>
 
-
     <section>
       <div class="columns is-centered">
         <div class="box has-text-centered" style="min-width: 30vh;" v-if="processingAPIRequest">
@@ -120,9 +126,11 @@
 <script>
 
 
-import axios from "axios"
+import axios from 'axios'
 import VueJsonPretty from 'vue-json-pretty'
 import SocialScoreBoard from './SocialScoreBoard'
+import ExplainCardWebScoreModal from './ExplainCardWebScoreModal'
+import ExplainCardOccupationModal from './ExplainCardOccupationModal'
 
 export default {
 
@@ -130,7 +138,9 @@ export default {
 
   components: {
     VueJsonPretty,
-    SocialScoreBoard
+    SocialScoreBoard,
+    ExplainCardWebScoreModal,
+    ExplainCardOccupationModal
   },
 
   data() {
@@ -156,7 +166,11 @@ export default {
         {'person': 'Charles Darwin', 'web_score': 0.79, 'google_items': 20100000, 'wiki_items': 3997, 'twtr_users': 20, 'twtr_followers': 2913852, 'ig_users': 21, 'ig_followers': 657},
         {'person': 'Bart Simpson', 'web_score': 0.98, 'google_items': 15700000, 'wiki_items': 426, 'twtr_users': 20, 'twtr_followers': 47348, 'ig_users': 37, 'ig_followers': 97200},
         {'person': 'Karolina Meschino', 'web_score': 0.86, 'google_items': 614000, 'wiki_items': 4, 'twtr_users': 1, 'twtr_followers': 134, 'ig_users': 30, 'ig_followers': 303700}
-      ]
+      ],
+
+      // modal flags
+      showModal_WebScore: true,
+      showModal_Occupation: false
     }
   },
 
@@ -260,6 +274,16 @@ export default {
     //       vm.country_code = response.data['country_code'].toLowerCase()
     //   })
     // })
+
+    // here is the bug I'm experiencing:
+    // a chart inside a modal is not being rendered initially.
+    // It renders if I resize browser zoom level. Many such issues on google,
+    // yet none of the solutions work for vue-trend-chart package.
+    // Therefore here is a fix:
+    // initially inside the data component "showModal_WebScore: true"
+    // Then here I set it to false when mounted and it fixes the bug for some reason (?)
+    this.showModal_WebScore = false
+
   }
 }
 
