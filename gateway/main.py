@@ -32,10 +32,9 @@ def auth(fn, *args, **kwargs):
         # if key is not provided limit by number of same IP requests per time period
         if not api_key:
 
-            time_frame = str(datetime.datetime.now() - datetime.timedelta(days=1))
             filter = {
                 'request.ip': request.headers.get('X-Forwarded-For', request.remote_addr),
-                'time': {'$gte': time_frame}
+                'time': {'$gte': str(datetime.datetime.now() - datetime.timedelta(days=1))}
             }
             call_count = db_client['logs']['api_calls'].count_documents(filter)
 
@@ -76,6 +75,8 @@ def proxy(request, to_url):
 
 # ------------- #
 # logging
+# TODO: should be a decorator as well. Check the example below:
+#  https://stackoverflow.com/questions/14703310/how-can-i-get-a-python-decorator-to-run-after-the-decorated-function-has-complet
 def log(db_client, request, response):
 
     # make log entry

@@ -1,5 +1,5 @@
 """
-# tis url works fine
+# this url works fine
 # will get blocked after a while if many requests are made > 150
 # might work for longer if shuffling headers and user-agent
 # still will have to use proxy
@@ -22,18 +22,15 @@ import json
 from data_sources.async_utils import make_async_requests
 from data_sources.requests_utils import requests_retry_session
 
+# The following func is not longer used as there is a better solution!
 # TODO: hard to replicate but sometimes this parse does not do the job
-# TODO: guess is that the response html structure depends on the caller location
-# TODO: when doing this through proxy the response structure is not parsed sometimes
-# TODO: maybe fix the proxy location?
-# TODO: another solution would be to work with async calls and set single proxy for whole batch
+#  guess is that the response html structure depends on the caller location
+#  when doing this through proxy the response structure is not parsed sometimes
+#  maybe fix the proxy location?
+#  another solution would be to work with async calls and set single proxy for whole batch
 def parse_html_to_user_info(html):
     """
-    Depreciated, looks like there is a better way to get this data
-    using another endpoints through graphql
-
-    :param html:
-    :return:
+    Parses data from 'https://www.instagram.com/{username}/?__a=1'
     """
 
     output = {}
