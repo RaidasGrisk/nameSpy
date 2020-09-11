@@ -1,13 +1,14 @@
 from googletrans import Translator
 from data_sources.requests_utils import requests_retry_session
 
+
 # this works on the premise that the fn will be ran
 # again if it returns False, else the loop will stop
 def retry_if_fn_returned_false(fn, max_tries=5):
     def wrapper(*args, **kwargs):
         for i in range(max_tries):
             output = fn(*args, **kwargs)
-            if output == False:
+            if not output:
                 continue
             return output
     return wrapper
@@ -24,7 +25,7 @@ def google_translate(google_data, proxies):
     # okay, this is pretty ugly but here is the idea:
     # I want to combine whole text into one string to send only one request to google translate
     # due to this snippets and titles are combined with special separator *||* (with hope that it will not break)
-    # later on all is reorganized back to spippets and titles
+    # later on all is reorganized back to snippets and titles
     # text_to_translate = titles + snippets
     text_to_translate = [' ||| '.join([title + ' ||| ' + snippet for title, snippet in zip(titles, snippets)])]
 
@@ -142,7 +143,6 @@ def get_google_search_result_count(person_name, exact_match, proxies, country_co
         print('Google search does not contain the search results div / or there are 0 results')
         return False
 
-
     def _parse_number_of_results(results_div_text):
         """
         parse total number of search results given the text
@@ -228,4 +228,3 @@ def get_google_search_result_items(person_name, exact_match, proxies, country_co
     # make sure the output is clean and can be used easily in the next steps
 
     return {'items': search_result_items}
-
