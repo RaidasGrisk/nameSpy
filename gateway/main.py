@@ -14,9 +14,7 @@ from pymongo import MongoClient
 from private import mongo_details  # dict with user/psw/cluster/connection url
 
 
-url = mongo_details['url'].format(mongo_details['user'],
-                                  mongo_details['password'],
-                                  mongo_details['cluster'])
+url = mongo_details['url'].format(*[mongo_details[i] for i in ['user', 'password', 'cluster']])
 db_client = MongoClient(url)
 
 
@@ -25,8 +23,8 @@ db_client = MongoClient(url)
 def auth(fn, *args, **kwargs):
     def inner(*args, **kwargs):
 
-        # TODO: Tie api_key search to the db
-        api_keys = {'123'}
+        # to clarify: the object 'request' is part of *args
+        # that is being passed to wrapped function, in this case 'proxy'
         api_key = request.args.get('api_key')
 
         # if key is not provided limit by number of same IP requests per time period
@@ -43,7 +41,7 @@ def auth(fn, *args, **kwargs):
                 return make_response(jsonify(output), 401)
 
         # if api_key is provided but is not in the db
-        elif api_key not in api_keys:
+        elif not db_client['data']['api_keys'].find_one({'api_key': api_key}):
             output = {'message': 'Provided api_key does not exist'}
             return make_response(jsonify(output), 401)
 
@@ -54,12 +52,44 @@ def auth(fn, *args, **kwargs):
 
 
 # ------------- #
+# logging
+def log(fn, *args, **kwargs):
+    def inner(*args, **kwargs):
+
+        response = fn(*args, **kwargs)
+
+        # to clarify: the object 'request' is part of *args
+        # that is being passed to wrapped function, in this case 'proxy'
+        log = {
+            'time': str(datetime.datetime.now()),
+            'request': {
+                'ip': request.headers.get('X-Forwarded-For', request.remote_addr),
+                'path': request.path,
+                'args': request.args.to_dict()
+            },
+            'response': {
+                'status_code': response.status_code,
+                'response': json.loads(response.response[0])
+            }
+        }
+
+        # push the log to db
+        # should use insert_one because insert is depreciated,
+        # but using insert because of the following issue:
+        # https://stackoverflow.com/questions/28664383/mongodb-not-allowing-using-in-key
+        # check_keys = false, to let insert dicts with keys containing '.' and '$'.
+        db_client['logs']['api_calls'].insert(log, check_keys=False)
+        return response
+    return inner
+
+
+# ------------- #
 # proxy
+@log
 @auth
 def proxy(request, to_url):
 
     # TODO: parse request headers and also pass method
-
     # parse request args
     args = request.args.to_dict()
 
@@ -73,40 +103,10 @@ def proxy(request, to_url):
     return response
 
 
-# ------------- #
-# logging
-# TODO: should be a decorator as well. Check the example below:
-#  https://stackoverflow.com/questions/14703310/how-can-i-get-a-python-decorator-to-run-after-the-decorated-function-has-complet
-def log(db_client, request, response):
-
-    # make log entry
-    log = {
-        'time': str(datetime.datetime.now()),
-        'request': {
-            'ip': request.headers.get('X-Forwarded-For', request.remote_addr),
-            'path': request.path,
-            'args': request.args.to_dict()
-        },
-        'response': {
-            'status_code': response.status_code,
-            'response': json.loads(response.response[0])
-        }
-    }
-
-    # push log to db
-    # should use insert_one, but using insert because of the following issue:
-    # https://stackoverflow.com/questions/28664383/mongodb-not-allowing-using-in-key
-    # check_keys = false, to let insert dicts with keys containing '.' and '$'.
-    db_client['logs']['api_calls'].insert(log, check_keys=False)
-
-    return True
-
-
 class job_title(Resource):
     def get(self):
         response = proxy(request, 'https://jobtitle-mu7u3ykctq-lz.a.run.app/api/job_title')
         response.headers.add('Access-Control-Allow-Origin', '*')
-        log(db_client, request, response)
         return response
 
 
@@ -114,7 +114,6 @@ class web_score(Resource):
     def get(self):
         response = proxy(request, 'https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score')
         response.headers.add('Access-Control-Allow-Origin', '*')
-        log(db_client, request, response)
         return response
 
 
@@ -123,25 +122,3 @@ api.add_resource(web_score, '/web_score')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
-
-# ----------- #
-
-# # https://projector-video-pdf-converter.datacamp.com/5865/chapter1.pdf
-# filter = {'request.path': '/v1/web_score', 'time': {'$lte': str(datetime.datetime.now())}}
-# db_client['logs']['api_calls'].count_documents(filter)
-#
-# filter = {'time': {'$lte': str(datetime.datetime.now())}}
-# for doc in db_client['logs']['api_calls'].find(filter):
-#     print(doc)
-
-# # create new db / collection and document
-# db = db_client['logs']
-# log_collection = db['api_calls']
-# log_collection.insert_one({'demo_try': 1, 'asdasd': 'asdads'})
-#
-# db = db_client.list_database_names()[0]
-# collection = db_client[db].list_collection_names()[0]
-#
-# for item in db_client[db][collection].find():
-#     print(item)
-#     break
