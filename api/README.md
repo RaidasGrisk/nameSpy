@@ -1,7 +1,6 @@
 # setup envjob_title
 
-Install conda:
-https://www.digitalocean.com/community/tutorials/how-to-install-anaconda-on-ubuntu-18-04-quickstart
+Install ![conda on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-anaconda-on-ubuntu-18-04-quickstart)
 
 ``` bash
 conda create --name names_api python=3.7
@@ -11,10 +10,6 @@ conda env update --file environment.yml
 python -m spacy download lt_core_news_sm
 python -m spacy download en_core_web_sm
 
-wget http://nlp.stanford.edu/software/stanford-corenlp-full-2018-02-27.zip
-unzip stanford-corenlp-full-2018-02-27.zip
-
-conda update --all
 ```
 
 # do credential and auth stuff
@@ -38,10 +33,7 @@ python endpoint_get_job_title.py
 
 ``` bash
 
-Two issues:
-what if google rezults are in fact 0? example "sosicc cequel tycoonkingz"
-intagram does not return user data. Not sure what triggers it.
-
-Add explanation popups to landing page to exaplien web score and occupations
+Unresolved issues:
+what if google results are in fact 0? example "sosicc cequel tycoonkingz"
 
 ```
