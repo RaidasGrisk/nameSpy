@@ -39,11 +39,10 @@ def get_social_score(input, filter_input=True, use_proxy=1, collected_data=1):
 
     if filter_input:
         entities = get_entities(input.title(), globals.nlp_models)
-        print(entities)
         person_name = process_entities(entities)
         output.update(get_api_output_head_from_input_entities(entities))
         if not person_name:
-            return {'warning': 'I am built to recognize names, but I dont see any :('}
+            return {'warning': 'I am built to recognize names, but I don`t see any :('}
     else:
         output.update(get_api_output_head_from_input_entities({'PERSON': [input.title()]}))
         person_name = input
