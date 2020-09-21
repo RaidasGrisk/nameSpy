@@ -2,6 +2,7 @@
 
 from twitter import *
 from private import TWITTER_KEYS
+from log_cofig import logger
 
 
 def get_twitter_users(input):
@@ -12,6 +13,7 @@ def get_twitter_users(input):
         TWITTER_KEYS['consumer_key'],
         TWITTER_KEYS['consumer_secret']))
 
+    logger.info('Sending a requests to twitter')
     results = twitter.users.search(q=input, count=20)
 
     output = {'num_users': len(results), 'users': []}

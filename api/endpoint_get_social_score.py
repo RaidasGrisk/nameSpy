@@ -15,6 +15,7 @@ from helpers import get_api_output_head_from_input_entities
 import globals
 
 from private import proxy_dict
+from log_cofig import handler as log_handler
 
 # having hard time loading these pickled files
 # https://stackoverflow.com/questions/50465106/attributeerror-when-reading-a-pickle-file
@@ -33,7 +34,7 @@ with open('web_score/scorers/scorer_dict.pkl', 'rb') as f:
     scorer_dict = unpickler.load()
 
 
-def get_social_score(input, filter_input=True, use_proxy=1, collected_data=1):
+def get_social_score(input, filter_input=True, use_proxy=1, collected_data=1, debug=0):
 
     output = dict()
 
@@ -60,18 +61,23 @@ def get_social_score(input, filter_input=True, use_proxy=1, collected_data=1):
     twitter_data = get_twitter_users(person_name)
 
     # making final output
-    output_data = {'data': {
-        'google': {'items': google_counts},
-        'wikipedia': wiki_data,
-        'twitter': twitter_data,
-        'instagram': instagram_data
-    }}
+    output_data = {
+        'data': {
+            'google': {'items': google_counts},
+            'wikipedia': wiki_data,
+            'twitter': twitter_data,
+            'instagram': instagram_data
+        }
+    }
 
     output['scores'] = get_score(scorer_dict, output_data['data'])
     output.update(output_data)
 
     if collected_data == 0:
         del output['data']
+
+    if debug == 1:
+        output['log'] = [str(i) for i in log_handler.log]
 
     return output
 
@@ -81,7 +87,7 @@ from flask import Flask
 from flask import jsonify
 from flask_restful import Resource, Api, reqparse
 import os
-
+import traceback
 
 app = Flask(__name__)
 api = Api(app)
@@ -96,12 +102,20 @@ class social_score(Resource):
         parser.add_argument('filter_input', type=int, default=1)
         parser.add_argument('use_proxy', type=int, default=1)
         parser.add_argument('collected_data', type=int, default=1)
+        parser.add_argument('debug', type=int, default=0)
         args = parser.parse_args()
 
         try:
             output = get_social_score(**args)
         except Exception as e:
-            output = {'something went wrong': ':(', 'traceback': str(e)}
+            output = {'something went wrong': ':(',
+                      'traceback': str(e),
+                      'full_traceback': str(traceback.format_exc()),
+                      'log': [str(i) for i in log_handler.log]}
+        finally:
+            # clear the log here because otherwise if an exception is caught
+            # the log will not be cleared if it is done inside the main function
+            log_handler.flush()
 
         # this or cant communicate with javascript axios
         output = jsonify(output)

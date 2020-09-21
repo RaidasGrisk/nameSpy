@@ -1,5 +1,6 @@
 import aiohttp
 import asyncio
+from log_cofig import logger
 
 
 # TODO: if requests fails it returns ClientHttpProxyError object
@@ -16,15 +17,18 @@ def make_async_requests(urls, proxies=None):
         # setting 5 retries in case of proxy fail
         # sometimes the url (due to proxies) is unreachable
         # TODO: should specify the exact exception(s) as this could be due to other reasons
-        for _ in range(5):
+        for i in range(5):
+            logger.info(f'Gathering single async request: {i}')
             try:
                 async with session.get(url, proxy=proxy, timeout=timeout) as response:
+                    logger.info(f'Gathering single async request: successfully received a response')
                     return await response.text()
             except Exception as e:  # TODO: aiohttp.ClientError
-                print(str(e))
+                logger.exception(f'Single async requests exception: {str(e)}')
 
     async def fetch_all(urls, loop):
         async with aiohttp.ClientSession(loop=loop) as session:
+            logger.info('Gathering async requests')
             results = await asyncio.gather(*[fetch(session, url, proxy) for url in urls], return_exceptions=True)
             return results
 

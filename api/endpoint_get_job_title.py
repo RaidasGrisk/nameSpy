@@ -7,9 +7,10 @@ from helpers import get_entities, process_entities
 from helpers import get_api_output_head_from_input_entities
 import globals
 from private import proxy_dict
+from log_cofig import handler as log_handler
 
 
-def get_job_title(input, ner_threshold=0.95, country_code='en', filter_input=True, use_proxy=1):
+def get_job_title(input, ner_threshold=0.95, country_code='en', filter_input=True, use_proxy=1, debug=0):
 
     output = dict()
 
@@ -58,6 +59,9 @@ def get_job_title(input, ner_threshold=0.95, country_code='en', filter_input=Tru
     # make final output
     output['google'] = {'titles': job_titles}
 
+    if debug == 1:
+        output['log'] = [str(i) for i in log_handler.log]
+
     return output
 
 
@@ -66,6 +70,7 @@ from flask import Flask
 from flask import jsonify
 from flask_restful import Resource, Api, reqparse
 import os
+import traceback
 
 app = Flask(__name__)
 api = Api(app)
@@ -81,12 +86,20 @@ class job_title(Resource):
         parser.add_argument('use_proxy', type=int, default=1)
         parser.add_argument('ner_threshold', type=float, default=0.95)
         parser.add_argument('country_code', type=str, default='us')
+        parser.add_argument('debug', type=int, default=0)
 
         args = parser.parse_args()
         try:
             output = get_job_title(**args)
         except Exception as e:
-            output = {'something went wrong': ':(', 'traceback': str(e)}
+            output = {'something went wrong': ':(',
+                      'traceback': str(e),
+                      'full_traceback': str(traceback.format_exc()),
+                      'log': [str(i) for i in log_handler.log]}
+        finally:
+            # clear the log here because otherwise if an exception is caught
+            # the log will not be cleared if it is done inside the main function
+            log_handler.flush()
 
         # this or cant communicate with javascript axios
         output = jsonify(output)

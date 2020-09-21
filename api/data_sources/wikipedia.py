@@ -1,5 +1,5 @@
 import requests
-
+from log_cofig import logger
 
 def get_wiki_search(query, exact_match=True):
 
@@ -10,7 +10,8 @@ def get_wiki_search(query, exact_match=True):
         'list': 'search',
         'srsearch': '"' + query + '"' if exact_match else query
     }
-    requests.get(url, params=params).json()
+    logger.info('Sending a request to wikipedia')
+    wiki_json = requests.get(url, params=params).json()
 
     output = {'items': wiki_json['query']['searchinfo']['totalhits'],
               'wordcount': sum([i['wordcount'] for i in wiki_json['query']['search']])}

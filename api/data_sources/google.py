@@ -1,12 +1,13 @@
 from googletrans import Translator
 from data_sources.requests_utils import requests_retry_session
-
+from log_cofig import logger
 
 # this works on the premise that the fn will be ran
 # again if it returns False, else the loop will stop
 def retry_if_fn_returned_false(fn, max_tries=5):
     def wrapper(*args, **kwargs):
         for i in range(max_tries):
+            logger.info(f'Trying {fn.__name__} {i}')
             output = fn(*args, **kwargs)
             if not output:
                 continue
@@ -42,6 +43,7 @@ def google_translate(google_data, proxies):
     #  if proxy fails and throws connection timeout error
     translator = Translator(proxies=proxies)
     translated = [item.text for item in translator.translate(text_to_translate, dest='en')]
+    logger.info('Successfully google translated text')
 
     # ungroup and split back to snippets and titles
     titles_translated = translated[0].split('|||')[0::2]
@@ -110,9 +112,10 @@ def get_google_search_response(person_name, exact_match, proxies, country_code):
     # if recaptcha in the response, the client that sent the request
     # is blacklisted so lets return False
     if 'https://www.google.com/recaptcha/api.js' in response.text:
-        print('Google search returned captcha')
+        logger.info('Received Captcha request')
         return False
 
+    logger.info('Received a valid response')
     return response
 
 
@@ -140,7 +143,7 @@ def get_google_search_result_count(person_name, exact_match, proxies, country_co
     #  have to find a way to separate this case from other cases where we return False.
     #  It should look something like this: if X (no results found) is in soup: return 0
     if not results_div or not results_div.__getattribute__('text'):
-        print('Google search does not contain the search results div / or there are 0 results')
+        logger.info('Google search does not contain the search results div / or there are 0 results')
         return False
 
     def _parse_number_of_results(results_div_text):

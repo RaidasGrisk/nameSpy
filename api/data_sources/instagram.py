@@ -21,6 +21,7 @@ from bs4 import BeautifulSoup
 import json
 from data_sources.async_utils import make_async_requests
 from data_sources.requests_utils import requests_retry_session
+from log_cofig import logger
 
 # The following func is not longer used as there is a better solution!
 # TODO: hard to replicate but sometimes this parse does not do the job
@@ -78,7 +79,11 @@ def get_instagram_users(input, proxies):
     url = 'https://www.instagram.com/web/search/topsearch'
     params = {'query': input.replace(' ', '+'), 'context': 'blended'}
 
+    logger.info('Sending a user search request to instagram')
     response = requests_retry_session().get(url, params=params, proxies=proxies)
+    # TODO: sometimes receiving this error
+    # raise JSONDecodeError(\"Expecting value\", s, err.value) from
+    # None\njson.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n",
     search_output = response.json()
 
     # get info of users
@@ -90,6 +95,9 @@ def get_instagram_users(input, proxies):
           'variables={{"id":{},"include_reel":false,"fetch_mutual":false,"first":0}}'
     user_urls = [url.format(id) for id in user_ids]
     user_data = make_async_requests(user_urls, proxies)
+    # TODO: sometimes receiving this error
+    # raise TypeError(f'the JSON object must be str, bytes or bytearray, '
+    # \nTypeError: the JSON object must be str, bytes or bytearray, not JSONDecodeError\n"
     user_data = [json.loads(i) for i in user_data]
 
     # parse info
