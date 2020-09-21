@@ -1,6 +1,7 @@
 import logging
 import json
 
+# TODO: how to disable log stdout printing?
 
 # this is optional: lets add structured message to logging record
 # logging.info(StructuredMessage('message 1', foo='bar', bar='baz', num=123, fnum=123.456))
@@ -37,7 +38,7 @@ class CustomHandler(logging.Handler):
     def string_to_dict(formatted_record):
         return json.loads(formatted_record)
 
-    def clear_log(self):
+    def flush(self):
         self.log = []
 
 
