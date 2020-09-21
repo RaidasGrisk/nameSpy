@@ -68069,6 +68069,7 @@ Theatrical Variety Agent
 Theology Professor
 Theology Teacher
 Theoretical Physicist
+Theoretical physicist
 Theoretical Physics Teacher
 Therapeutic Activities Services Worker
 Therapeutic Assistant
@@ -74399,4 +74400,3 @@ Z OS Mainframe Systems Programmer
 Zumba Instructor
 Zyglo Inspector
 Zyglo Technician
-Theoretical physicistTheoretical physicist
