@@ -1,6 +1,6 @@
 # setup envjob_title
 
-Install ![conda on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-anaconda-on-ubuntu-18-04-quickstart)
+Install [conda on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-anaconda-on-ubuntu-18-04-quickstart)
 
 ``` bash
 conda create --name names_api python=3.7
