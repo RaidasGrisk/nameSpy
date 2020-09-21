@@ -14,9 +14,8 @@ def get_entities(input, nlp_models):
                 if ent.label_ in entities.keys():
                     entities[ent.label_].add(ent_str)
                 else:
-                    entities[ent.label_] = set([ent_str])
-        else:
-            print(model_lang, '-')
+                    entities[ent.label_] = {ent_str}
+
 
     # convert to decent dict
     for key, value in entities.items():
