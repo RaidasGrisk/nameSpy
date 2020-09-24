@@ -1,14 +1,9 @@
-'''
-TODO: fail when cannot connect to proxy:
-"HTTPSConnectionPool(host='www.google.com', port=443):
-Max retries exceeded with url: /search?as_epq=ryan+amegable (Caused by ProxyError('Cannot connect to proxy.',
-OSError('Tunnel connection failed: 502 Proxy Error (destination unreachable)')))"
-'''
-
 from data_sources.instagram import get_instagram_users
 from data_sources.wikipedia import get_wiki_search
 from data_sources.twitter import get_twitter_users
 from data_sources.google import get_google_search_result_count
+
+import concurrent.futures
 
 from helpers import get_entities, process_entities
 from helpers import get_api_output_head_from_input_entities
@@ -50,23 +45,40 @@ def get_social_score(input, filter_input=True, use_proxy=1, collected_data=1, de
 
     proxies = proxy_dict if use_proxy == 1 else {}
 
-    # TODO: this whole block could be ran async?
-    # http://www.hydrogen18.com/blog/python-await-multiple.html
-    google_counts = get_google_search_result_count(person_name,
-                                                   exact_match=True,
-                                                   proxies=proxies,
-                                                   country_code='us')
-    wiki_data = get_wiki_search(person_name)
-    instagram_data = get_instagram_users(person_name, proxies)
-    twitter_data = get_twitter_users(person_name)
+    # the following is for executing a number of functions in parallel
+    # it would be better if this was refactored to use async
+    # but the following fns (except parts of get_instagram_users) are synchronous
+    # therefore one way to speed it without refactoring up is to run in parallel
+
+    # keys are indicative, used to sort output later on
+    # values are tuples where first item is the function
+    # the rest of the items are function args
+    # TODO: improve the readability of giving args with *args **kwargs
+    fn_list = {
+        'google': (get_google_search_result_count, person_name, True, proxies, 'us'),
+        'wikipedia': (get_wiki_search, person_name),
+        'instagram': (get_instagram_users, person_name, proxies),
+        'twitter': (get_twitter_users, person_name)
+    }
+
+    # lets create the executor and execute
+    # the above defined fns in parallel
+    fn_outputs = {}
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+        # dict with keys as executors and values as strings of data sources
+        # this is needed to map outputs to its sources. Keys are executors because
+        # it only works this way inside concurrent.futures.as_completed
+        futures = {executor.submit(*fn_list[key]): key for key in fn_list}
+        for future in concurrent.futures.as_completed(futures):
+            fn_outputs[futures[future]] = future.result()
 
     # making final output
     output_data = {
         'data': {
-            'google': {'items': google_counts},
-            'wikipedia': wiki_data,
-            'twitter': twitter_data,
-            'instagram': instagram_data
+            'google': {'items': fn_outputs['google']},
+            'wikipedia': fn_outputs['wikipedia'],
+            'twitter': fn_outputs['twitter'],
+            'instagram': fn_outputs['instagram']
         }
     }
 
