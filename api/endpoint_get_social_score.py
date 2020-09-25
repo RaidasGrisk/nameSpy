@@ -12,21 +12,18 @@ import globals
 from private import proxy_dict
 from log_cofig import handler as log_handler
 
-# having hard time loading these pickled files
-# https://stackoverflow.com/questions/50465106/attributeerror-when-reading-a-pickle-file
-from web_score.make_score import get_score
-import pickle
+# load models
+import dill
 
-class MyCustomUnpickler(pickle.Unpickler):
-    def find_class(self, module, name):
-        if module == '__main__':
-            module = 'web_score.make_score'
-        return super().find_class(module, name)
+# import, otherwise loaded models will throw not defined error
+import numpy as np
+import pandas as pd
 
-
-with open('web_score/scorers/scorer_dict.pkl', 'rb') as f:
-    unpickler = MyCustomUnpickler(f)
-    scorer_dict = unpickler.load()
+preprocess_pipe_path = 'web_score/scorers/preprocess_pipe.pkl'
+model_pipe_path = 'web_score/scorers/model_pipe.pkl'
+with open(preprocess_pipe_path, 'rb') as i, open(model_pipe_path, 'rb') as j:
+    preprocess_pipe = dill.load(i)
+    model_pipe = dill.load(j)
 
 
 def get_social_score(input, filter_input=True, use_proxy=1, collected_data=1, debug=0):
@@ -72,7 +69,7 @@ def get_social_score(input, filter_input=True, use_proxy=1, collected_data=1, de
         for future in concurrent.futures.as_completed(futures):
             fn_outputs[futures[future]] = future.result()
 
-    # making final output
+    # make output
     output_data = {
         'data': {
             'google': {'items': fn_outputs['google']},
@@ -82,7 +79,12 @@ def get_social_score(input, filter_input=True, use_proxy=1, collected_data=1, de
         }
     }
 
-    output['scores'] = get_score(scorer_dict, output_data['data'])
+    # get scores
+    preprocessed_data = preprocess_pipe.transform([output_data['data']])
+    separate_scores = model_pipe.named_steps['ECDF'].transform(preprocessed_data).T[0].to_dict()
+    final_score = {'web_score': model_pipe.transform(preprocess_pipe.transform([output_data['data']]))[0]}
+
+    output['scores'] = {**final_score, **separate_scores}
     output.update(output_data)
 
     if collected_data == 0:
