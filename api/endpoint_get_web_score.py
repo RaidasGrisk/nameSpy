@@ -11,7 +11,7 @@ import concurrent.futures
 import dill
 
 # load score models
-# import, otherwise loaded models will throw error not defined
+# import, otherwise loaded models will throw error: not defined
 import numpy as np
 import pandas as pd
 
@@ -31,7 +31,6 @@ def make_output(input, filter_input=True, use_proxy=1, collected_data=1, debug=0
             return output_name_part
     else:
         output_name_part = {'input': input}
-    person_name = output_name_part['input']
 
     proxies = proxy_dict if use_proxy == 1 else {}
 
@@ -44,6 +43,7 @@ def make_output(input, filter_input=True, use_proxy=1, collected_data=1, debug=0
     # values are tuples where first item is the function
     # the rest of the items are function args
     # TODO: improve the readability of giving args with *args **kwargs
+    person_name = output_name_part['input']
     fn_list = {
         'google': (get_google_search_result_count, person_name, True, proxies, 'us'),
         'wikipedia': (get_wiki_search, person_name),

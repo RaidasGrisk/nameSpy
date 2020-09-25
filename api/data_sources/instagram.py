@@ -67,8 +67,9 @@ def parse_html_to_user_info(html):
 
 
 def parse_json_to_user_info(user_info):
-    output = {}
-    output['followers_count'] = user_info.get('data').get('user').get('edge_followed_by').get('count')
+    output = {
+        'followers_count': user_info.get('data').get('user').get('edge_followed_by').get('count')
+    }
     return output
 
 
