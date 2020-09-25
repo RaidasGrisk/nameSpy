@@ -79,12 +79,19 @@ def get_instagram_users(input, proxies):
     url = 'https://www.instagram.com/web/search/topsearch'
     params = {'query': input.replace(' ', '+'), 'context': 'blended'}
 
-    logger.info('Sending a user search request to instagram')
-    response = requests_retry_session().get(url, params=params, proxies=proxies)
-    # TODO: sometimes receiving this error
-    # raise JSONDecodeError(\"Expecting value\", s, err.value) from
-    # None\njson.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n",
-    search_output = response.json()
+    # sometimes instead of json it returns html
+    # <!DOCTYPE html>\n<html lang="en" class="no-js not-logged-in client-root">
+    # try again if such case occur
+    for i in range(5):
+        try:
+            logger.info(f'Sending a user search request to instagram {i}')
+            response = requests_retry_session().get(url, params=params, proxies=proxies)
+            search_output = response.json()
+            logger.info(f'Sending a user search request to instagram: received a valid response')
+            break
+        except json.decoder.JSONDecodeError as e:
+            logger.info(f'user search request to instagram exception: {repr(e)}')
+            continue
 
     # get info of users
     # make async calls to save some time
@@ -95,9 +102,6 @@ def get_instagram_users(input, proxies):
           'variables={{"id":{},"include_reel":false,"fetch_mutual":false,"first":0}}'
     user_urls = [url.format(id) for id in user_ids]
     user_data = make_async_requests(user_urls, proxies)
-    # TODO: sometimes receiving this error
-    # raise TypeError(f'the JSON object must be str, bytes or bytearray, '
-    # \nTypeError: the JSON object must be str, bytes or bytearray, not JSONDecodeError\n"
     user_data = [json.loads(i) for i in user_data]
 
     # parse info
