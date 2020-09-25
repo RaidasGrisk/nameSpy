@@ -3,6 +3,9 @@ from endpoint_get_social_score import app as social_score_app
 import urllib
 import json
 
+import numpy as np
+import pandas as pd
+
 # -------- #
 with job_title_app.test_client() as c:
 

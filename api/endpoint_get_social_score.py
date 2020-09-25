@@ -3,19 +3,15 @@ from data_sources.wikipedia import get_wiki_search
 from data_sources.twitter import get_twitter_users
 from data_sources.google import get_google_search_result_count
 
-import concurrent.futures
-
-from helpers import get_entities, process_entities
-from helpers import get_api_output_head_from_input_entities
-import globals
-
+from helpers import get_filtered_input
 from private import proxy_dict
 from log_cofig import handler as log_handler
 
-# load models
+import concurrent.futures
 import dill
 
-# import, otherwise loaded models will throw not defined error
+# load score models
+# import, otherwise loaded models will throw error not defined
 import numpy as np
 import pandas as pd
 
@@ -28,17 +24,14 @@ with open(preprocess_pipe_path, 'rb') as i, open(model_pipe_path, 'rb') as j:
 
 def get_social_score(input, filter_input=True, use_proxy=1, collected_data=1, debug=0):
 
-    output = dict()
-
+    # make output: name
     if filter_input:
-        entities = get_entities(input.title(), globals.nlp_models)
-        person_name = process_entities(entities)
-        output.update(get_api_output_head_from_input_entities(entities))
-        if not person_name:
-            return {'warning': 'I am built to recognize names, but I don`t see any :('}
+        output_name_part = get_filtered_input(input.title())
+        if not output_name_part.get('input'):
+            return output_name_part
     else:
-        output.update(get_api_output_head_from_input_entities({'PERSON': [input.title()]}))
-        person_name = input
+        output_name_part = {'input': input}
+    person_name = output_name_part['input']
 
     proxies = proxy_dict if use_proxy == 1 else {}
 
@@ -69,8 +62,8 @@ def get_social_score(input, filter_input=True, use_proxy=1, collected_data=1, de
         for future in concurrent.futures.as_completed(futures):
             fn_outputs[futures[future]] = future.result()
 
-    # make output
-    output_data = {
+    # make output: data
+    output_data_part = {
         'data': {
             'google': {'items': fn_outputs['google']},
             'wikipedia': fn_outputs['wikipedia'],
@@ -79,19 +72,23 @@ def get_social_score(input, filter_input=True, use_proxy=1, collected_data=1, de
         }
     }
 
-    # get scores
-    preprocessed_data = preprocess_pipe.transform([output_data['data']])
+    # make output: scores
+    preprocessed_data = preprocess_pipe.transform([output_data_part['data']])
     separate_scores = model_pipe.named_steps['ECDF'].transform(preprocessed_data).T[0].to_dict()
-    final_score = {'web_score': model_pipe.transform(preprocess_pipe.transform([output_data['data']]))[0]}
+    web_score = model_pipe.transform(preprocess_pipe.transform([output_data_part['data']]))[0]
+    final_score = {'web_score': web_score}
+    output_score_part = {**final_score, **separate_scores}
 
-    output['scores'] = {**final_score, **separate_scores}
-    output.update(output_data)
+    # make output: log
+    output_log_part = {'log': [str(i) for i in log_handler.log]}
 
-    if collected_data == 0:
-        del output['data']
-
-    if debug == 1:
-        output['log'] = [str(i) for i in log_handler.log]
+    # combine parts into final output
+    output = {
+        **output_name_part,
+        **output_score_part,
+        **[output_data_part if collected_data == 1 else {}][0],
+        **[output_log_part if debug == 1 else {}][0],
+    }
 
     return output
 
@@ -122,7 +119,7 @@ class social_score(Resource):
         try:
             output = get_social_score(**args)
         except Exception as e:
-            output = {'something went wrong': ':(',
+            output = {'error': 'something went wrong :(',
                       'traceback': str(e),
                       'full_traceback': str(traceback.format_exc()),
                       'log': [str(i) for i in log_handler.log]}
