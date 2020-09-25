@@ -1,5 +1,5 @@
 from endpoint_get_job_title import app as job_title_app
-from endpoint_get_social_score import app as social_score_app
+from endpoint_get_web_score import app as web_score_app
 import urllib
 import json
 
@@ -48,7 +48,7 @@ with job_title_app.test_client() as c:
         print('\n\n')
 
 # ---------- #
-with social_score_app.test_client() as c:
+with web_score_app.test_client() as c:
 
     inputs = [
         {'input': 'carl hust',
@@ -87,6 +87,6 @@ with social_score_app.test_client() as c:
     ]
 
     for input in inputs:
-        resp = c.get('api/social_score?{}'.format(urllib.parse.urlencode(input)))
+        resp = c.get('api/web_score?{}'.format(urllib.parse.urlencode(input)))
         print(json.dumps(json.loads(resp.data), indent=4))
         print('\n\n')

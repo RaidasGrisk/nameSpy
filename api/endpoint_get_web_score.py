@@ -22,7 +22,7 @@ with open(preprocess_pipe_path, 'rb') as i, open(model_pipe_path, 'rb') as j:
     model_pipe = dill.load(j)
 
 
-def get_social_score(input, filter_input=True, use_proxy=1, collected_data=1, debug=0):
+def make_output(input, filter_input=True, use_proxy=1, collected_data=1, debug=0):
 
     # make output: name
     if filter_input:
@@ -77,7 +77,7 @@ def get_social_score(input, filter_input=True, use_proxy=1, collected_data=1, de
     separate_scores = model_pipe.named_steps['ECDF'].transform(preprocessed_data).T[0].to_dict()
     web_score = model_pipe.transform(preprocess_pipe.transform([output_data_part['data']]))[0]
     final_score = {'web_score': web_score}
-    output_score_part = {**final_score, **separate_scores}
+    output_score_part = {'scores': {**final_score, **separate_scores}}
 
     # make output: log
     output_log_part = {'log': [str(i) for i in log_handler.log]}
@@ -105,7 +105,7 @@ api = Api(app)
 app.config['JSON_SORT_KEYS'] = False  # do not sort data
 
 
-class social_score(Resource):
+class web_score(Resource):
     def get(self):
 
         parser = reqparse.RequestParser()
@@ -117,7 +117,7 @@ class social_score(Resource):
         args = parser.parse_args()
 
         try:
-            output = get_social_score(**args)
+            output = make_output(**args)
         except Exception as e:
             output = {'error': 'something went wrong :(',
                       'traceback': str(e),
@@ -135,7 +135,7 @@ class social_score(Resource):
         return output
 
 
-api.add_resource(social_score, '/api/social_score', endpoint='/social_score')
+api.add_resource(web_score, '/api/web_score', endpoint='/web_score')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))

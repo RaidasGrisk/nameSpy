@@ -1,7 +1,7 @@
 FROM python:3.7-slim
 
 # install dependencies
-COPY /deploy/social_score/requirements.txt ./api/
+COPY /deploy/web_score/requirements.txt ./api/
 
 RUN pip install -r api/requirements.txt
 RUN python -m spacy download en_core_web_sm
@@ -22,7 +22,7 @@ COPY /api/data_sources ./api/data_sources/
 COPY /api/web_score ./api/web_score/
 COPY /api/proxy ./api/proxy/
 COPY /api/__init__.py /api/globals.py /api/helpers.py /api/private.py ./api/
-COPY /api/endpoint_get_social_score.py ./api/
+COPY /api/endpoint_get_web_score.py ./api/
 
 # set variables
 EXPOSE 9050 9051
@@ -32,4 +32,4 @@ RUN export PORT=8080
 WORKDIR /api
 CMD service tor stop && \
     service tor start && \
-    exec gunicorn --bind :8080 --workers 1 --threads 4 endpoint_get_social_score:app
+    exec gunicorn --bind :8080 --workers 1 --threads 4 endpoint_get_web_score:app
