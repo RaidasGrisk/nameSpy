@@ -12,6 +12,7 @@ api = Api(app, prefix='/v1')
 # database connection
 from pymongo import MongoClient
 from private import mongo_details  # dict with user/psw/cluster/connection url
+from private import secret_endpoints  # dict with secret endpoints
 
 
 url = mongo_details['url'].format(*[mongo_details[i] for i in ['user', 'password', 'cluster']])
@@ -105,14 +106,14 @@ def proxy(request, to_url):
 
 class job_title(Resource):
     def get(self):
-        response = proxy(request, 'https://jobtitle-mu7u3ykctq-lz.a.run.app/api/job_title')
+        response = proxy(request, secret_endpoints['job_title'])
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
 
 class web_score(Resource):
     def get(self):
-        response = proxy(request, 'https://socialscore-mu7u3ykctq-lz.a.run.app/api/social_score')
+        response = proxy(request, secret_endpoints['web_score'])
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
