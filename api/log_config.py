@@ -56,6 +56,13 @@ logger.setLevel(logging.INFO)
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+# turn off stdout logging and save compute/space on prod
+# If this evaluates to true, events logged to this logger
+# will be passed to the handlers of higher level (ancestor) loggers,
+# in addition to any handlers attached to this logger.
+# https://docs.python.org/2/library/logging.html#logging.Logger.propagate
+logger.propagate = False
+
 # having this setup, log records can be created in any other module by either
 # importing logging package or importing logger object defined in this module.
 # Both of the following works:
