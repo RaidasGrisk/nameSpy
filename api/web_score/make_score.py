@@ -139,15 +139,16 @@ if __name__ == '__main__':
             if i['instagram']['users'][0].get('followers_count', -1) < 0:
                 data.remove(i)
 
-    # split the pipeline into two one for json and df
-    # the other one for fillna and all the rest
+    # split the pipeline into two: preprocess and model
+    def json_to_df(x): return pd.DataFrame(x)  # cant pickle lambdas
+    def fill_na(x): return x.fillna(-1)
     preprocess_pipe = Pipeline(
         [
             ('restructure_jsons', FunctionTransformer(restructure_data)),
-            ('jsons_to_df', FunctionTransformer(lambda x: pd.DataFrame(x))),
+            ('jsons_to_df', FunctionTransformer(json_to_df)),
             # not using imputer as it casts to array
             # fill with -1 to separate missing case from 0
-            ('fillna', FunctionTransformer(lambda x: x.fillna(-1))),
+            ('fill_na', FunctionTransformer(fill_na)),
         ]
     )
 
@@ -172,6 +173,11 @@ if __name__ == '__main__':
     # temp.sort_values(0).round(2)
 
     # save
+    # make sure to change the settings as follows
+    # otherwise importing the saved files will be hard
+    # https://github.com/uqfoundation/dill/issues/126
+    dill.settings['recurse'] = True
+
     print('Saving')
     preprocess_pipe_path = 'web_score/scorers/preprocess_pipe.pkl'
     model_pipe_path = 'web_score/scorers/model_pipe.pkl'
