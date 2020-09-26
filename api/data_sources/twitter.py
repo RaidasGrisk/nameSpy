@@ -2,7 +2,7 @@
 
 from twitter import *
 from private import TWITTER_KEYS
-from log_cofig import logger
+from log_config import logger
 
 
 def get_twitter_users(input):

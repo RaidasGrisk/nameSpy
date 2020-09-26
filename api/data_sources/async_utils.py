@@ -1,6 +1,6 @@
 import aiohttp
 import asyncio
-from log_cofig import logger
+from log_config import logger
 
 
 def make_async_requests(urls, proxies=None):

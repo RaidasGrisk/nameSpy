@@ -19,7 +19,7 @@ https://github.com/ping/instagram_private_api/blob/54427574583d33544c006c9f6a13c
 import json
 from data_sources.async_utils import make_async_requests
 from data_sources.requests_utils import requests_retry_session
-from log_cofig import logger
+from log_config import logger
 
 
 def parse_json_to_user_info(user_info):

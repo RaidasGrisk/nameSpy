@@ -1,6 +1,6 @@
 from googletrans import Translator
 from data_sources.requests_utils import requests_retry_session
-from log_cofig import logger
+from log_config import logger
 
 # this works on the premise that the fn will be ran
 # again if it returns False, else the loop will stop

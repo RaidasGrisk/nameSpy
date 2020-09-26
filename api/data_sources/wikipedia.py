@@ -1,5 +1,5 @@
 import requests
-from log_cofig import logger
+from log_config import logger
 
 def get_wiki_search(query, exact_match=True):
 
