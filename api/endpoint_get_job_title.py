@@ -3,34 +3,44 @@ from data_sources.google import get_google_search_result_items, google_translate
 from job_titles.ner_hard_match import get_job_titles as get_job_titles_1
 from job_titles.ner_flair_model import get_job_titles as get_job_titles_2
 
-from helpers import get_entities, process_entities
-from helpers import get_api_output_head_from_input_entities
-import globals
+from helpers import get_filtered_input
 from private import proxy_dict
-from log_cofig import handler as log_handler
+from log_config import handler as log_handler
+
+from helpers import get_nlp_models
+nlp_models = get_nlp_models()
 
 
-def get_job_title(input, ner_threshold=0.95, country_code='en', filter_input=True, use_proxy=1, debug=0):
+def get_job_title(input,
+                  ner_threshold=0.95,
+                  country_code='en',
+                  filter_input=True,
+                  use_proxy=1,
+                  debug=0):
 
-    output = dict()
-
+    # make output: name
     if filter_input:
-        entities = get_entities(input.title(), globals.nlp_models)
-        person_name = process_entities(entities)
-        output.update(get_api_output_head_from_input_entities(entities))
-        if not person_name:
-            return {'warning': 'I am built to recognize names, but I don`t see any :('}
+        output_name_part = get_filtered_input(input.title(), nlp_models)
+        if not output_name_part.get('input'):
+            return output_name_part
     else:
-        output.update(get_api_output_head_from_input_entities({'PERSON': [input.title()]}))
-        person_name = input
+        output_name_part = {'input': input}
 
     proxies = proxy_dict if use_proxy == 1 else {}
 
-    google_data = get_google_search_result_items(person_name,
-                                                 exact_match=True,
-                                                 proxies=proxies,
-                                                 country_code=country_code)
+    # make output: main part of the API
+    # 1. scrape google search
+    # 2. translate all to english
+    # 3. run models to detect job titles
+    # can not improve this with concurrency
+    google_data = get_google_search_result_items(
+        output_name_part['input'],
+        exact_match=True,
+        proxies=proxies,
+        country_code=country_code
+    )
 
+    # can I remove this?
     if not google_data:
         return {'warning': 'google did not return the search results'}
 
@@ -49,18 +59,24 @@ def get_job_title(input, ner_threshold=0.95, country_code='en', filter_input=Tru
 
     job_titles = job_titles_1
 
-    # sorted(job_titles, key=job_titles.get('count'))
-    job_titles = dict(sorted(job_titles.items(), key=lambda x: x[1].get('count'), reverse=True))
+    output_job_titles_part = dict(sorted(job_titles.items(),
+                                         key=lambda x: x[1].get('count'),
+                                         reverse=True))
 
     # convert sets to list for JSON + do other cleaning
-    for title, _ in job_titles.items():
-        job_titles[title]['sources'] = list(job_titles[title]['sources'])
+    for title, _ in output_job_titles_part.items():
+        output_job_titles_part[title]['sources'] = \
+            list(output_job_titles_part[title]['sources'])
 
-    # make final output
-    output['google'] = {'titles': job_titles}
+    # make output: log
+    output_log_part = {'log': [str(i) for i in log_handler.log]}
 
-    if debug == 1:
-        output['log'] = [str(i) for i in log_handler.log]
+    # combine parts into final output
+    output = {
+        **output_name_part,
+        **{'titles': output_job_titles_part},
+        **[output_log_part if debug == 1 else {}][0],
+    }
 
     return output
 
@@ -87,8 +103,8 @@ class job_title(Resource):
         parser.add_argument('ner_threshold', type=float, default=0.95)
         parser.add_argument('country_code', type=str, default='us')
         parser.add_argument('debug', type=int, default=0)
-
         args = parser.parse_args()
+
         try:
             output = get_job_title(**args)
         except Exception as e:
