@@ -1,5 +1,11 @@
 import re
-import globals
+import spacy
+
+
+def get_nlp_models():
+    nlp_models = {'LTU': spacy.load('lt_core_news_sm'),
+                  'EN': spacy.load('en_core_web_sm')}
+    return nlp_models
 
 
 def get_entities(input, nlp_models):
@@ -29,8 +35,8 @@ def get_domain_from_url(url):
     return re.search(regex, url)[0]
 
 
-def get_filtered_input(input_name):
-    entities = get_entities(input_name, globals.nlp_models)
+def get_filtered_input(input_name, nlp_models):
+    entities = get_entities(input_name, nlp_models)
     output = {}
     if entities.get('PERSON'):
         output['input'] = entities['PERSON'][0]

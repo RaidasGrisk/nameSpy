@@ -5,16 +5,15 @@ from data_sources.google import get_google_search_result_count
 
 from helpers import get_filtered_input
 from private import proxy_dict
-from log_cofig import handler as log_handler
+from log_config import handler as log_handler
 
 import concurrent.futures
 import dill
 
-# load score models
-# import, otherwise loaded models will throw error: not defined
-import numpy as np
-import pandas as pd
+from helpers import get_nlp_models
+nlp_models = get_nlp_models()
 
+# load score models
 preprocess_pipe_path = 'web_score/scorers/preprocess_pipe.pkl'
 model_pipe_path = 'web_score/scorers/model_pipe.pkl'
 with open(preprocess_pipe_path, 'rb') as i, open(model_pipe_path, 'rb') as j:
@@ -26,7 +25,7 @@ def make_output(input, filter_input=True, use_proxy=1, collected_data=1, debug=0
 
     # make output: name
     if filter_input:
-        output_name_part = get_filtered_input(input.title())
+        output_name_part = get_filtered_input(input.title(), nlp_models)
         if not output_name_part.get('input'):
             return output_name_part
     else:
