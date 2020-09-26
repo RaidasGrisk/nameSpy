@@ -21,7 +21,7 @@ with open('web_score/data/random_names.txt', 'w') as outfile:
 import requests
 import json
 import os
-from endpoint_get_social_score import app as social_score_app
+from endpoint_get_web_score import app as social_score_app
 
 random_names = [line.strip() for line in open('web_score/data/random_names.txt')]
 finished_names = [i.replace('.txt', '') for i in os.listdir('web_score/data/resp')]

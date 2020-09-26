@@ -3,8 +3,6 @@ from endpoint_get_web_score import app as web_score_app
 import urllib
 import json
 
-import numpy as np
-import pandas as pd
 
 # -------- #
 with job_title_app.test_client() as c:
@@ -20,7 +18,7 @@ with job_title_app.test_client() as c:
          'country_code': 'lt',
          'debug': 1},
 
-        {'input': 'egle tauraite',
+        {'input': 'Eglė Tauraitė',
          'ner_threshold': 0.95,
          'country_code': 'lt',
          'use_proxy': 0,
@@ -61,7 +59,7 @@ with web_score_app.test_client() as c:
          'country_code': 'lt',
          'debug': 1},
 
-        {'input': 'egle tauraite',
+        {'input': 'Eglė Tauraitė',
          'ner_threshold': 0.95,
          'country_code': 'lt',
          'use_proxy': 1,
