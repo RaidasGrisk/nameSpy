@@ -2,12 +2,9 @@ from flair.inference_utils import WordEmbeddingsStore
 from flair.data import Sentence
 
 from helpers import get_domain_from_url
-import pickle
 import unicodedata
+from log_config import logger
 
-# load model
-# model = pickle.load(open('job_titles/flair_model2.pickle', 'rb'))
-# WordEmbeddingsStore.load_stores(model)
 
 from flair.models import SequenceTagger
 model = SequenceTagger.load('job_titles/flair_model.pt')
@@ -24,10 +21,10 @@ def get_flair_entities(input, score_threshold=0.9):
     prev_entity_part = ''
     for entity in sentence.to_dict(tag_type='ner')['entities']:
 
-        if entity['confidence'] < score_threshold:
+        if entity['labels'][0]._score < score_threshold:
             continue
 
-        print(entity)
+        logger.info('flair entity detected: ' + str(entity))
         if prev_end_pos + 1 == entity['start_pos']:
             del entities[-1]
             final_entity = prev_entity_part + ' ' + entity['text']
