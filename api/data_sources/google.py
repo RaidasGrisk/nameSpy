@@ -58,7 +58,6 @@ def google_translate(google_data, proxies):
 
 
 # ------ #
-import requests
 from bs4 import BeautifulSoup
 import unidecode
 import re
