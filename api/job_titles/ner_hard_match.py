@@ -9,7 +9,6 @@ TODO:
 * also compare to https://github.com/scrapinghub/webstruct/blob/master/webstruct/utils.py#L155
 """
 
-import logging
 from collections import namedtuple
 
 from acora import AcoraBuilder
@@ -109,10 +108,8 @@ class FinderAcora(BaseFinder):
                   if use_unicode
                   else (s.encode('ascii') for s in titles))
         builder = AcoraBuilder()
-        logging.info('building job title searcher')
         builder.update(titles)
         self.ac = builder.build(ignore_case=ignore_case)
-        logging.info('building done')
 
     def find_raw(self, string):
         """
@@ -132,13 +129,11 @@ class FinderPyaho(BaseFinder):
         :param titles: if given, overrides default `load_titles()` values
         """
         titles = titles if titles else load_titles()
-        logging.info('building job title searcher')
         autom = ahocorasick.Automaton()
         for title in titles:
             autom.add_word(title, title)
         autom.make_automaton()
         self.autom = autom
-        logging.info('building done')
 
     def find_raw(self, string):
         """
