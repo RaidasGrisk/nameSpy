@@ -28,7 +28,7 @@ def get_job_title(input,
 
     proxies = proxy_dict if use_proxy == 1 else {}
 
-    # make output: main part of the API
+    # make output: job titles
     # 1. scrape google search
     # 2. translate all to english
     # 3. run models to detect job titles
@@ -56,17 +56,19 @@ def get_job_title(input,
             job_titles_1[key]['sources'].update(value['sources'])
         else:
             job_titles_1.update({key: value})
-
     job_titles = job_titles_1
 
-    output_job_titles_part = dict(sorted(job_titles.items(),
-                                         key=lambda x: x[1].get('count'),
-                                         reverse=True))
+    # sort by job title count
+    job_titles = dict(sorted(job_titles.items(),
+                             key=lambda x: x[1].get('count'),
+                             reverse=True))
 
     # convert sets to list for JSON + do other cleaning
-    for title, _ in output_job_titles_part.items():
-        output_job_titles_part[title]['sources'] = \
-            list(output_job_titles_part[title]['sources'])
+    for title, _ in job_titles.items():
+        job_titles[title]['sources'] = \
+            list(job_titles[title]['sources'])
+
+    output_job_titles_part = {'titles': job_titles}
 
     # make output: log
     output_log_part = {'log': [str(i) for i in log_handler.log]}
@@ -74,7 +76,7 @@ def get_job_title(input,
     # combine parts into final output
     output = {
         **output_name_part,
-        **{'titles': output_job_titles_part},
+        **output_job_titles_part,
         **[output_log_part if debug == 1 else {}][0],
     }
 
