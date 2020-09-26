@@ -6,11 +6,11 @@ future
 fake-useragent
 twitter
 requests
-google-api-python-client
 googletrans
 spacy
 gunicorn
 statsmodels
-stem
 aiohttp
 asyncio
+dill
+sklearn

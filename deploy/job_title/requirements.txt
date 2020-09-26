@@ -7,10 +7,7 @@ unidecode
 future
 fake-useragent
 requests
-requests[socks]
-google-api-python-client
-googletrans
+googletrans==2.4.0
 spacy
 gunicorn
 flair
-stem
