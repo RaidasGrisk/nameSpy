@@ -75,6 +75,14 @@ def make_output(input, filter_input=True, use_proxy=1, collected_data=1, debug=0
     preprocessed_data = preprocess_pipe.transform([output_data_part['data']])
     separate_scores = model_pipe.named_steps['ECDF'].transform(preprocessed_data).T[0].to_dict()
     web_score = model_pipe.transform(preprocess_pipe.transform([output_data_part['data']]))[0]
+
+    keys_mapping = {
+        'google_items': 'google',
+        'wikipedia_items': 'wikipedia',
+        'twitter_followers_mean': 'twitter',
+        'instagram_followers_mean': 'instagram'
+    }
+    separate_scores = {keys_mapping[k]: v for k, v in separate_scores.items()}
     final_score = {'web_score': web_score}
     output_score_part = {'scores': {**final_score, **separate_scores}}
 
