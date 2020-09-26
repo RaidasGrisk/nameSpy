@@ -1,5 +1,10 @@
 # installing tor
 
+Tor can be used as a proxy.  
+
+Cannot reliably use tor, because tor's exit nodes are blocked by google search.
+Leaving the following for future reference. Better example of tor installation is in the .dockerfile inside deploy folder.
+
 ``` bash
 sudo apt update
 sudo apt install apt-transport-https

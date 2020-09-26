@@ -12,14 +12,15 @@ python -m spacy download en_core_web_sm
 
 ```
 
-# do credential and auth stuff
+# credentials and authentication
 
 All of this is stored in private.py
 ``` bash
 touch private.py
-echo "GOOGLE_KEYS = {}" >> private.py
-echo "TWITTER_KEYS = {}" >> private.py
-echo "proxy_dict = {}" >> private.py
+
+# twitter_keys
+# proxy_dict
+# ...
 ```
 
 # serve
