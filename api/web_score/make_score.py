@@ -19,7 +19,6 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.preprocessing import FunctionTransformer
 from sklearn.pipeline import Pipeline
 
-import pickle
 
 # pandas print options
 pd.set_option('display.max_columns', None)
@@ -94,6 +93,43 @@ class CustomECDF(BaseEstimator, TransformerMixin):
         return x_copy
 
 
+class VAE_numpy(BaseEstimator, TransformerMixin):
+
+    # never mind if model is tf or tf-lite
+    # im still unable to put it as part of
+    # sklearn Pipeline and then pickle all into one obj
+    # this create a lot of problems later on during depl
+    # just want a couple of simple steps to get the output
+
+    # so the simples and shittiest way to do this
+    # is to make a new object and port vae to it
+    # the vae model is very simple so lets do this.
+
+    # the below model is vae model trained in vae.py
+    # manually inspected and converted to numpy mmult
+
+    # w1 = vae.encoder.dense_proj.weights[0].numpy()
+    # b1 = vae.encoder.dense_proj.weights[1].numpy()
+    # w2 = vae.encoder.dense_mean.weights[0].numpy()
+
+    def __init__(self):
+        self.w1 = np.array([[0.21999376],
+                            [0.17360488],
+                            [0.44476038],
+                            [0.79192466]])
+        self.b1 = np.array([[0.85967510]])
+        self.w2 = np.array([[0.82613724]])
+
+    def fit(self, x, y=None):
+        return self
+
+    def transform(self, x, y=None):
+        x = np.dot(x, self.w1) + self.b1
+        x = np.clip(x, 0, np.inf)  # tf.keras.constraints.MinMaxNorm
+        x = np.dot(x, self.w2)
+        return x
+
+
 def restructure_data(responses: list) -> list:
     """Takes in a list of response data jsons and outputs a list of restructured jsons"""
     responses_ = []
@@ -155,12 +191,15 @@ if __name__ == '__main__':
     model_pipe = Pipeline(
         [
             ('ECDF', CustomECDF()),
-            # ('IF', CustomIsolationForest(n_estimators=5)),
+            ('prep_for_VAE', FunctionTransformer(lambda x: x.values.astype('float32'))),
+            ('VAE', VAE_numpy()),
             ('final_score', FunctionTransformer(lambda x:
-                                                np.array(x)
+                                                (np.array(x)
                                                 .reshape(x.shape[0], -1)
                                                 .mean(axis=1)
-                                                .round(2)))
+                                                .round(2) - 1)
+                                                .clip(-1, 1))
+            )
         ]
     )
 
@@ -169,7 +208,8 @@ if __name__ == '__main__':
     model_pipe.fit(train_data)
 
     # scores = model_pipe.transform(train_data)
-    # temp = pd.concat([train_data, pd.Series(scores)], axis=1)
+    # print(pd.concat([train_data, scores], axis=1))
+    # temp = pd.concat([train_data, pd.Series(scores.ravel())], axis=1)
     # temp.sort_values(0).round(2)
 
     # save
@@ -206,7 +246,7 @@ def debugging():
             'num_users': 0,
             'users': [
                 {
-                    'followers_count': np.mean([48843, 3688, 2450, 1792, 1860]),
+                    'followers_count': np.mean([48843, 3688, 2450, 1792, 1860])
                 },
             ]
         },
@@ -227,3 +267,5 @@ def debugging():
     final_score = {'web_score': model_pipe.transform(preprocess_pipe.transform([debug_data]))[0]}
 
     print({**final_score, **separate_scores})
+
+
