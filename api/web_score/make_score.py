@@ -159,7 +159,7 @@ def load_data():
             data.append(response['data'])
     return data
 
-if __name__ == '__main__':
+def train():
 
     # 1. read jsons into a list
     data = load_data()
