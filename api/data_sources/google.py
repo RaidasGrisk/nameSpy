@@ -83,9 +83,8 @@ def get_google_search_response(person_name, exact_match, proxies, country_code):
     # in google banning the ip address and asking for recaptcha
     # TODO: even though the parameter is set, the search results
     #  differ when returned from different proxy/client
-    #  maybe this is fine as this returns different search results
-    #  implying that it is actually working in terms of loc spec
-    #  it might vary just because it varies by default in the loc
+    #  clearly, the results returned are dependent on proxy
+    #  results are often in a language corresponding to proxy location
     if proxies:
         params['gl'] = 'us'
     if country_code:
@@ -196,9 +195,14 @@ def get_google_search_result_items(person_name, exact_match, proxies, country_co
         return None
 
     def _get_snippet(li):
-        sdiv = li.find('div', attrs={'class': 's'})
+        # TODO: this part has problems.
+        #  recently it started to fail to parse snippets.
+        #  Quick fix: s -> IsZvec and st -> aCOpRe
+        #  These classes might be temporary
+        #  but for now range across many countries.
+        sdiv = li.find('div', attrs={'class': 'IsZvec'})  # s / IsZvec
         if sdiv:
-            stspan = sdiv.find('span', attrs={'class': 'st'})
+            stspan = sdiv.find('span', attrs={'class': 'aCOpRe'})  # st / aCOpRe
             if stspan is not None:
                 return stspan.text.strip()
         else:
