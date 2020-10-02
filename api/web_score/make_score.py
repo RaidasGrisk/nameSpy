@@ -218,6 +218,12 @@ def train():
     # https://github.com/uqfoundation/dill/issues/126
     dill.settings['recurse'] = True
 
+    # to be able to save and load the models with no error
+    # have to transform at least once before saving
+    # otherwise it throws the following error:
+    # _function_transformer.py - KeyError: '__builtins__'
+    model_pipe.transform(train_data)
+
     print('Saving')
     preprocess_pipe_path = 'web_score/scorers/preprocess_pipe.pkl'
     model_pipe_path = 'web_score/scorers/model_pipe.pkl'
