@@ -9,9 +9,8 @@ def retry_if_fn_returned_false(fn, max_tries=5):
         for i in range(max_tries):
             logger.info(f'Trying {fn.__name__} {i}')
             output = fn(*args, **kwargs)
-            if not output:
-                continue
-            return output
+            if output:
+                return output
     return wrapper
 
 
