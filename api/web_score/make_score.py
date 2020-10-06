@@ -130,6 +130,15 @@ class VAE_numpy(BaseEstimator, TransformerMixin):
         return x
 
 
+class CustomScoreCombination(BaseEstimator, TransformerMixin):
+
+    def fit(self, x, y=None):
+        return self
+
+    def transform(self, x, y=None):
+        return [np.mean([np.mean(x), np.max(x)]).round(2)]
+
+
 def restructure_data(responses: list) -> list:
     """Takes in a list of response data jsons and outputs a list of restructured jsons"""
     responses_ = []
@@ -158,6 +167,7 @@ def load_data():
                 continue
             data.append(response['data'])
     return data
+
 
 def train():
 
@@ -188,18 +198,23 @@ def train():
         ]
     )
 
+    def cast_to_float32(x): return x.values.astype('float32')
+
+    def format_final_score(x): return \
+        np.array(x)\
+        .reshape(x.shape[0], -1)\
+        .mean(axis=1)\
+        .__sub__(1)\
+        .clip(-1, 1)\
+        .round(2)
+
     model_pipe = Pipeline(
         [
             ('ECDF', CustomECDF()),
-            ('prep_for_VAE', FunctionTransformer(lambda x: x.values.astype('float32'))),
-            ('VAE', VAE_numpy()),
-            ('final_score', FunctionTransformer(lambda x:
-                                                (np.array(x)
-                                                .reshape(x.shape[0], -1)
-                                                .mean(axis=1)
-                                                .round(2) - 1)
-                                                .clip(-1, 1))
-            )
+            ('prep_for_VAE', FunctionTransformer(cast_to_float32)),
+            # ('VAE', VAE_numpy()),
+            # ('final_score', FunctionTransformer(format_final_score))
+            ('CustomScoreCombination', CustomScoreCombination()),
         ]
     )
 
@@ -273,5 +288,3 @@ def debugging():
     final_score = {'web_score': model_pipe.transform(preprocess_pipe.transform([debug_data]))[0]}
 
     print({**final_score, **separate_scores})
-
-
