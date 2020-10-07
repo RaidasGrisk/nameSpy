@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, Response, make_response
+from flask import Flask, jsonify, make_response
 from flask_restful import Resource, Api, request
 import requests
 import os
@@ -7,6 +7,7 @@ import json
 
 app = Flask(__name__)
 api = Api(app, prefix='/v1')
+app.config['JSON_SORT_KEYS'] = False  # do not sort data
 
 # ------------- #
 # database connection
@@ -97,9 +98,12 @@ def proxy(request, to_url):
     # proxy to the endpoint
     r = requests.get(to_url, params=args)
 
-    response = Response(response=r.text,
-                        status=r.status_code,
-                        mimetype='application/json')
+    # the response is json, so we can not jsonify it again
+    # convert it to python dict/list/etc, then jsonify
+    # this ensures browsers render the response nicely
+    response = jsonify(json.loads(r.text))
+    response.status_code = r.status_code
+    response.headers.add('Access-Control-Allow-Origin', '*')
 
     return response
 
@@ -107,14 +111,12 @@ def proxy(request, to_url):
 class job_title(Resource):
     def get(self):
         response = proxy(request, secret_endpoints['job_title'])
-        response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
 
 class web_score(Resource):
     def get(self):
         response = proxy(request, secret_endpoints['web_score'])
-        response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
 
