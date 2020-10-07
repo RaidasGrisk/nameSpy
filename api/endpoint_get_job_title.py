@@ -11,7 +11,7 @@ from helpers import get_nlp_models
 nlp_models = get_nlp_models()
 
 
-def get_job_title(input,
+def make_output(input,
                   ner_threshold=0.95,
                   country_code='en',
                   filter_input=True,
@@ -108,19 +108,25 @@ class job_title(Resource):
         args = parser.parse_args()
 
         try:
-            output = get_job_title(**args)
+            output = make_output(**args)
+            status_code = 200
         except Exception as e:
-            output = {'something went wrong': ':(',
-                      'traceback': str(e),
-                      'full_traceback': str(traceback.format_exc()),
-                      'log': [str(i) for i in log_handler.log]}
+            output = {
+                'error': 'something went wrong :(',
+                'traceback': str(e),
+                'full_traceback': str(traceback.format_exc()),
+                'log': [str(i) for i in log_handler.log]
+            }
+            status_code = 500  # HTTP_500_INTERNAL_SERVER_ERROR
         finally:
             # clear the log here because otherwise if an exception is caught
             # the log will not be cleared if it is done inside the main function
             log_handler.flush()
 
-        # this or cant communicate with javascript axios
         output = jsonify(output)
+        output.status_code = status_code
+
+        # this or cant communicate with javascript axios
         output.headers.add('Access-Control-Allow-Origin', '*')
 
         return output

@@ -102,7 +102,7 @@ def make_output(input, filter_input=True, use_proxy=1, collected_data=1, debug=0
 
 # -------------- #
 from flask import Flask
-from flask import jsonify
+from flask import jsonify, Response
 from flask_restful import Resource, Api, reqparse
 import os
 import traceback
@@ -125,18 +125,24 @@ class web_score(Resource):
 
         try:
             output = make_output(**args)
+            status_code = 200
         except Exception as e:
-            output = {'error': 'something went wrong :(',
-                      'traceback': str(e),
-                      'full_traceback': str(traceback.format_exc()),
-                      'log': [str(i) for i in log_handler.log]}
+            output = {
+                'error': 'something went wrong :(',
+                'traceback': str(e),
+                'full_traceback': str(traceback.format_exc()),
+                'log': [str(i) for i in log_handler.log]
+            }
+            status_code = 500  # HTTP_500_INTERNAL_SERVER_ERROR
         finally:
             # clear the log here because otherwise if an exception is caught
             # the log will not be cleared if it is done inside the main function
             log_handler.flush()
 
-        # this or cant communicate with javascript axios
         output = jsonify(output)
+        output.status_code = status_code
+
+        # this or cant communicate with javascript axios
         output.headers.add('Access-Control-Allow-Origin', '*')
 
         return output
