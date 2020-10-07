@@ -136,7 +136,7 @@ class CustomScoreCombination(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, x, y=None):
-        return [np.mean([np.mean(x), np.max(x)]).round(2)]
+        return np.mean([np.mean(x), np.max(x)])
 
 
 def restructure_data(responses: list) -> list:
@@ -200,7 +200,7 @@ def train():
 
     def cast_to_float32(x): return x.values.astype('float32')
 
-    def format_final_score(x): return \
+    def vae_output_format(x): return \
         np.array(x)\
         .reshape(x.shape[0], -1)\
         .mean(axis=1)\
@@ -208,13 +208,18 @@ def train():
         .clip(-1, 1)\
         .round(2)
 
+    # float64 is due to the fact that float32 is not json serialisable
+    # https://github.com/tensorflow/tensorboard/issues/3057
+    def final_format(x): return np.atleast_1d(x).astype('float64').round(2)
+
     model_pipe = Pipeline(
         [
             ('ECDF', CustomECDF()),
             ('prep_for_VAE', FunctionTransformer(cast_to_float32)),
             # ('VAE', VAE_numpy()),
-            # ('final_score', FunctionTransformer(format_final_score))
+            # ('vae_output_format', FunctionTransformer(vae_output_format))
             ('CustomScoreCombination', CustomScoreCombination()),
+            ('final_format', FunctionTransformer(final_format))
         ]
     )
 
