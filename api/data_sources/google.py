@@ -1,5 +1,6 @@
 from googletrans import Translator
 from data_sources.requests_utils import requests_retry_session
+import re
 from log_config import logger
 
 # this works on the premise that the fn will be ran
@@ -37,10 +38,11 @@ def google_translate(google_data, proxies):
     text_to_translate = [re.sub(r"[^\w.,|']", ' ', text) for text in text_to_translate]
 
     # translate
-    # TODO: Translator creates its own requests session, so I
-    #  should find a way to make it repeat the call to the server
-    #  if proxy fails and throws connection timeout error
+    # Translator creates its own requests session, so lets
+    # modify it to retry on fail connection / other errors
+    # else, the code will fail at this point with broken conn
     translator = Translator(proxies=proxies)
+    translator.session = requests_retry_session()
     translated = [item.text for item in translator.translate(text_to_translate, dest='en')]
     logger.info('Successfully google translated text')
 
@@ -59,9 +61,9 @@ def google_translate(google_data, proxies):
 # ------ #
 from bs4 import BeautifulSoup
 import unidecode
-import re
 from fake_useragent.fake import UserAgent
-
+# from data_sources.constants import browsers
+# import random
 
 @retry_if_fn_returned_false
 def get_google_search_response(person_name, exact_match, proxies, country_code):
@@ -94,10 +96,19 @@ def get_google_search_response(person_name, exact_match, proxies, country_code):
     # the number of search results and none of the divs
     # responsible for storing number of results are there.
     # Basically, the structure of html is totally different.
-    # TODO: not sure if need to use UserAgent() as sometimes it
-    #  fails, maybe just pick from a random of 10 headers
-    #  stored locally? Not sure if this is good long term solution
+    # IMPORTANT: the above holds for requests sent directly
+    # IMPORTANT: and for requests send through a proxy.
+
+    # UserAgent() is a heroku app that sometimes fails
+    # lets save a list of browsers for headers locally,
+    # so that we don't have to call the heroku app
+    # again and again every time.
+    # Randomising from locally stored browsers does
+    # increase the rate of captcha and invalid responses
+    # For now lets fall back to UserAgent and investigate
+    # the reasons later on.
     headers = {'User-Agent': UserAgent().random}
+    # headers = {'User-Agent': random.choice(browsers)}
 
     # make the request
     url = 'https://www.google.com/search'
