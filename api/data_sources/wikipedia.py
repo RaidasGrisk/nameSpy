@@ -3,7 +3,14 @@ from log_config import logger
 
 def get_wiki_search(query, exact_match=True):
 
-    url = 'https://en.wikipedia.org/w/api.php'
+    # wikipedia has many websites for specific language
+    # E. g. english wiki: https://en.wikipedia.org/w/api.php
+    # the one used below is supposed to be international
+    # and search the whole wiki, instead of wiki of specific country
+    # also: Quotes around words mark an "exact phrase" search.
+    # For parameters they are also needed to delimit multi-word input.
+    # source: https://www.mediawiki.org/wiki/Help:CirrusSearch#Prefer_phrase_matches
+    url = 'https://www.wikidata.org/w/api.php?'
     params = {
         'action': 'query',
         'format': 'json',
