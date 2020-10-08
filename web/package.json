@@ -21,6 +21,7 @@
     "vue-json-pretty": "^1.6.5",
     "vue-prism-editor": "^0.6.1",
     "vue-router": "^3.3.4",
+    "vue-tilt.js": "^1.1.1",
     "vue-trend-chart": "^0.15.2"
   },
   "devDependencies": {

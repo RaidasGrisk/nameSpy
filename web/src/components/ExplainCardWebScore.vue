@@ -12,11 +12,12 @@
         </b></p>
 
         <p>
-          First it collects the publicly available data on social networks and google (numbers of followers, google search results etc).
-          Then, based on average population metrics, it analizes and combines the data to make a web score of a given name.
-          The score ranges between -1 and 1, where 0 is an average person, 1 is a super-mega star and -1 is totally unknown.
+          Here is the workflow: <br>
+          1. Collect publicly available data on social networks / google / wikipedia. <br>
+          2. Analize and combine the data to make a web score besed on average population metrics. <br>
+          <br>
+          The score ranges between -1 and 1, where 0 is an average name, 1 is a super star and -1 is totally unknown.
         </p>
-
         <p>
           To give you an idea here are some examples:
         </p> <br>

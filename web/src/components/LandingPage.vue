@@ -3,12 +3,15 @@
     <section class="section has-text-centered has-text-white-ter">
 
       <transition name="fade" mode="out-in" appear>
-        <div class="columns is-one-fifth is-centered" style="transition-delay: 0.3s">
-          <div class="box has-text-centered">
-            <img src="@/assets/Picture1.png" alt="Logo" style="width:100px;">
+        <div class="columns is-mobile is-one-fifth is-centered" style="transition-delay: 0.3s">
+          <div v-tilt="tiltOptions">
+            <div class="box has-text-centered">
+              <img src="@/assets/Picture1.png" alt="Logo" style="width:100px;">
+            </div>
           </div>
         </div>
       </transition>
+
 
       <transition name="fade" mode="out-in" appear>
         <div class="section"  style="transition-delay: 0.6s">
@@ -170,7 +173,15 @@ export default {
 
       // modal flags
       showModal_WebScore: true,
-      showModal_Occupation: false
+      showModal_Occupation: false,
+
+      tiltOptions: {
+        speed: 5000,
+        perspective: 1000,
+        glare: true,
+        scale: 1.1,
+        max: 20
+      }
     }
   },
 
