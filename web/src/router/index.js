@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-// router compontnts
-import Home from '../components/LandingPage'
-import Docs from '../components/Docs'
+// router components
+import Home from '../pages/Home'
+import Docs from '../pages/Docs'
 
 
 Vue.use(Router)

@@ -36,34 +36,10 @@
 
       <div class="container column is-6">
         <div class="section">
-
           <div id="endpoints"></div>
           <div id="webscore"><docsBlockWebScore/></div><br/>
           <div id="occupation"><docsBlockOccupation/></div><br/>
-          <div id="about">
-
-
-          </div><br/>
-
-          <div class="card is-hidden1" id="about">
-            <div class="card-header"><p class="card-header-title">About</p></div>
-            <div class="card-content">
-              <div class="content">
-
-                <div class="columns" style="font-size: 11px !important;">
-                  <div class="column">
-                    <ExplainCardWebScore/>
-                  </div>
-                  <div class="column">
-                    <ExplainCardOccupation/>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </div>
-          <br />
-
+          <div id="about"><aboutBlock/></div><br/>
         </div>
       </div>
 
@@ -74,11 +50,10 @@
 
 <script>
 
-import docsBlockWebScore from './DocsBlockWebScore'
-import docsBlockOccupation from './DocsBlockOccupation'
+import docsBlockWebScore from '@/components/docs/DocsBlockWebScore'
+import docsBlockOccupation from '@/components/docs/DocsBlockOccupation'
+import aboutBlock from '@/components/docs/AboutBlock'
 
-import ExplainCardWebScore from './ExplainCardWebScore'
-import ExplainCardOccupation from './ExplainCardOccupation'
 
 export default {
 
@@ -87,9 +62,7 @@ export default {
   components: {
     docsBlockWebScore,
     docsBlockOccupation,
-
-    ExplainCardWebScore,
-    ExplainCardOccupation
+    aboutBlock
   },
 
   data() {

@@ -45,8 +45,13 @@
 
             <!-- ExplainCard modals -->
             <div class="is-size-7">
-              <ExplainCardWebScoreModal v-show="showModal_WebScore" @close="showModal_WebScore=false"/>
-              <ExplainCardOccupationModal v-show="showModal_Occupation" @close="showModal_Occupation=false"/>
+
+              <Modal v-show="showModal_WebScore" @close="showModal_WebScore=false">
+                <ExplainCardWebScore/>
+              </Modal>
+              <Modal v-show="showModal_Occupation" @close="showModal_Occupation=false">
+                <ExplainCardOccupation/>
+              </Modal>
 
               <div @click="showModal_WebScore=true">
                 <a class="has-text-weight-bold has-text-success">web score</a>
@@ -131,9 +136,12 @@
 
 import axios from 'axios'
 import VueJsonPretty from 'vue-json-pretty'
-import SocialScoreBoard from './SocialScoreBoard'
-import ExplainCardWebScoreModal from './ExplainCardWebScoreModal'
-import ExplainCardOccupationModal from './ExplainCardOccupationModal'
+import SocialScoreBoard from '@/components/home/SocialScoreBoard'
+
+import ExplainCardWebScore from '@/components/docs/ExplainCardWebScore'
+import ExplainCardOccupation from '@/components/docs/ExplainCardOccupation'
+import Modal from '@/components/Modal'
+
 
 export default {
 
@@ -142,8 +150,9 @@ export default {
   components: {
     VueJsonPretty,
     SocialScoreBoard,
-    ExplainCardWebScoreModal,
-    ExplainCardOccupationModal
+    ExplainCardWebScore,
+    ExplainCardOccupation,
+    Modal
   },
 
   data() {
@@ -275,7 +284,7 @@ export default {
     )
 
     // api.ipify.org + api.ipstack.com
-    // not as nice as it neets to call multiple APIs
+    // not as nice as it needs to call multiple APIs
     // axios.get('https://api.ipify.org/?format=json').then(function (response){
     //
     //   // get the location of the client and set API param

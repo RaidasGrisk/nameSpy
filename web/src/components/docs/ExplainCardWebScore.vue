@@ -6,6 +6,7 @@
           <p class="title is-4 has-text-centered has-text-success">Web Score</p>
         </div>
       </div>
+
       <div class="content">
         <p><b>
           Web score shows how well a given name is known on the internet.
@@ -33,7 +34,7 @@
 
 <script>
 
-import ExplainCardWebScoreChart from './ExplainCardWebScoreChart'
+import ExplainCardWebScoreChart from '@/components/docs/ExplainCardWebScoreChart'
 
 export default {
 
