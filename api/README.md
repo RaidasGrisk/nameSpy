@@ -25,7 +25,7 @@ touch private.py
 
 # serve
 ``` bash
-python endpoint_get_social_score.py
+python endpoint_get_web_score.py
 python endpoint_get_job_title.py
 
 ```
