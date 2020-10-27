@@ -2,33 +2,10 @@
   <div>
     <section class="section has-text-centered has-text-white-ter">
 
-      <transition name="fade" mode="out-in" appear>
-        <div class="columns is-mobile is-one-fifth is-centered" style="transition-delay: 0.3s">
-          <div v-tilt="tiltOptions">
-            <div class="box has-text-centered">
-              <img src="@/assets/Picture1.png" alt="Logo" style="width:100px;">
-            </div>
-          </div>
-        </div>
-      </transition>
+      <div @click="showModal_Login=true">
+        <a class="has-text-weight-bold has-text-success">Login</a>
+      </div>
 
-
-      <transition name="fade" mode="out-in" appear>
-        <div class="section"  style="transition-delay: 0.6s">
-          <div class="is-size-4 is-uppercase has-text-weight-bold">
-            Hi, my names is
-          </div>
-          <div class="is-size-4 is-uppercase has-text-weight-bold has-text-success">
-            NameSpy
-          </div>
-          <div class="content is-size-7 has-text-weight-bold has-text-success">
-            I am a REST API service
-          </div>
-          <div class="content is-size-4">
-            🧐
-          </div>
-        </div>
-      </transition>
 
         <!-- <div class="content"> -->
         <transition name="fade" mode="out-in" appear>
@@ -128,6 +105,13 @@
       <SocialScoreBoard :gridData="getGridData()"></SocialScoreBoard>
     </section>
 
+    <!-- Keep all the modals at the bottom,
+    else upon opening it the background shifts a little -->
+    <Modal v-show="showModal_Login" @close="showModal_Login=false">
+      <Login/>
+    </Modal>
+
+
   </div>
 </template>
 
@@ -142,6 +126,8 @@ import ExplainCardWebScore from '@/components/docs/ExplainCardWebScore'
 import ExplainCardOccupation from '@/components/docs/ExplainCardOccupation'
 import Modal from '@/components/Modal'
 
+import Login from '@/components/home/Login'
+
 
 export default {
 
@@ -152,7 +138,8 @@ export default {
     SocialScoreBoard,
     ExplainCardWebScore,
     ExplainCardOccupation,
-    Modal
+    Modal,
+    Login
   },
 
   data() {
@@ -183,6 +170,7 @@ export default {
       // modal flags
       showModal_WebScore: true,
       showModal_Occupation: false,
+      showModal_Login: false,
 
       tiltOptions: {
         speed: 5000,
@@ -274,7 +262,7 @@ export default {
     // wont work if the website use SSL
     // axios.get('http://ip-api.com/json/').then(function (response){
     //     vm.country_code = response.data['countryCode'].toLowerCase()
-    //   }
+    //   }body
     // )
 
     // https://geolocation-db.com/json/

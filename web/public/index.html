@@ -7,6 +7,24 @@
     <link rel="icon" href="favicon.ico">
     <title>NameSpy</title>
     <meta name="description" content=" A rest API service mapping name to web score (social score) and/or asociated job/occupational titles">
+
+    <!-- Google Login scripts -->
+    <!-- https://developers.google.com/identity/sign-in/web/sign-in -->
+    <!-- https://stackoverflow.com/a/31145147 -->
+    <script type="text/javascript">
+      function triggerGoogleLoaded() {
+        window.dispatchEvent(new Event("google-loaded"));
+      }
+    </script>
+    <script
+      src="https://apis.google.com/js/platform.js?onload=triggerGoogleLoaded"
+      async
+      defer
+    ></script>
+    <meta
+      name="google-signin-client_id"
+      content="943529136358-66uu34u80q0a9t3p4b2sbb96dqba9h7k.apps.googleusercontent.com"
+    />
   </head>
   <body>
     <noscript>

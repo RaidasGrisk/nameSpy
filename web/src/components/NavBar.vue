@@ -1,8 +1,8 @@
 <template>
-  <nav class="navbar is-spaced has-shadow is-primary is-transparent">
+  <nav class="navbar is-spaced is-transparent is-primary">
     <div class="navbar-brand">
       <a class="navbar-item" href="/">
-        <img src="@/assets/Picture3.png" alt="Logo">
+        <img src="@/assets/white_large.png" alt="Logo">
       </a>
       <a class="navbar-item" href="/">
         <a href="https://github.com/RaidasGrisk/names_app" target="_blank" title="Github" class="navbar-item">
@@ -53,3 +53,13 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+
+nav.navbar {
+  padding-left: 5rem;
+  padding-right: 5rem
+}
+
+
+</style>
