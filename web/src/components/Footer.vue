@@ -1,5 +1,5 @@
 <template>
-  <footer class="footer is-primary">
+  <footer class="footer has-background-primary">
     <!-- style="border-top: 2px solid #F0F0F0;" -->
     <div class="container">
       <div class="content has-text-centered has-text-white-ter is-size-7">
@@ -8,8 +8,6 @@
             <b>NameSpy</b><br>
           </div>
           <div class="content">
-            Care for more info?<br>
-            Drop a message
           </div>
 
           <div class="buttons is-centered">
@@ -26,6 +24,14 @@
                 </span>
               </a>
 
+          </div>
+
+          <div>
+            Made with ❤️ using<br>
+            <img src="@/assets/vue.png" alt="Logo" style="width:20px;">
+            <img src="@/assets/python.png" alt="Logo" style="width:24px;">
+            <img src="@/assets/gcp.png" alt="Logo" style="width:24px;">
+            <img src="@/assets/mongodb.png" alt="Logo" style="width:24px;">
           </div>
 
         </div>
@@ -49,6 +55,5 @@ export default {
 
 .footer {
   padding-bottom: 2rem;
-  background-color: #673AB7;
 }
 </style>

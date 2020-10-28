@@ -25,9 +25,11 @@ export default {
     // hero component already has a navbar component
     // (must be this way so that navbar can be on top of hero)
     // therefore on some pages we want to alternate between rendering
-    // navbar and hero components
+    // navbar and hero component
     renderHero: function () {
-      return this.$route.name != 'Home'
+      // pages we do not want navbar on (because it's inside hero)
+      var pages = ['Home']
+      return !pages.includes(this.$route.name)
     }
   }
 
@@ -41,8 +43,8 @@ export default {
 
 // Set your colors
 // https://coolors.co/ffbe0b-fb5607-ff006e-8338ec-3a86ff
-$primary: #8338EC;
-$success: #FFBE0B;
+$primary: #8338EC; // backgrounds
+$success: #FFBE0B; // links and small items
 $info: #3A86FF;
 $warning: #FFBE0B;
 $danger: #FB5607;
@@ -66,7 +68,7 @@ $link: $danger;
 $link-invert: $primary-invert;
 $link-focus-border: $primary;
 
-// Import Bulma and Buefy styles
+// Import Bulma
 @import "~bulma";
 @import url('https://fonts.googleapis.com/css?family=Roboto+Condensed');
 
