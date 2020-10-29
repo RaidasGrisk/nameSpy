@@ -4,7 +4,7 @@ FROM python:3.8-slim
 COPY /deploy/backend/requirements.txt .
 RUN pip3 install -r requirements.txt
 
-# copy files 
+# copy files
 COPY /backend ./backend
 WORKDIR /backend
 
