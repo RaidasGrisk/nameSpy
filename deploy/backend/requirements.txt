@@ -1,0 +1,6 @@
+pymongo[srv]
+fastapi
+motor
+aiohttp
+gunicorn
+uvicorn[standard]
