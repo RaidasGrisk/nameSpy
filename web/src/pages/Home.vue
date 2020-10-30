@@ -1,7 +1,11 @@
 <template>
   <div class="section" style="margin-left: auto; margin-right: auto;">
 
-    <Service/>
+    <transition name="fade" mode="out-in" appear>
+      <div style="transition-delay: 1s">
+        <Service/>
+      </div>
+    </transition>
 
     <!-- <section class="section"> -->
       <!-- ExplainCard modals -->
@@ -70,5 +74,11 @@ export default {
 
 <style>
 
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 1s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
 
 </style>

@@ -5,7 +5,7 @@
 
         <!-- Left col -->
         <div class="column is-two-third">
-          <h1 class="title">
+          <h1 class="title has-text-success">
             Enough explaining. <br>
             Try it out yourself!
           </h1>
