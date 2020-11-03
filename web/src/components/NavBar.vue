@@ -1,30 +1,32 @@
 <template>
   <div>
     <nav class="navbar is-spaced is-transparent is-primary">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="/">
-          <img src="@/assets/white_large.png" alt="Logo">
-        </a>
-        <a class="navbar-item" href="/">
-          <a href="https://github.com/RaidasGrisk/names_app" target="_blank" title="Github" class="navbar-item">
-          <img src="@/assets/GitHub-Mark-Light-32px.png" alt="Logo">
+      <div class="container">
+        <div class="navbar-brand">
+          <a class="navbar-item" href="/">
+            <img src="@/assets/white_large.png" alt="Logo">
           </a>
-        </a>
+          <a class="navbar-item" href="/">
+            <a href="https://github.com/RaidasGrisk/names_app" target="_blank" title="Github" class="navbar-item">
+            <img src="@/assets/GitHub-Mark-Light-32px.png" alt="Logo">
+            </a>
+          </a>
 
-        <div class="navbar-burger" @click="showNav = !showNav" :class="{ 'is-active': showNav }">
-          <span></span>
-          <span></span>
-          <span></span>
+          <div class="navbar-burger" @click="showNav = !showNav" :class="{ 'is-active': showNav }">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
         </div>
-      </div>
-      <div class="navbar-menu" :class="{ 'is-active': showNav }">
-        <div class="navbar-end">
-          <router-link class="navbar-item" v-for="routes in links"
-          v-bind:key="routes.id"
-          :to="`${routes.page}`">{{routes.text}}</router-link>
-          <!-- Login button -->
-          <button class="button is-normal is-danger is-outlined"
-          @click="showModal_Login=!showModal_Login">Login</button>
+        <div class="navbar-menu" :class="{ 'is-active': showNav }">
+          <div class="navbar-end">
+            <router-link class="navbar-item" v-for="routes in links"
+            v-bind:key="routes.id"
+            :to="`${routes.page}`">{{routes.text}}</router-link>
+            <!-- Login button -->
+            <!-- <button class="button is-normal is-success is-outlined"
+            @click="showModal_Login=!showModal_Login">Login</button> -->
+          </div>
         </div>
       </div>
     </nav>

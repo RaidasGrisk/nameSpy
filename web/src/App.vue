@@ -43,11 +43,13 @@ export default {
 
 // Set your colors
 // https://coolors.co/ffbe0b-fb5607-ff006e-8338ec-3a86ff
+// https://coolors.co/
+// https://colors.muz.li/
 $primary: #8338EC; // backgrounds
-$success: #FFBE0B; // links and small items
+$success: #280756; // links and small items
 $info: #3A86FF;
 $warning: #FFBE0B;
-$danger: #FB5607;
+$danger: #FF1279;  // FB5607
 $primary-invert: findColorInvert($primary);
 
 // Setup $colors to use as bulma classes (e.g. 'is-twitter')
@@ -64,7 +66,7 @@ $colors: (
 );
 
 // Links
-$link: $danger;
+$link: $primary;
 $link-invert: $primary-invert;
 $link-focus-border: $primary;
 
@@ -78,7 +80,6 @@ $link-focus-border: $primary;
   font-family: 'B616', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: $primary;
 
 }
 </style>

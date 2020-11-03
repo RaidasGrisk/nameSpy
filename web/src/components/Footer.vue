@@ -26,12 +26,12 @@
 
           </div>
 
-          <div>
-            Made with ❤️ using<br>
+          <div class="content has-text-grey-darker">
+            Made with<br>
             <img src="@/assets/vue.png" alt="Logo" style="width:20px;">
             <img src="@/assets/python.png" alt="Logo" style="width:24px;">
-            <img src="@/assets/gcp.png" alt="Logo" style="width:24px;">
             <img src="@/assets/mongodb.png" alt="Logo" style="width:24px;">
+            <img src="@/assets/gcp.png" alt="Logo" style="width:24px;">
           </div>
 
         </div>

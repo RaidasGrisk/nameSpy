@@ -13,7 +13,7 @@
             <div class="column is-one-third">
               <transition name="fade" mode="out-in" appear>
                 <div style="transition-delay: 0.3s">
-                  <h1 class="title">
+                  <h1 class="title has-text-success">
                     Hi, my name is NAMESPY 🧐
                   </h1>
                   <h2 class="subtitle has-text-grey-darker">
@@ -23,12 +23,12 @@
                   <h2 class="subtitle has-text-grey-darker">
                     I'll tell you who's famous🔥 and who's not
                     <!-- and if you'll dig deeper, you might find even more details -->
-                    and if if you wish, will
+                    and if you wish, will find
                     the job title / occupation {{ this.currentEmoji }} behind the name
                   </h2>
                   <br>
                   <div class="has-text-grey-darker">
-                    Use my <router-link to="/Docs">REST API</router-link> service
+                    Use my <router-link class="has-text-danger" to="/Docs">REST API</router-link> service
                     to get to know the names you've got!
                   </div>
                 </div>
@@ -42,16 +42,9 @@
             <!-- the image on the right -->
             <div class="column is-one-third">
               <transition name="fade" mode="out-in" appear>
-                <div style="transition-delay: 2s">
+                <div style="transition-delay: 0.3s">
                   <div v-tilt="tiltOptions">
-                    <div class="box has-text-centered has-background-primary">
-                      <img src="@/assets/black.png" alt="Logo" style="width:200px; opacity: 0.4;">
-                    </div>
-                    <div class="has-text-grey-darker">
-                      API status: <label v-html="statusEmoji"></label> <br>
-                      Requests today: 10<br>
-                      Requests total: 999
-                    </div>
+                    <StatusBoard/>
                   </div>
                 </div>
               </transition>
@@ -61,9 +54,6 @@
         </div>
       </div>
 
-
-
-
     </section>
   </body>
 </template>
@@ -71,12 +61,13 @@
 <script>
 
 import NavBar from '@/components/NavBar'
-import axios from 'axios'
+import StatusBoard from '@/components/home/StatusBoard'
 
 export default {
   name: 'Hero',
   components: {
-    NavBar
+    NavBar,
+    StatusBoard
   },
 
   data() {
@@ -91,13 +82,12 @@ export default {
 
       currentEmoji: this.getJobEmoji(),
 
-      system_status: undefined,
     }
   },
 
   methods: {
     getJobEmoji() {
-      var emojis = ['🤺', '🚴', '🚀', '🤸', '🤹', '🎮', '🎨', '🎻', '🛰']
+      var emojis = ['🤺', '🚴', '🚀', '🤸', '🤹', '🎮', '🎨', '🎻', '🛰', '🦙', '🐿️', '👩‍💼']
       return emojis[Math.floor(Math.random() * emojis.length)]
     },
 
@@ -112,24 +102,7 @@ export default {
   },
 
   computed: {
-    statusEmoji() {
-      // chec if undefined
-      if (!this.system_status){
-        console.log('asdasdasd')
-        return '<label class="loader"></label>'
-      }
-      else {
-        var firstChar = String(this.system_status).charAt(0)
-        console.log(this.system_status)
-        if (firstChar == '5'){
-          return '🔴'
-        } else {
-          return '🟢'
-        }
 
-      }
-
-    }
   },
 
   created() {
@@ -137,16 +110,6 @@ export default {
   },
 
   mounted() {
-
-    var vm = this
-    axios.get('https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/web_score')
-    .then(function (response){
-      vm.system_status = response.status
-      console.log(response.status)
-    }).catch(function (error){
-      vm.system_status = error.response.status
-      console.log(error.response.status)
-    })
 
   }
 
@@ -175,19 +138,11 @@ body {
 	}
 }
 
-/* Spinnig Icon */
-.loader {
-  border: 3px solid #FFFFFF; /* Light grey */
-  border-top: 3px solid #8338EC; /* Blue */
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  animation: spin 1s linear infinite;
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 1s;
 }
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 
 </style>
