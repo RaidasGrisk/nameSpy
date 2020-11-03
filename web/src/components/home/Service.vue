@@ -19,7 +19,7 @@
           </div>
           <br>
           <div class="has-text-grey-darker">
-            Or read the <router-link to="/Docs">Docs</router-link> 📖
+            Or read the <router-link class="has-text-danger" to="/Docs">Docs</router-link> 📖
           </div>
         </div>
 

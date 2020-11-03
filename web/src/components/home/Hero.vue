@@ -28,7 +28,7 @@
                   </h2>
                   <br>
                   <div class="has-text-grey-darker">
-                    Use my <router-link to="/Docs">REST API</router-link> service
+                    Use my <router-link class="has-text-danger" to="/Docs">REST API</router-link> service
                     to get to know the names you've got!
                   </div>
                 </div>

@@ -66,7 +66,7 @@ $colors: (
 );
 
 // Links
-$link: $danger;
+$link: $primary;
 $link-invert: $primary-invert;
 $link-focus-border: $primary;
 
@@ -80,7 +80,6 @@ $link-focus-border: $primary;
   font-family: 'B616', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: $primary;
 
 }
 </style>

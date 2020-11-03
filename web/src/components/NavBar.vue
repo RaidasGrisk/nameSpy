@@ -24,8 +24,8 @@
             v-bind:key="routes.id"
             :to="`${routes.page}`">{{routes.text}}</router-link>
             <!-- Login button -->
-            <button class="button is-normal is-success is-outlined"
-            @click="showModal_Login=!showModal_Login">Login</button>
+            <!-- <button class="button is-normal is-success is-outlined"
+            @click="showModal_Login=!showModal_Login">Login</button> -->
           </div>
         </div>
       </div>

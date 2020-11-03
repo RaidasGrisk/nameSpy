@@ -22,7 +22,7 @@
             <td>Total</td>
             <td>
               <label v-if="call_counts['counts']['total']">
-                {{call_counts['counts']['total']}}
+                {{  call_counts['counts']['total']  }}
               </label>
               <label v-else class="loader"></label>
             </td>
@@ -31,7 +31,7 @@
             <td>Last 30 d</td>
             <td>
               <label v-if="call_counts['counts']['last30days']">
-                {{call_counts['counts']['last30days']}}
+                {{  call_counts['counts']['last30days']  }}
               </label>
               <label v-else class="loader"></label>
             </td>
@@ -39,8 +39,8 @@
           <tr>
             <td>Last 24 hr</td>
             <td>
-              <label v-if="call_counts['counts']['last24hours']">
-                {{call_counts['counts']['last24hours']}}
+              <label v-if="call_counts['counts']['last24hours'] || call_counts['counts']['last24hours'] === 0">
+                {{  call_counts['counts']['last24hours']  }}
               </label>
               <label v-else class="loader"></label>
             </td>
