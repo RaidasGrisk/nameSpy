@@ -43,8 +43,18 @@ def google_translate(google_data, proxies):
     # else, the code will fail at this point with broken conn
     translator = Translator(proxies=proxies)
     translator.session = requests_retry_session()
-    translated = [item.text for item in translator.translate(text_to_translate, dest='en')]
-    logger.info('Successfully google translated text')
+    # translated = [item.text for item in translator.translate(text_to_translate, dest='en')]
+    # logger.info('Successfully google translated text')
+
+    # temp fix: https://github.com/ssut/py-googletrans/issues/234
+    for _ in range(5):
+        try:
+            translated = [item.text for item in translator.translate(text_to_translate, dest='en')]
+            logger.info('Successfully google translated text')
+            break
+        except:
+            translator = Translator(proxies=proxies)
+            translator.session = requests_retry_session()
 
     # ungroup and split back to snippets and titles
     titles_translated = translated[0].split('|||')[0::2]
@@ -120,10 +130,10 @@ def get_google_search_response(person_name, exact_match, proxies, country_code):
     # if recaptcha in the response, the client that sent the request
     # is blacklisted so lets return False
     if 'https://www.google.com/recaptcha/api.js' in response.text:
-        logger.info('Received Captcha request')
+        logger.info('Received Captcha request (google search)')
         return False
 
-    logger.info('Received a valid response')
+    logger.info('Received a valid response (google search)')
     return response
 
 
