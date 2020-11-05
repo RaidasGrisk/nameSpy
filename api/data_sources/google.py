@@ -41,20 +41,23 @@ def google_translate(google_data, proxies):
     # Translator creates its own requests session, so lets
     # modify it to retry on fail connection / other errors
     # else, the code will fail at this point with broken conn
-    translator = Translator(proxies=proxies)
-    translator.session = requests_retry_session()
-    # translated = [item.text for item in translator.translate(text_to_translate, dest='en')]
-    # logger.info('Successfully google translated text')
+    translator = Translator(proxies=proxies, timeout=5)
+
+    # the following would overwrite a couple of things
+    # also would force token acquisition to be done via proxy
+    # none of this is good, so lets not do this and use the default session
+    # translator.session = requests_retry_session(retries=0, timeout=5)
 
     # temp fix: https://github.com/ssut/py-googletrans/issues/234
+    # also this is good for cases when proxy connection fails
     for _ in range(5):
         try:
             translated = [item.text for item in translator.translate(text_to_translate, dest='en')]
             logger.info('Successfully google translated text')
             break
-        except:
-            translator = Translator(proxies=proxies)
-            translator.session = requests_retry_session()
+        except Exception as e:
+            logger.info(f'google translate error {_}')
+            translator = Translator(proxies=proxies, timeout=5)
 
     # ungroup and split back to snippets and titles
     titles_translated = translated[0].split('|||')[0::2]
