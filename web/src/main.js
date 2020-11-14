@@ -16,6 +16,10 @@ library.add(faPython, faJs, faLinux, faTerminal)
 import { faTwitter, faGithub } from '@fortawesome/free-brands-svg-icons'
 library.add(faTwitter, faGithub)
 
+// Other icons
+import { faCopy } from '@fortawesome/free-solid-svg-icons'
+library.add(faCopy)
+
 // tilt
 import VueTilt from 'vue-tilt.js'
 Vue.use(VueTilt)

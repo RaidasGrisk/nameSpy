@@ -29,24 +29,32 @@
 
             <div class="field has-addons">
               <p class="control">
-                <a class="button is-primary is-focused is-small" @click="getModelApiData(url_webscore)">
+                <a class="button is-primary is-focused is-small" @click="getModelApiData(url_webscore, webscore_params)">
                   web_score
                 </a>
               </p>
-              <p class="control is-expanded ">
-                <input class="input is-small has-text-grey" v-bind:value="parseUrl(url_webscore, input)" readonly>
+              <p class="control is-expanded">
+                <input class="input is-small has-text-grey"
+                v-bind:value="removeUrlBase(parseUrl(url_webscore, webscore_params))" readonly>
               </p>
+              <a class="button is-small has-text-primary" @click="copyRefText('web_score_url')">
+                <font-awesome-icon :icon="['fa', 'copy']"/>
+              </a>
             </div>
 
             <div class="field has-addons">
               <p class="control">
-                <a class="button is-primary is-focused is-small" @click="getModelApiData(url_jobtitle)" style="padding-right:30px">
+                <a class="button is-primary is-focused is-small" @click="getModelApiData(url_jobtitle, jobtitle_params)" style="padding-right:30px">
                   job_title
                 </a>
               </p>
-              <p class="control is-expanded ">
-                <input class="input is-small has-text-grey" v-bind:value="parseUrl(url_jobtitle, input)" readonly>
+              <p class="control is-expanded">
+                <input class="input is-small has-text-grey"
+                v-bind:value="removeUrlBase(parseUrl(url_jobtitle, jobtitle_params))" readonly>
               </p>
+              <a class="button is-small has-text-primary" @click="copyRefText('job_title_url')">
+                <font-awesome-icon :icon="['fa', 'copy']"/>
+              </a>
             </div>
 
             <div v-if="processingAPIRequest || output">
@@ -70,6 +78,14 @@
       </div>
     </div>
 
+    <!-- Hidden text are to copy from -->
+    <!-- style="visibility: hidden" -->
+    <!-- https://stackoverflow.com/questions/49053240/hidden-element-wont-copy-to-clipboard -->
+    <div style="position: absolute; left: -999em;" aria-hidden="true">
+      <textarea ref="web_score_url" v-bind:value="parseUrl(url_webscore, webscore_params)"></textarea>
+      <textarea ref="job_title_url" v-bind:value="parseUrl(url_jobtitle, jobtitle_params)"></textarea>
+    </div>
+
   </div>
 </template>
 
@@ -86,44 +102,71 @@ export default {
 
   data() {
     return {
+
+      // api input/output
       input: '',
-      isActive: 'webscore',
+      output: '',
+
       // end point params
-      country_code: 'us',
       url_webscore: 'https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/web_score',
       url_jobtitle: 'https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/job_title',
-      output: '',
+      webscore_params: {
+        // 'input': '',
+        // 'country_code': '',
+        'filter_input': 1,
+        'use_proxy': 1,
+        'debug': 0,
+        'collected_data': 1,
+      },
+      jobtitle_params: {
+        // 'input': '',
+        // 'country_code': '',
+        'filter_input': 1,
+        'use_proxy': 1,
+        'debug': 0
+      },
+
+      // other
       processingAPIRequest: false,
     }
   },
 
   methods: {
-    getModelApiData(endpoint) {
+    getModelApiData(endpoint, params) {
 
       this.output = null
       this.processingAPIRequest = true
       var vm = this
+      var parsed_params = {...{'input': vm.input}, ...params}
 
-      axios.get(endpoint, {
-        params: {
-          'input': vm.input,
-          'country_code': vm.country_code,
-          'filter_input': 1,
-          'use_proxy': 1,
-          'collected_data': 1
-        }
-      }).then(function (response){
+      axios.get(endpoint, {params: parsed_params}
+      ).then(function (response){
         vm.output = response.data
         vm.processingAPIRequest = false
-        vm.lastAPICalled = endpoint
       }).catch(function (error){
         vm.output = error.response.data
         vm.processingAPIRequest = false
       })
     },
 
-    parseUrl(url, param) {
-      return url  + '?input=' + param
+    parseUrl(url, params) {
+      var parsed_params = {...{'input': this.input}, ...params}
+      var parsed_url = url + '?'
+      for (var key in parsed_params) {
+        parsed_url += key + '=' + parsed_params[key] + '&'
+      }
+      return parsed_url.slice(0, -1)
+    },
+
+    removeUrlBase(url) {
+      // https://stackoverflow.com/questions/14480345/how-to-get-the-nth-occurrence-in-a-string
+      var base_ending_index = url.split('/', 3).join('/').length;
+      return url.slice(base_ending_index)
+    },
+
+    copyRefText(ref) {
+      this.$refs[ref].select();
+      document.execCommand('copy');
     }
   },
 
@@ -141,7 +184,8 @@ export default {
 
     // https://geolocation-db.com/json/
     axios.get('https://geolocation-db.com/json/').then(function (response){
-        vm.country_code = response.data['country_code'].toLowerCase()
+        vm.webscore_params['country_code'] = response.data['country_code'].toLowerCase()
+        vm.jobtitle_params['country_code'] = response.data['country_code'].toLowerCase()
       }
     )
   }
