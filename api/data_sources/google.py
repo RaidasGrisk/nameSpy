@@ -49,6 +49,7 @@ def google_translate(google_data, proxies):
     # translator.session = requests_retry_session(retries=0, timeout=5)
 
     # temp fix: https://github.com/ssut/py-googletrans/issues/234
+    # from the looks of it, it seems the issue will be soon fixed
     # also this is good for cases when proxy connection fails
     for _ in range(5):
         try:
@@ -95,14 +96,16 @@ def get_google_search_response(person_name, exact_match, proxies, country_code):
     # will increase the prob of triggering bot detection
     # so using this without a proxy will quickly result
     # in google banning the ip address and asking for recaptcha
-    # TODO: even though the parameter is set, the search results
-    #  differ when returned from different proxy/client
-    #  clearly, the results returned are dependent on proxy
-    #  results are often in a language corresponding to proxy location
+    #
+    # set lr and cr params, maybe both of the will result
+    # in actually simulating a search from specified country
+    # source: https://github.com/MarioVilas/googlesearch/blob/master/googlesearch/__init__.py
     if proxies:
-        params['gl'] = 'us'
+        params['cr'] = 'us'
+        params['lr'] = 'lang_' + 'us'
     if country_code:
-        params['gl'] = country_code
+        params['cr'] = country_code
+        params['lr'] = 'lang_' + 'country_code'
 
     # set headers - this is important!!!
     # if headers are not set google does not return
