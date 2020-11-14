@@ -13,7 +13,7 @@ nlp_models = get_nlp_models()
 
 def make_output(input,
                 ner_threshold=0.95,
-                country_code='en',
+                country_code='us',
                 filter_input=True,
                 use_proxy=1,
                 debug=0):
