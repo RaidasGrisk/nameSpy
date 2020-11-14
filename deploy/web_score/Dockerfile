@@ -17,9 +17,11 @@ COPY /api/web_score/__init__.py /api/web_score/make_score.py ./api/web_score/
 COPY /api/__init__.py /api/helpers.py /api/private.py /api/log_config.py ./api/
 COPY /api/endpoint_get_web_score.py ./api/
 
-# set variables
-RUN export PORT=8080
-
 # launch app
 WORKDIR /api
-CMD exec gunicorn --bind :8080 --workers 1 --threads 4 endpoint_get_web_score:app
+
+# https://weastur.medium.com/production-ready-gunicorn-config-b98574033e45
+# lets not use threads and use workers instead to utilize timeout
+# during my test this timeout is not working, so Im setting it together with
+# gcloud run deploy command. Setting that is not working either :D
+CMD exec gunicorn --bind :8080 --workers 4 --threads 1 --timeout 60 endpoint_get_web_score:app

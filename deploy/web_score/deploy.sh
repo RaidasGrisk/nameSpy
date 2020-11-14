@@ -6,5 +6,10 @@ docker build -f deploy/web_score/Dockerfile . --tag gcr.io/namesapi-158101076088
 docker push gcr.io/namesapi-1581010760883/webscore
 
 gcloud config set project namesapi-1581010760883
-gcloud run deploy --image gcr.io/namesapi-1581010760883/webscore --platform managed --region europe-north1
-gcloud run services update webscore --memory 2G --platform managed --region europe-north1 --max-instances 5
+gcloud run deploy \
+  --image gcr.io/namesapi-1581010760883/webscore \
+  --platform managed \
+  --region europe-north1 \
+  --memory 2G \
+  --max-instances 5 \
+  --timeout 60

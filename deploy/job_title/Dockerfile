@@ -32,5 +32,7 @@ COPY /api/__init__.py /api/log_config.py /api/helpers.py /api/private.py /api/en
 
 # set variables
 WORKDIR /api
-RUN export PORT=8080
-CMD exec gunicorn --bind :8080 --workers 1 --threads 4 endpoint_get_job_title:app
+
+# https://weastur.medium.com/production-ready-gunicorn-config-b98574033e45
+# lets not use threads and use workers instead to utilize timeout
+CMD exec gunicorn --bind :8080 --workers 4 --threads 1 --timeout 60  endpoint_get_job_title:app
