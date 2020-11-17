@@ -16,18 +16,18 @@
                   <h1 class="title has-text-success">
                     Hi, my name is NAMESPY 🧐
                   </h1>
-                  <h2 class="subtitle has-text-grey-darker">
+                  <h2 class="subtitle has-text-black-ter">
                     I spy on names, duh.
                   </h2>
                   <br>
-                  <h2 class="subtitle has-text-grey-darker">
+                  <h2 class="subtitle has-text-black-ter">
                     I'll tell you who's famous🔥 and who's not
                     <!-- and if you'll dig deeper, you might find even more details -->
                     and if you wish, will find
                     the job title / occupation {{ this.currentEmoji }} behind the name
                   </h2>
                   <br>
-                  <div class="has-text-grey-darker">
+                  <div class="has-text-black-ter">
                     Use my <router-link class="has-text-danger" to="/Docs">REST API</router-link> service
                     to get to know the names you've got!
                   </div>

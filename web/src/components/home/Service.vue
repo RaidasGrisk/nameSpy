@@ -9,7 +9,7 @@
             Enough explaining. <br>
             Try it out yourself!
           </h1>
-          <h2 class="subtitle has-text-grey-darker">
+          <h2 class="subtitle has-text-black-ter">
             type in a name and see what's up
           </h2>
           <div class="field has-addons">
@@ -18,7 +18,7 @@
             </p>
           </div>
           <br>
-          <div class="has-text-grey-darker">
+          <div class="has-text-black-ter">
             Or read the <router-link class="has-text-danger" to="/Docs">Docs</router-link> 📖
           </div>
         </div>

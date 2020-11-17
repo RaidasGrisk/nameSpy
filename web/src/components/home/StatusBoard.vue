@@ -1,10 +1,11 @@
 <template>
-  <div class="has-text-grey-darker">
+  <div class="has-text-black-ter">
 
-    <div class="box has-text-centered has-background-primary">
+    <div class="box has-text-centered has-background-primary"
+    style="border: 0px solid black">
       <img src="@/assets/black.png"
       alt="Logo"
-      style="width:150px; opacity: 0.5;"
+      style="width:150px; opacity: 0.7;"
       @click="updateStatusData(); updateCallCountsData();"
       >
     </div>

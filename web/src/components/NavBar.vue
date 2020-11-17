@@ -1,6 +1,6 @@
 <template>
   <div>
-    <nav class="navbar is-spaced is-transparent is-primary">
+    <nav class="navbar is-spaced is-transparent is-primary is-medium">
       <div class="container">
         <div class="navbar-brand">
           <a class="navbar-item" href="/">

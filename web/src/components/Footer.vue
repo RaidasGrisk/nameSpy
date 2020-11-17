@@ -18,7 +18,7 @@
                 </span>
               </a>
 
-              <a href="https://github.com/RaidasGrisk/" class="button is-success is-link" target="_blank">
+              <a href="https://github.com/RaidasGrisk/namespy" class="button is-success is-link" target="_blank">
                 <span class="icon">
                   <font-awesome-icon :icon="['fab', 'github']" />
                 </span>
@@ -26,7 +26,7 @@
 
           </div>
 
-          <div class="content has-text-grey-darker">
+          <div class="content has-text-black-ter">
             Made with<br>
             <img src="@/assets/vue.png" alt="Logo" style="width:20px;">
             <img src="@/assets/python.png" alt="Logo" style="width:24px;">
