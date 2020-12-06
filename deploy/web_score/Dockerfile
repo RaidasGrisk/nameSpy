@@ -24,4 +24,5 @@ WORKDIR /api
 # lets not use threads and use workers instead to utilize timeout
 # during my test this timeout is not working, so Im setting it together with
 # gcloud run deploy command. Setting that is not working either :D
-CMD exec gunicorn --bind :8080 --workers 4 --threads 1 --timeout 60 endpoint_get_web_score:app
+# therefore lets fall back to original w1 t4 config until I sort this out
+CMD exec gunicorn --bind :8080 --workers 1 --threads 4 --timeout 60 endpoint_get_web_score:app
