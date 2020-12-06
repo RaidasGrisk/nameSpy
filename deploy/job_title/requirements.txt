@@ -7,7 +7,7 @@ unidecode
 future
 fake-useragent
 requests
-googletrans==2.4.0
+googletrans==3.1.0a0
 spacy
 gunicorn
 flair
