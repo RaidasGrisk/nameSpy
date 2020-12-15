@@ -105,7 +105,7 @@ def get_google_search_response(person_name, exact_match, proxies, country_code):
         params['lr'] = 'lang_' + 'us'
     if country_code:
         params['cr'] = country_code
-        params['lr'] = 'lang_' + 'country_code'
+        params['lr'] = 'lang_' + country_code
 
     # set headers - this is important!!!
     # if headers are not set google does not return
