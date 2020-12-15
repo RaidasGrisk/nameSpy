@@ -112,11 +112,18 @@ api = Api(app)
 app.config['JSON_SORT_KEYS'] = False  # do not sort data
 
 
+def non_empty_str(i):
+    if isinstance(i, str) and len(i) > 0:
+        return i
+    else:
+        raise ValueError('Must be none empty string')
+
+
 class web_score(Resource):
     def get(self):
 
         parser = reqparse.RequestParser()
-        parser.add_argument('input', type=str, required=True)
+        parser.add_argument('input', required=True, type=non_empty_str)
         parser.add_argument('filter_input', type=int, default=1)
         parser.add_argument('use_proxy', type=int, default=1)
         parser.add_argument('collected_data', type=int, default=1)
