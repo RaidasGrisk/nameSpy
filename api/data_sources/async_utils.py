@@ -3,7 +3,7 @@ import asyncio
 from log_config import logger
 
 
-def make_async_requests(urls, proxies=None):
+def make_async_requests(urls, headers=None, proxies=None):
 
     proxy = proxies.get('http') if proxies else ''
 
@@ -17,7 +17,7 @@ def make_async_requests(urls, proxies=None):
         for i in range(5):
             logger.info(f'Gathering single async request: {i}')
             try:
-                async with session.get(url, proxy=proxy, timeout=timeout) as response:
+                async with session.get(url, headers=headers, proxy=proxy, timeout=timeout) as response:
                     logger.info(f'Gathering single async request: successfully received a response')
                     return await response.text()
             except Exception as e:

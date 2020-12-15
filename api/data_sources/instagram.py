@@ -36,13 +36,22 @@ def get_instagram_users(input, proxies):
     url = 'https://www.instagram.com/web/search/topsearch'
     params = {'query': input.replace(' ', '+'), 'context': 'blended'}
 
+    # since ~2020-12-12 the request must contain user-agent header
+    # else will return an html everytime
+    # <!DOCTYPE html>\n<html lang="en" class="no-js not-logged-in client-root">
+    headers = {
+        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) '
+                      'AppleWebKit/537.36 (KHTML, like Gecko) '
+                      'Chrome/83.0.4103.116 Safari/537.36',
+    }
+
     # sometimes instead of json it returns html
     # <!DOCTYPE html>\n<html lang="en" class="no-js not-logged-in client-root">
     # try again if such case occur
     for i in range(5):
         try:
             logger.info(f'Sending a user search request to instagram {i}')
-            response = requests_retry_session().get(url, params=params, proxies=proxies)
+            response = requests_retry_session().get(url, params=params, headers=headers, proxies=proxies)
             search_output = response.json()
             logger.info(f'Sending a user search request to instagram: received a valid response')
             break
@@ -58,7 +67,7 @@ def get_instagram_users(input, proxies):
           '?query_hash=c76146de99bb02f6415203be841dd25a&' \
           'variables={{"id":{},"include_reel":false,"fetch_mutual":false,"first":0}}'
     user_urls = [url.format(id) for id in user_ids]
-    user_data = make_async_requests(user_urls, proxies)
+    user_data = make_async_requests(user_urls, headers=headers, proxies=proxies)
     user_data = [json.loads(i) for i in user_data]
 
     # parse info
@@ -68,9 +77,10 @@ def get_instagram_users(input, proxies):
         user_info.update(parse_json_to_user_info(data))
         users.append(user_info)
 
-    output = {}
-    output['num_users'] = len(response.json()['users'])
-    output['users'] = users
+    output = {
+        'num_users': len(response.json()['users']),
+        'users': users
+    }
 
     return output
 
