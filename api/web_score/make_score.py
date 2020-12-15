@@ -136,6 +136,7 @@ class CustomScoreCombination(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, x, y=None):
+        x = np.array(x)  # in case it is pandas object
         return np.mean([np.mean(x), np.max(x)])
 
 
@@ -215,7 +216,7 @@ def train():
     model_pipe = Pipeline(
         [
             ('ECDF', CustomECDF()),
-            ('prep_for_VAE', FunctionTransformer(cast_to_float32)),
+            # ('prep_for_VAE', FunctionTransformer(cast_to_float32)),
             # ('VAE', VAE_numpy()),
             # ('vae_output_format', FunctionTransformer(vae_output_format))
             ('CustomScoreCombination', CustomScoreCombination()),
@@ -263,16 +264,16 @@ def debugging():
 
     debug_data = {
         'google': {
-            'items': 15500000
+            'items': 10600000
         },
         'wikipedia': {
-            'items': 436,
+            'items': 683,
         },
         'twitter': {
             'num_users': 0,
             'users': [
                 {
-                    'followers_count': np.mean([48843, 3688, 2450, 1792, 1860])
+                    'followers_count': np.mean([62102, 294884])
                 },
             ]
         },
@@ -280,7 +281,7 @@ def debugging():
             'num_users': 1,
             'users': [
                 {
-                    'followers_count': np.mean([1589, 293, 27675, 3688, 152])
+                    'followers_count': 10
                 },
 
             ]
