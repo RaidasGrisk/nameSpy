@@ -23,3 +23,4 @@ api/web_score/data/
 stanford*
 facebook-names-unique.txt
 *.pt
+.gitsecret/keys/random_seed
