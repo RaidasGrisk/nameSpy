@@ -148,25 +148,34 @@ export default {
         this.system_status['status'][key] = undefined
       }
 
-      // loop over all the server status urls
-      // save the data returned
-      // https://stackoverflow.com/questions/56532652/axios-get-then-in-a-for-loop
-      let promises = []
-      let resp = {}
+      // for the sake of simplicity lets not do this in a loop
+      // do each call separately
 
-      for (let key in vm.system_status['urls']) {
-        promises.push(
-          axios.get(vm.system_status['urls'][key])
-          .then(response => {
-            resp[key] = response['data']['is_up']
-          }).catch(error => {
-            console.log(JSON.stringify(error))
-            resp[key] = false
-          })
-        )
-      }
-      Promise.all(promises).then(() => {
-        vm.system_status['status'] = resp
+      // gateway
+      axios.get(vm.system_status['urls']['gateway'])
+      .then(response => {
+        vm.system_status['status']['gateway'] = response['data']['is_up']
+      }).catch(error => {
+        console.log(JSON.stringify(error))
+        vm.system_status['status']['gateway'] = false
+      })
+
+      // webscore
+      axios.get(vm.system_status['urls']['webscore'])
+      .then(response => {
+        vm.system_status['status']['webscore'] = response['data']['is_up']
+      }).catch(error => {
+        console.log(JSON.stringify(error))
+        vm.system_status['status']['webscore'] = false
+      })
+
+      // gateway
+      axios.get(vm.system_status['urls']['jobtitle'])
+      .then(response => {
+        vm.system_status['status']['jobtitle'] = response['data']['is_up']
+      }).catch(error => {
+        console.log(JSON.stringify(error))
+        vm.system_status['status']['jobtitle'] = false
       })
     },
 
@@ -178,9 +187,6 @@ export default {
       for (let key in this.call_counts['counts']){
         this.call_counts['counts'][key] = undefined
       }
-
-      // loop over api call count url_webscore
-      // save the data returned
 
       // create dates to filter on
       let date = new Date()
@@ -194,31 +200,49 @@ export default {
         'last24hours': {'time': {'$gte': last24hours.toISOString()}}
       }
 
-      // retrieve data
-      let promises_count = []
-      let resp_count = {}
+      // same as with updateStatusData
+      // for the sake of simplicity lets not do this in a loop
+      // do each call separately
 
-      for (let key in vm.call_counts['counts']) {
-        promises_count.push(
-          axios.get(vm.call_counts['url'], {
-            params: {
-              filter: JSON.stringify(filters[key])
-            }
-          })
-          .then(response => {
-            resp_count[key] = response['data']
-          }).catch(error => {
-            console.log(JSON.stringify(error))
-            resp_count[key] = '☠️'
-          })
-        )
-      }
+      // total
+      axios.get(vm.call_counts['url'], {
+        params: {
+          filter: JSON.stringify(filters['total'])
+        }
+      })
+      .then(response => {
+        vm.call_counts['counts']['total'] = response['data']
+      }).catch(error => {
+        console.log(JSON.stringify(error))
+        vm.call_counts['counts']['total'] = '☠️'
+      })
 
-      Promise.all(promises_count).then(() => {
-        vm.call_counts['counts'] = resp_count
+      // last30days
+      axios.get(vm.call_counts['url'], {
+        params: {
+          filter: JSON.stringify(filters['last30days'])
+        }
+      })
+      .then(response => {
+        vm.call_counts['counts']['last30days'] = response['data']
+      }).catch(error => {
+        console.log(JSON.stringify(error))
+        vm.call_counts['counts']['last30days'] = '☠️'
+      })
+
+      // last24hours
+      axios.get(vm.call_counts['url'], {
+        params: {
+          filter: JSON.stringify(filters['last24hours'])
+        }
+      })
+      .then(response => {
+        vm.call_counts['counts']['last24hours'] = response['data']
+      }).catch(error => {
+        console.log(JSON.stringify(error))
+        vm.call_counts['counts']['last24hours'] = '☠️'
       })
     }
-
   },
 
   mounted() {

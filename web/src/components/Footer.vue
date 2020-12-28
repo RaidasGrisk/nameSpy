@@ -28,10 +28,12 @@
 
           <div class="content has-text-black-ter">
             Made with<br>
-            <img src="@/assets/vue.png" alt="Logo" style="width:20px;">
-            <img src="@/assets/python.png" alt="Logo" style="width:24px;">
-            <img src="@/assets/mongodb.png" alt="Logo" style="width:24px;">
-            <img src="@/assets/gcp.png" alt="Logo" style="width:24px;">
+            <img src="@/assets/vue.png" alt="Logo" style="width:20px;"> &nbsp;
+            <img src="@/assets/python.png" alt="Logo" style="width:24px;"> &nbsp;
+            <img src="@/assets/mongodb.png" alt="Logo" style="width:24px;"> &nbsp;
+            <img src="@/assets/docker.png" alt="Logo" style="width:24px;"> <br>
+            <img src="@/assets/gcp.png" alt="Logo" style="width:24px;"> &nbsp;
+            <img src="@/assets/nginx.png" alt="Logo" style="width:20px;">
           </div>
 
         </div>
