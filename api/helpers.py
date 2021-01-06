@@ -43,6 +43,7 @@ def get_filtered_input(input_name, nlp_models):
         if len(entities['PERSON']) != 1:
             output['warning'] = 'Huh!? Why is there more than one person?'
     else:
-        output['warning'] = 'I am built to recognize names, but I dont see any :('
+        output['warning'] = 'I am a ML program built to recognize names, but I dont see any :('
+        output['suggestion'] = 'if I fail to recognize your name (pardon me, I am just a dumb AI), turn me off by passing filter_input=0'
         output['entities'] = list(entities.keys())
     return output
