@@ -29,9 +29,9 @@
 
             <div class="field has-addons">
               <p class="control">
-                <a class="button is-primary is-focused is-small" @click="getModelApiData(url_webscore, webscore_params)">
+                <button class="button is-primary is-focused is-small" @click="getModelApiData(url_webscore, webscore_params)">
                   web_score
-                </a>
+                </button>
               </p>
               <p class="control is-expanded">
                 <input class="input is-small has-text-grey"
@@ -42,11 +42,18 @@
               </a>
             </div>
 
-            <div class="field has-addons">
+            <div
+              class="field has-addons has-tooltip-success has-tooltip-bottom has-tooltip-multiline "
+              data-tooltip="Endpoint is temporary disabled until dev dependencies are fixed"
+            >
               <p class="control">
-                <a class="button is-primary is-focused is-small" @click="getModelApiData(url_jobtitle, jobtitle_params)" style="padding-right:30px">
+                <button class="button is-primary is-focused is-small"
+                  @click="getModelApiData(url_jobtitle, jobtitle_params)"
+                  style="padding-right:26px;"
+                  disabled
+                 >
                   job_title
-                </a>
+                </button>
               </p>
               <p class="control is-expanded">
                 <input class="input is-small has-text-grey"
@@ -112,18 +119,18 @@ export default {
       url_jobtitle: 'https://namespy-api-mu7u3ykctq-lz.a.run.app/v1/job_title',
       webscore_params: {
         // 'input': '',
-        // 'country_code': '',
-        'filter_input': 1,
-        'use_proxy': 1,
-        'debug': 0,
-        'collected_data': 1,
+        'country_code': '',
+        // 'filter_input': 1,
+        // 'use_proxy': 1,
+        // 'debug': 0,
+        // 'collected_data': 1,
       },
       jobtitle_params: {
         // 'input': '',
-        // 'country_code': '',
-        'filter_input': 1,
-        'use_proxy': 1,
-        'debug': 0
+        'country_code': '',
+        // 'filter_input': 1,
+        // 'use_proxy': 1,
+        // 'debug': 0
       },
 
       // other

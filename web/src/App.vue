@@ -74,6 +74,9 @@ $link-focus-border: $primary;
 @import "~bulma";
 @import url('https://fonts.googleapis.com/css?family=Roboto+Condensed');
 
+// bulma extentions
+@import '~@creativebulma/bulma-tooltip/src/sass/index.sass';
+
 #app {
 
   /* init */
