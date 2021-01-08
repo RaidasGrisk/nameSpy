@@ -36,14 +36,20 @@ def get_domain_from_url(url):
 
 
 def get_filtered_input(input_name, nlp_models):
+
+    suggestion = 'If I fail to recognize your name ' \
+                 '(pardon me, I am just a dumb AI), ' \
+                 'turn me off by passing additional argument: ' \
+                 'filter_input=0'
     entities = get_entities(input_name, nlp_models)
     output = {}
     if entities.get('PERSON'):
         output['input'] = entities['PERSON'][0]
         if len(entities['PERSON']) != 1:
-            output['warning'] = 'Huh!? Why is there more than one person?'
+            output['warning'] = 'Huh!? Why is there more than one name?'
+            output['suggestion'] = suggestion
     else:
         output['warning'] = 'I am built to recognize names, but I dont see any :('
-        output['suggestion'] = 'if I fail to recognize your name (pardon me, I am just a dumb AI), turn me off by passing filter_input=0'
+        output['suggestion'] = suggestion
         output['entities'] = list(entities.keys())
     return output
