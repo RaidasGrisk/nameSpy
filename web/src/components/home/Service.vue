@@ -155,7 +155,9 @@ export default {
       for (var key in parsed_params) {
         parsed_url += key + '=' + parsed_params[key] + '&'
       }
-      return parsed_url.slice(0, -1)
+      // not sure about the slice part
+      // replace ' ' spaces with proper url encoding '%20'
+      return parsed_url.slice(0, -1).replace(/\s/g, '%20')
     },
 
     removeUrlBase(url) {
