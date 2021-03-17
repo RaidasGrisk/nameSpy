@@ -2,17 +2,24 @@ from googletrans import Translator
 from data_sources.requests_utils import requests_retry_session
 import re
 from log_config import logger
+from functools import wraps
+
 
 # this works on the premise that the fn will be ran
 # again if it returns False, else the loop will stop
-def retry_if_fn_returned_false(fn, max_tries=5):
-    def wrapper(*args, **kwargs):
-        for i in range(max_tries):
-            logger.info(f'Trying {fn.__name__} {i}')
-            output = fn(*args, **kwargs)
-            if output:
-                return output
-    return wrapper
+# https://towardsdatascience.com/are-you-using-python-with-apis-learn-how-to-use-a-retry-decorator-27b6734c3e6
+# https://blog.miguelgrinberg.com/post/the-ultimate-guide-to-python-decorators-part-iii-decorators-with-arguments
+def retry_if_fn_returned_false(max_tries=5):
+    def inner(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            for i in range(max_tries):
+                logger.info(f'Trying {fn.__name__} {i}')
+                output = fn(*args, **kwargs)
+                if output:
+                    return output
+        return wrapper
+    return inner
 
 
 def google_translate(google_data, proxies):
@@ -76,10 +83,9 @@ def google_translate(google_data, proxies):
 from bs4 import BeautifulSoup
 import unidecode
 from fake_useragent.fake import UserAgent
-# from data_sources.constants import browsers
-# import random
 
-@retry_if_fn_returned_false
+
+@retry_if_fn_returned_false(max_tries=5)
 def get_google_search_response(person_name, exact_match, proxies, country_code):
 
     # set params
@@ -91,21 +97,34 @@ def get_google_search_response(person_name, exact_match, proxies, country_code):
     # when using proxies the google results will depend on
     # the random country the proxy is located at and
     # the results will differ with every random proxy call
-    #
+
     # also keep in mind that including this parameter (as well as others, likely)
     # will increase the prob of triggering bot detection
     # so using this without a proxy will quickly result
     # in google banning the ip address and asking for recaptcha
-    #
+
     # set lr and cr params, maybe both of the will result
     # in actually simulating a search from specified country
     # source: https://github.com/MarioVilas/googlesearch/blob/master/googlesearch/__init__.py
+
+    # as of 2021 the request triggers some kind of google protection
+    # by not rendering the full page in html. Depending on the exact params set
+    # in the html returned it says "Jei per kelias sekundes nebūsite nukreipti, <...>"
+    # or just returns a different html structure that does not include div slim_appbar.
+    # div slim_appbar contains the number of total results and we want to parse it.
+    #
+    # For future reference, the following does not help:
+    # following the url provided together with "if you are not redirected within a few".
+    # fixing proxy location (in private.py) e.g. US only.
+    # do not setting cr lr params.
     if proxies:
-        params['cr'] = 'us'
-        params['lr'] = 'lang_' + 'us'
+        pass
+        # params['cr'] = 'us'
+        # params['lr'] = 'lang_' + 'us'
     if country_code:
-        params['cr'] = country_code
-        params['lr'] = 'lang_' + country_code
+        pass
+        # params['cr'] = country_code
+        # params['lr'] = 'lang_' + country_code
 
     # set headers - this is important!!!
     # if headers are not set google does not return
@@ -143,7 +162,7 @@ def get_google_search_response(person_name, exact_match, proxies, country_code):
     return response
 
 
-@retry_if_fn_returned_false
+@retry_if_fn_returned_false(max_tries=2)
 def get_google_search_result_count(person_name, exact_match, proxies, country_code):
 
     """
