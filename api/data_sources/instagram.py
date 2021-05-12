@@ -61,13 +61,32 @@ def get_instagram_users(input, proxies):
 
     # get info of users
     # make async calls to save some time
+
+    # as of 2021-05-01 many requests are failing.
+    # looks like it wont fail if cookie is included
+    # in header. Don't think this is a long term solution
+    # will probably be banned or something. Don't see other
+    # solutions though. Cookies taken from chrome browser.
+    headers_ = {
+        "cookie":
+            "ig_did=9D06479D-FAB2-4F3B-A77E-2C3D7410AAC1; "
+            "mid=XuzOYgAEAAFhdMSCcYcQ6kuygMhy; "
+            "fbm_124024574287414=base_domain=.instagram.com; "
+            "csrftoken=D6TGF4d2TA5pe7KrHGBjhtTUzY7DLuk1; "
+            "sessionid=4791334445%3ArcqL1iuBGrw1JZ%3A7; "
+            "ds_user_id=4791334445; s"
+            "hbid=2755; "
+            "shbts=1620822813.0845783; "
+            "rur=FTW"
+    }
+
     user_names = [i['user']['username'] for i in search_output['users'][:5]]
     user_ids = [i['user']['pk'] for i in search_output['users'][:5]]
     url = 'https://www.instagram.com/graphql/query/' \
           '?query_hash=c76146de99bb02f6415203be841dd25a&' \
           'variables={{"id":{},"include_reel":false,"fetch_mutual":false,"first":0}}'
     user_urls = [url.format(id) for id in user_ids]
-    user_data = make_async_requests(user_urls, headers=headers, proxies=proxies)
+    user_data = make_async_requests(user_urls, headers={**headers, **headers_}, proxies=proxies)
     user_data = [json.loads(i) for i in user_data]
 
     # parse info
