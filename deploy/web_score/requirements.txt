@@ -1,5 +1,5 @@
-flask
-flask-restful
+flask==1.1.1
+flask-restful==0.3.7
 beautifulsoup4==4.8.2
 unidecode
 future
