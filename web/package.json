@@ -18,7 +18,7 @@
     "core-js": "^3.6.5",
     "module": "^1.2.5",
     "prism-themes": "^1.4.0",
-    "prismjs": "^1.23.0",
+    "prismjs": "^1.25.0",
     "vue": "^2.6.10",
     "vue-json-pretty": "^1.6.5",
     "vue-prism-editor": "^0.6.1",
